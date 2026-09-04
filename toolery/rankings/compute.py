@@ -15,6 +15,101 @@ _TEMPLATES_DIR = Path(__file__).parent.parent / "core" / "templates"
 _env = Environment(loader=FileSystemLoader(_TEMPLATES_DIR))
 
 
+def _population_stddev(values: list[float]) -> float:
+    if not values:
+        return 0.0
+    m = sum(values) / len(values)
+    return math.sqrt(sum((v - m) ** 2 for v in values) / len(values))
+
+
+# Max possible stddev of a bounded [0, 1] score population is 0.5 (achieved by
+# a 50/50 split at the extremes 0.0 and 1.0). Used to normalize the raw
+# per-pair stddev into a [0, 1] consistency score: 1.0 = zero variance (every
+# trial scored identically), 0.0 = maximum variance.
+_MAX_SCORE_STDDEV = 0.5
+
+
+def compute_consistency_scores(
+    store: Store, history_window_runs: int = 5,
+) -> dict[tuple[str, str], dict[str, float | int]]:
+    """Per (model, adapter): a synthetic 'consistency' score measuring how
+    stable a model's scores are across trials — lower score variance means
+    higher consistency.
+
+    consistency = 1 - min(population_stddev(scores), 0.5) / 0.5
+
+    Scores are pooled across all trials/scenarios in the most recent
+    `history_window_runs` runs for that (model, adapter) pair (same recency
+    window as the other ranking dimensions), so the metric reflects
+    current behavior rather than the pair's entire history.
+    """
+    runs = store.fetch_all_runs()
+    run_meta = {r["run_id"]: r for r in runs}
+    with store.conn() as c:
+        all_results = [dict(r) for r in c.execute("SELECT * FROM scenario_results").fetchall()]
+
+    # (model, adapter) -> run_id -> started_at (to pick the recency window)
+    pair_runs: dict[tuple[str, str], dict[str, str]] = defaultdict(dict)
+    pair_scores: dict[tuple[str, str], dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
+    for r in all_results:
+        meta = run_meta.get(r["run_id"])
+        if not meta:
+            continue
+        key = (meta["model"], r["adapter"])
+        pair_runs[key][r["run_id"]] = meta["started_at"]
+        pair_scores[key][r["run_id"]].append(r["score"])
+
+    out: dict[tuple[str, str], dict[str, float | int]] = {}
+    for key, runs_started in pair_runs.items():
+        recent_run_ids = sorted(runs_started, key=lambda rid: runs_started[rid], reverse=True)
+        recent_run_ids = recent_run_ids[:history_window_runs]
+        scores: list[float] = []
+        for rid in recent_run_ids:
+            scores.extend(pair_scores[key][rid])
+        if not scores:
+            continue
+        stddev = _population_stddev(scores)
+        consistency = 1.0 - min(stddev, _MAX_SCORE_STDDEV) / _MAX_SCORE_STDDEV
+        out[key] = {"score": consistency, "stddev": stddev, "n": len(scores),
+                    "runs": len(recent_run_ids)}
+    return out
+
+
+def _render_consistency_ranking(store: Store, out_dir: Path, now: datetime,
+                                history_window_runs: int, half_life_days: float,
+                                bootstrap_iters: int) -> None:
+    """Render rankings/consistency.md — model-level rows use the best (highest
+    consistency) adapter per model, mirroring the other dimensions' semantics."""
+    per_pair = compute_consistency_scores(store, history_window_runs=history_window_runs)
+    pair_rows = [
+        {"model": model, "adapter": adapter, "score": v["score"], "runs": v["runs"]}
+        for (model, adapter), v in per_pair.items()
+    ]
+    per_model: dict[str, list[dict]] = defaultdict(list)
+    for pr in pair_rows:
+        per_model[pr["model"]].append(pr)
+    rows_out: list[dict] = []
+    for model, prs in per_model.items():
+        prs.sort(key=lambda p: -p["score"])
+        best = prs[0]
+        rows_out.append({
+            "model": model, "score": best["score"], "best_adapter": best["adapter"],
+            "runs": sum(p["runs"] for p in prs), "adapter_breakdown": prs,
+        })
+    rows_out.sort(key=lambda r: -r["score"])
+    _assign_ranks(rows_out)
+    breakdown = sorted(pair_rows, key=lambda p: -p["score"])
+    tmpl = _env.get_template("ranking.md.j2")
+    md = tmpl.render(
+        dimension="consistency", updated_iso=now.isoformat(),
+        model_count=len(rows_out), run_count=sum(r["runs"] for r in rows_out),
+        rows=rows_out, breakdown=breakdown,
+        window=history_window_runs, half_life=half_life_days,
+        bootstrap_iters=bootstrap_iters,
+    )
+    (out_dir / "consistency.md").write_text(md)
+
+
 def regenerate_rankings(*, store: Store, dimensions: list[str], out_dir: Path,
                         history_window_runs: int = 5, half_life_days: float = 14.0,
                         bootstrap_iters: int = 1000, min_runs: int = 1,
@@ -25,7 +120,15 @@ def regenerate_rankings(*, store: Store, dimensions: list[str], out_dir: Path,
     runs = store.fetch_all_runs()
     run_meta = {r["run_id"]: r for r in runs}
 
-    for dim in dimensions:
+    # 'consistency' is a synthetic dimension (score variance across trials,
+    # not tied to any scenario's ranking_dimensions tag) and is computed via
+    # its own path rather than the standard per-dimension loop below.
+    real_dimensions = [d for d in dimensions if d != "consistency"]
+    if "consistency" in dimensions:
+        _render_consistency_ranking(store, out_dir, now, history_window_runs,
+                                    half_life_days, bootstrap_iters)
+
+    for dim in real_dimensions:
         with store.conn() as c:
             rows = c.execute("SELECT * FROM scenario_results").fetchall()
             results = [dict(r) for r in rows]

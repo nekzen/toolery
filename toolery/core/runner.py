@@ -21,6 +21,31 @@ _log = logging.getLogger(__name__)
 # can tell "skipped, never ran" apart from a real ScenarioResult.
 _SKIP = object()
 
+# Substrings that identify a TRANSIENT adapter failure — rate limiting,
+# timeouts, connection resets, and 5xx server errors. These are infra hiccups,
+# not genuine model failures (bad tool call, wrong answer, malformed output),
+# and are safe to retry without inflating a model's apparent capability.
+# Deliberately conservative: anything not matched here is treated as a real
+# failure and is never retried.
+_TRANSIENT_ERROR_MARKERS = (
+    "429", "rate limit", "too many requests",
+    "timeout", "timed out",
+    "connection reset", "connection refused", "connection aborted",
+    "connection error", "broken pipe",
+    "server error", "bad gateway", "service unavailable", "gateway timeout",
+    "500", "502", "503", "504",
+)
+
+
+def is_transient_error(error: str) -> bool:
+    """True if `error` looks like a transient adapter failure worth retrying.
+
+    NEVER matches genuine model failures — e.g. "unknown tool", schema
+    validation failures, or any error string that doesn't mention rate
+    limiting / timeouts / connection issues / 5xx."""
+    e = error.lower()
+    return any(marker in e for marker in _TRANSIENT_ERROR_MARKERS)
+
 
 async def _maybe_call(cb, *args) -> None:
     if cb is None:
@@ -49,6 +74,14 @@ class Runner:
     # at 96-100% of the limit). Default is 2.0 since then; bump higher for
     # slow cloud/reasoning endpoints (e.g. 4.0).
     timeout_scale: float = 2.0
+    # Retry policy for transient adapter failures (429 / timeout / connection
+    # reset / 5xx). Genuine model failures (bad tool call, wrong answer, a
+    # clean non-transient error) are NEVER retried — retrying those would
+    # silently inflate a model's apparent reliability. max_retries=0 disables
+    # retry entirely (single attempt, current behavior).
+    max_retries: int = 0
+    retry_backoff_base: float = 1.0
+    retry_backoff_max: float = 30.0
 
     async def _run_one(self, scenario: Scenario, adapter_name: str, adapter: Adapter,
                        trial_index: int) -> ScenarioResult:
@@ -56,20 +89,28 @@ class Runner:
         await _maybe_call(self.on_start, scenario.id, adapter_name, trial_index, started_at)
         eff_timeout = int(scenario.budget.timeout_seconds * self.timeout_scale)
         try:
-            try:
-                trace = await asyncio.wait_for(
-                    adapter.run_scenario(scenario, self.model, eff_timeout),
-                    timeout=eff_timeout + 5,
-                )
-            except TimeoutError:
-                from toolery.core.models import TraceResult
-                trace = TraceResult(
-                    scenario_id=scenario.id, adapter=adapter_name, trial_index=trial_index,
-                    messages=[], tool_calls=[], final_response=None,
-                    started_at_iso=started_at,
-                    duration_ms=eff_timeout * 1000,
-                    error="timeout",
-                )
+            attempt = 0
+            while True:
+                try:
+                    trace = await asyncio.wait_for(
+                        adapter.run_scenario(scenario, self.model, eff_timeout),
+                        timeout=eff_timeout + 5,
+                    )
+                except TimeoutError:
+                    from toolery.core.models import TraceResult
+                    trace = TraceResult(
+                        scenario_id=scenario.id, adapter=adapter_name, trial_index=trial_index,
+                        messages=[], tool_calls=[], final_response=None,
+                        started_at_iso=started_at,
+                        duration_ms=eff_timeout * 1000,
+                        error="timeout",
+                    )
+                if attempt < self.max_retries and trace.error and is_transient_error(trace.error):
+                    delay = min(self.retry_backoff_base * (2 ** attempt), self.retry_backoff_max)
+                    await asyncio.sleep(delay)
+                    attempt += 1
+                    continue
+                break
             trace = trace.model_copy(update={"adapter": adapter_name, "trial_index": trial_index})
             return evaluate(scenario, trace)
         finally:

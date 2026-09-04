@@ -64,6 +64,9 @@ _MIGRATIONS = [
     "ALTER TABLE runs ADD COLUMN current_scenario TEXT",
     "ALTER TABLE runs ADD COLUMN cluster TEXT",   # 'single' | 'dual' | 'triple' | 'quad' | NULL
     "ALTER TABLE runs ADD COLUMN updated_at TEXT",
+    # Soft-delete: NULL = active, ISO timestamp = deleted. fetch_all_runs()
+    # excludes soft-deleted rows by default (include_deleted=True to see them).
+    "ALTER TABLE runs ADD COLUMN deleted_at TEXT",
 ]
 
 
@@ -118,13 +121,19 @@ class Store:
                       status TEXT CHECK(status IN ('running','done','aborted','failed','paused')),
                       config_json TEXT, llm_test_version TEXT, scenarios_hash TEXT,
                       total_units INTEGER, phase TEXT, current_scenario TEXT,
-                      cluster TEXT, updated_at TEXT
+                      cluster TEXT, updated_at TEXT, deleted_at TEXT
                     );
                     INSERT INTO runs_new ({col_list}) SELECT {col_list} FROM runs;
                     DROP TABLE runs;
                     ALTER TABLE runs_new RENAME TO runs;
                 """)
                 c.execute("PRAGMA foreign_keys=ON")
+                # deleted_at didn't exist on the old table (it predates 'paused'),
+                # so it's absent from col_list and thus from runs_new too — add it
+                # now the same way any other post-'paused' migration column would be.
+                existing = {row[1] for row in c.execute("PRAGMA table_info(runs)").fetchall()}
+                if "deleted_at" not in existing:
+                    c.execute("ALTER TABLE runs ADD COLUMN deleted_at TEXT")
 
     def create_run(self, run_id, model, base_url, started_at, config_json, scenarios_hash,
                    llm_test_version: str = "0.3.0", total_units: int | None = None,
@@ -313,10 +322,28 @@ class Store:
                 (run_id,),
             )
 
-    def fetch_all_runs(self) -> list[dict]:
+    def fetch_all_runs(self, include_deleted: bool = False) -> list[dict]:
         with self.conn() as c:
-            rows = c.execute("SELECT * FROM runs ORDER BY started_at DESC").fetchall()
+            if include_deleted:
+                rows = c.execute("SELECT * FROM runs ORDER BY started_at DESC").fetchall()
+            else:
+                rows = c.execute(
+                    "SELECT * FROM runs WHERE deleted_at IS NULL ORDER BY started_at DESC"
+                ).fetchall()
         return [dict(r) for r in rows]
+
+    def delete_run(self, run_id: str) -> None:
+        """Soft-delete: stamp deleted_at with the current UTC timestamp.
+        Does not remove any row — restore_run() reverses this."""
+        from datetime import UTC, datetime
+        now = datetime.now(UTC).isoformat()
+        with self.conn() as c:
+            c.execute("UPDATE runs SET deleted_at=? WHERE run_id=?", (now, run_id))
+
+    def restore_run(self, run_id: str) -> None:
+        """Undo delete_run(): clear deleted_at so the run is active again."""
+        with self.conn() as c:
+            c.execute("UPDATE runs SET deleted_at=NULL WHERE run_id=?", (run_id,))
 
     def write_perf(self, run_id: str, depth: int, **fields) -> None:
         with self.conn() as c:

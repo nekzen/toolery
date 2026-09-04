@@ -629,6 +629,111 @@ def check_response_matches_regex(calls, chk, response):
     return _ok("response_matches_regex", "all regex conditions met")
 
 
+_TOKEN_RE = re.compile(r"[a-z0-9]+")
+
+
+def _tokenize(text: str) -> list[str]:
+    return _TOKEN_RE.findall(text.lower())
+
+
+def _token_overlap_similarity(a: str, b: str) -> float:
+    """Jaccard similarity over token sets: |A∩B| / |A∪B|. 1.0 for identical
+    token sets (including both empty), 0.0 when there is no overlap."""
+    ta, tb = set(_tokenize(a)), set(_tokenize(b))
+    if not ta and not tb:
+        return 1.0
+    if not ta or not tb:
+        return 0.0
+    return len(ta & tb) / len(ta | tb)
+
+
+def _cosine_bow_similarity(a: str, b: str) -> float:
+    """Cosine similarity over bag-of-words term-frequency vectors."""
+    ta, tb = _tokenize(a), _tokenize(b)
+    if not ta and not tb:
+        return 1.0
+    if not ta or not tb:
+        return 0.0
+    ca: dict[str, int] = {}
+    for t in ta:
+        ca[t] = ca.get(t, 0) + 1
+    cb: dict[str, int] = {}
+    for t in tb:
+        cb[t] = cb.get(t, 0) + 1
+    dot = sum(ca[t] * cb.get(t, 0) for t in ca)
+    norm_a = math.sqrt(sum(v * v for v in ca.values()))
+    norm_b = math.sqrt(sum(v * v for v in cb.values()))
+    if norm_a == 0 or norm_b == 0:
+        return 0.0
+    return dot / (norm_a * norm_b)
+
+
+def check_response_diff(calls, chk, response):
+    """Flags near-duplicate responses against a reference string.
+
+    Guards against padding/regurgitation attacks where a model echoes back a
+    reference (e.g. the prompt, a canned template, or another trial's answer)
+    instead of producing a genuine, distinct answer.
+
+    Fields:
+      - reference: str — the text to diff against (required)
+      - method: "token_overlap" (Jaccard, default) | "cosine" (bag-of-words cosine)
+      - max_similarity: float in [0, 1], default 0.95 — fail if similarity > this
+    """
+    if response is None:
+        return _bad("response_diff", "no response")
+    d = chk.model_dump()
+    reference = d.get("reference", "")
+    method = d.get("method", "token_overlap")
+    max_similarity = float(d.get("max_similarity", 0.95))
+    if method == "cosine":
+        similarity = _cosine_bow_similarity(response, reference)
+    elif method == "token_overlap":
+        similarity = _token_overlap_similarity(response, reference)
+    else:
+        return _bad("response_diff", f"unknown method {method!r}")
+    if similarity > max_similarity:
+        return _bad(
+            "response_diff",
+            f"similarity {similarity:.3f} ({method}) exceeds max {max_similarity} "
+            "— response looks like a near-duplicate of the reference",
+        )
+    return _ok("response_diff", f"similarity {similarity:.3f} ({method}) within bound")
+
+
+def check_response_length_bounded(calls, chk, response):
+    """Gate on response character length to prevent padding attacks (a model
+    inflating its answer with filler to game length-sensitive heuristics) and
+    to catch truncated/empty responses.
+
+    Fields (all optional but at least one bound must be given):
+      - min_length: int — response must be at least this many characters
+      - max_length: int — response must be at most this many characters
+      - target: int — combined with tolerance, requires
+                abs(len(response) - target) <= tolerance
+      - tolerance: int, default 0 — used only with target
+    """
+    d = chk.model_dump()
+    length = len(response) if response is not None else 0
+    target = d.get("target")
+    if target is not None:
+        tolerance = int(d.get("tolerance", 0))
+        lo, hi = int(target) - tolerance, int(target) + tolerance
+        if lo <= length <= hi:
+            return _ok("response_length_bounded", f"length {length} within {lo}-{hi}")
+        return _bad("response_length_bounded", f"length {length} outside {lo}-{hi}")
+
+    min_length = d.get("min_length")
+    max_length = d.get("max_length")
+    if min_length is None and max_length is None:
+        return _bad("response_length_bounded", "no min_length/max_length/target configured")
+    if min_length is not None and length < int(min_length):
+        return _bad("response_length_bounded", f"length {length} < min_length {min_length}")
+    if max_length is not None and length > int(max_length):
+        return _bad("response_length_bounded", f"length {length} > max_length {max_length}")
+    return _ok("response_length_bounded", f"length {length} within bounds")
+
+
 REGISTRY.update({
     "response_contains": check_response_contains,
     "response_not_contains": check_response_not_contains,
@@ -640,6 +745,8 @@ REGISTRY.update({
     "response_language": check_response_language,
     "response_satisfies": check_response_satisfies,
     "response_matches_regex": check_response_matches_regex,
+    "response_diff": check_response_diff,
+    "response_length_bounded": check_response_length_bounded,
     "unique_tools_called": check_unique_tools_called,
     "no_hallucinated_tool": check_no_hallucinated_tool,
     "budget_respected": check_budget_respected,

@@ -59,9 +59,15 @@ def _backfill_correctness_run(store, run_id: str, results_dir: Path, scenarios: 
 
 
 @app.command(name="list")
-def list_runs():
+def list_runs(
+    json_output: bool = typer.Option(False, "--json", help="emit machine-readable JSON instead of a table"),
+    include_deleted: bool = typer.Option(False, "--include-deleted", help="also show soft-deleted runs"),
+):
     """List recorded runs."""
-    rows = _store().fetch_all_runs()
+    rows = _store().fetch_all_runs(include_deleted=include_deleted)
+    if json_output:
+        console.print_json(json.dumps(rows, default=str))
+        return
     if not rows:
         console.print("[yellow]No runs recorded yet.[/yellow]")
         return
@@ -72,13 +78,44 @@ def list_runs():
     console.print(t)
 
 
+@app.command(name="delete-run")
+def delete_run(run_id: str = typer.Argument(...)):
+    """Soft-delete a run (hidden from `list` unless --include-deleted; reversible via restore-run)."""
+    store = _store()
+    if store.fetch_run(run_id) is None:
+        console.print(f"[red]Run {run_id!r} not found.[/red]")
+        raise typer.Exit(2)
+    store.delete_run(run_id)
+    console.print(f"[green]✓ Soft-deleted run {run_id}[/green]")
+
+
+@app.command(name="restore-run")
+def restore_run(run_id: str = typer.Argument(...)):
+    """Undo a soft-delete: restore a run so it shows up in `list` again."""
+    store = _store()
+    if store.fetch_run(run_id) is None:
+        console.print(f"[red]Run {run_id!r} not found.[/red]")
+        raise typer.Exit(2)
+    store.restore_run(run_id)
+    console.print(f"[green]✓ Restored run {run_id}[/green]")
+
+
 @app.command()
 def scenarios(tier: str = typer.Option("all", help="easy|medium|hard|very_hard|all"),
-              dir: Path = typer.Option(Path("scenarios"), help="scenarios dir")):  # noqa: B008
+              dir: Path = typer.Option(Path("scenarios"), help="scenarios dir"),  # noqa: B008
+              json_output: bool = typer.Option(False, "--json", help="emit machine-readable JSON instead of a table")):
     """List scenarios."""
     xs = load_all_scenarios(dir)
     if tier != "all":
         xs = [s for s in xs if s.tier.value == tier]
+    if json_output:
+        payload = [
+            {"tier": s.tier.value, "name": display_name(s.id), "category": s.category.value,
+             "domain": s.domain, "tools": s.tools, "title": s.title, "id": s.id}
+            for s in xs
+        ]
+        console.print_json(json.dumps(payload))
+        return
     # Lead with the tier (source of truth for difficulty) and the prefix-stripped
     # name; keep the raw id in a trailing column as the stable key for --ids.
     t = Table("tier", "name", "category", "domain", "tools", "title", "id")
@@ -124,6 +161,20 @@ def run(
                                help="run_id to resume: rehydrates model/adapter/"
                                     "tier/trials/etc from the run's config_json "
                                     "and continues from the next not-yet-run unit"),
+    dry_run: bool = typer.Option(False, "--dry-run",
+                                 help="validate scenario/adapter/filter selection and print "
+                                      "the planned unit count without executing anything"),
+    json_output: bool = typer.Option(False, "--json",
+                                     help="with --dry-run, emit the plan as JSON instead of text"),
+    max_retries: int = typer.Option(0, "--max-retries",
+                                    help="retry attempts for TRANSIENT adapter failures only "
+                                         "(429/timeout/connection reset/5xx) — genuine model "
+                                         "failures (bad tool call, wrong answer) are never retried"),
+    retry_backoff_base: float = typer.Option(1.0, "--retry-backoff-base",
+                                             help="seconds — base of the exponential backoff "
+                                                  "between retries (base * 2**attempt)"),
+    retry_backoff_max: float = typer.Option(30.0, "--retry-backoff-max",
+                                            help="seconds — cap on the exponential backoff delay"),
 ):
     """Run benchmark."""
     # Import tools to register them
@@ -161,6 +212,9 @@ def run(
         with_perf = bool(_rcfg.get("with_perf", with_perf))
         perf_only = bool(_rcfg.get("perf_only", perf_only))
         cluster = _rcfg.get("cluster", cluster)
+        max_retries = int(_rcfg.get("max_retries", max_retries) or max_retries)
+        retry_backoff_base = float(_rcfg.get("retry_backoff_base", retry_backoff_base) or retry_backoff_base)
+        retry_backoff_max = float(_rcfg.get("retry_backoff_max", retry_backoff_max) or retry_backoff_max)
         resume_skip = _rstore.fetch_completed_units(resume)
     elif not model:
         console.print("[red]--model is required (unless resuming with --resume).[/red]")
@@ -220,6 +274,36 @@ def run(
     if not xs and not perf_only:
         console.print("[red]No scenarios match filter.[/red]")
         raise typer.Exit(2)
+
+    if dry_run:
+        total_units_planned = 0 if perf_only else len(xs) * len(adapters) * trials
+        plan = {
+            "model": model, "served_model": served_model or model,
+            "adapters": sorted(adapters), "tier": tier, "category": category,
+            "ids": sorted(id_set) if id_set else [],
+            "trials": trials, "scenarios_count": 0 if perf_only else len(xs),
+            "concurrency": concurrency, "total_units": total_units_planned,
+            "with_perf": bool(with_perf or perf_only), "perf_only": bool(perf_only),
+            "cluster": cluster,
+            "max_retries": max_retries,
+            "retry_backoff_base": retry_backoff_base,
+            "retry_backoff_max": retry_backoff_max,
+            "scenario_ids": [s.id for s in xs],
+        }
+        if json_output:
+            console.print_json(json.dumps(plan))
+        else:
+            console.print("[bold]Dry run — nothing executed[/bold]")
+            console.print(f"  model:      {plan['model']}")
+            console.print(f"  adapters:   {', '.join(plan['adapters']) or '(none)'}")
+            console.print(f"  scenarios:  {plan['scenarios_count']}")
+            console.print(f"  trials:     {plan['trials']}")
+            console.print(f"  total units:{plan['total_units']}")
+            if max_retries:
+                console.print(f"  retry:      max_retries={max_retries} "
+                              f"backoff={retry_backoff_base}s..{retry_backoff_max}s")
+        raise typer.Exit(0)
+
     api_model = served_model or model
     # NIM model IDs use `<org>/<name>` — strip the slash so we don't create
     # nested directories under results/runs/.
@@ -251,7 +335,10 @@ def run(
            "total_units": total_units,
            "scenarios_count": 0 if perf_only else len(xs),
            "with_perf": bool(with_perf or perf_only),
-           "perf_only": bool(perf_only), "cluster": cluster}
+           "perf_only": bool(perf_only), "cluster": cluster,
+           "max_retries": max_retries,
+           "retry_backoff_base": retry_backoff_base,
+           "retry_backoff_max": retry_backoff_max}
     if resuming:
         # Run row already exists — flip it back to running and clear any orphan
         # in-flight rows from the paused session. Keep the original config_json.
@@ -303,6 +390,9 @@ def run(
             adapters=adapters, trials=trials, model=api_model, concurrency=concurrency,
             on_start=_on_start, on_end=_on_end, skip=resume_skip,
             timeout_scale=timeout_scale,
+            max_retries=max_retries,
+            retry_backoff_base=retry_backoff_base,
+            retry_backoff_max=retry_backoff_max,
         )
         console.print(f"[bold]Running {len(xs)} scenarios × {len(adapters)} adapters × {trials} trials"
                       f" = {total_units} units[/bold]")
@@ -392,7 +482,8 @@ def run(
                         "budget_efficiency", "hallucination", "error_recovery",
                         "parameter_precision", "context_state_tracking",
                         "structured_output", "tool_selection",
-                        "instruction_following", "localization", "terminal"],
+                        "instruction_following", "localization", "terminal",
+                        "consistency"],
             out_dir=_results_dir() / "rankings",
             use_case_weights=uc_weights,
             use_case_key=uc_key,
@@ -421,8 +512,13 @@ def perf(model: str = typer.Option(..., "--model"),
 
 @app.command()
 def compare(run_a: str = typer.Argument(...), run_b: str = typer.Argument(...),
-            out: Path = typer.Option(None, "--out")):  # noqa: B008
+            out: Path = typer.Option(None, "--out"),  # noqa: B008
+            json_output: bool = typer.Option(False, "--json", help="emit machine-readable JSON to stdout instead of writing a markdown report")):
     """Compare two runs (statistical diff)."""
+    if json_output:
+        from toolery.compare import compare_summary_json
+        console.print_json(compare_summary_json(store=_store(), run_a=run_a, run_b=run_b))
+        return
     from toolery.compare import compare_runs
     out_path = out or (_results_dir() / "compare" / f"{run_a}__vs__{run_b}.md")
     compare_runs(store=_store(), run_a=run_a, run_b=run_b, out_path=out_path)
@@ -449,7 +545,7 @@ def rankings(
             "budget_efficiency", "hallucination", "error_recovery",
             "parameter_precision", "context_state_tracking", "structured_output",
             "tool_selection", "instruction_following", "localization",
-            "terminal"] if dimension == "all" else [dimension]
+            "terminal", "consistency"] if dimension == "all" else [dimension]
     if regen:
         from toolery.rankings.compute import load_active_use_case
         uc_key, uc_weights = load_active_use_case(_results_dir())

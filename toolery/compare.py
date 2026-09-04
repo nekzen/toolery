@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from collections import defaultdict
 from pathlib import Path
 
@@ -16,9 +17,25 @@ _env.filters["display_name"] = display_name
 
 
 def compare_runs(*, store: Store, run_a: str, run_b: str, out_path: Path) -> None:
+    summary = compare_summary(store=store, run_a=run_a, run_b=run_b)
+    tmpl = _env.get_template("compare.md.j2")
+    md = tmpl.render(
+        run_a=summary["run_a"], run_b=summary["run_b"],
+        common_adapter=summary["common_adapter"], common_scenarios=summary["common_scenarios"],
+        trials=summary["trials"], metrics=summary["metrics"],
+        regressions=summary["regressions"], improvements=summary["improvements"],
+        identical_count=summary["identical_count"],
+    )
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(md)
+
+
+def compare_summary(*, store: Store, run_a: str, run_b: str) -> dict:
+    """Compute the (model-agnostic) comparison summary shared by the markdown
+    renderer and the JSON exporter, so both stay in sync."""
     rs_a = store.fetch_results_for_run(run_a)
     rs_b = store.fetch_results_for_run(run_b)
-    runs_meta = {r["run_id"]: r for r in store.fetch_all_runs()}
+    runs_meta = {r["run_id"]: r for r in store.fetch_all_runs(include_deleted=True)}
     common_adapter = _common_adapter(rs_a, rs_b)
 
     a_by_scenario: dict[str, list[dict]] = defaultdict(list)
@@ -60,18 +77,23 @@ def compare_runs(*, store: Store, run_a: str, run_b: str, out_path: Path) -> Non
         else:
             identical += 1
 
-    tmpl = _env.get_template("compare.md.j2")
-    md = tmpl.render(
-        run_a={"run_id": run_a, "model": runs_meta[run_a]["model"],
-               "config": runs_meta[run_a]["config_json"]},
-        run_b={"run_id": run_b, "model": runs_meta[run_b]["model"],
-               "config": runs_meta[run_b]["config_json"]},
-        common_adapter=common_adapter, common_scenarios=len(common_scenarios),
-        trials=n, metrics=[overall_metric],
-        regressions=regressions, improvements=improvements, identical_count=identical,
-    )
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(md)
+    return {
+        "run_a": {"run_id": run_a, "model": runs_meta[run_a]["model"],
+                  "config": runs_meta[run_a]["config_json"]},
+        "run_b": {"run_id": run_b, "model": runs_meta[run_b]["model"],
+                  "config": runs_meta[run_b]["config_json"]},
+        "common_adapter": common_adapter, "common_scenarios": len(common_scenarios),
+        "trials": n, "metrics": [overall_metric],
+        "regressions": regressions, "improvements": improvements,
+        "identical_count": identical,
+    }
+
+
+def compare_summary_json(*, store: Store, run_a: str, run_b: str) -> str:
+    """Machine-readable JSON rendering of the same comparison compare_runs()
+    writes to markdown. Suitable for --json output on the `compare` CLI
+    command or programmatic consumption."""
+    return json.dumps(compare_summary(store=store, run_a=run_a, run_b=run_b), indent=2)
 
 
 def _common_adapter(rs_a, rs_b) -> str:
