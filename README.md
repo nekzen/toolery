@@ -65,6 +65,11 @@ uv sync --extra dev     # + pytest, ruff, mypy (needed for tests)
 uv sync --extra perf    # + llama-benchy (throughput benchmarking)
 uv sync --extra mcp     # + MCP bridge exposing the mock tools to MCP-aware
                         #   agents like hermes (see docs/hermes-mcp-bridge.md)
+
+# Extras combine — all three forms below are equivalent:
+uv sync --extra dev,perf,mcp                    # comma-separated (recent uv)
+uv sync --extra dev --extra perf --extra mcp    # repeated flag (any uv version)
+uv sync --all-extras                            # everything, future-proof
 ```
 
 Everything below is invoked as `uv run toolery …` when installed from
