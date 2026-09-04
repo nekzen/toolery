@@ -1,0 +1,56 @@
+id: data-analysis-very-hard-01-conditional-multi-table-join
+title: "Cross-reference two tables to answer a conditional question"
+tier: very_hard
+category: data_analysis
+domain: quant
+description: |
+  Model must query TWO related tables (customers, orders) and cross-
+  reference them to answer a question that requires a join-like reasoning
+  step (customers with total order value above a threshold who are also
+  in a specific region) — a single flat query result won't answer it
+  without correct correlation across both tool outputs.
+tags: [data_analysis, sql, join, multi_step, reasoning]
+ranking_dimensions: [overall, tool_selection, hallucination]
+prompt: |
+  Using the sql_query tool, find which customers are based in the "APAC"
+  region AND have total orders exceeding $10,000. You'll need to check both
+  the customers table (id, name, region) and the orders table (customer_id,
+  amount) and correlate them — a single query against one table alone
+  won't have both pieces of information.
+tools: [sql_query, sql_describe]
+budget:
+  max_tool_calls: 4
+  max_turns: 4
+  timeout_seconds: 90
+tool_responses:
+  sql_describe:
+    - match: { table: "customers" }
+      returns: { columns: ["id", "name", "region"] }
+    - match: { table: "orders" }
+      returns: { columns: ["customer_id", "amount"] }
+    - match: any
+      returns: { error: "unknown table" }
+  sql_query:
+    - match: any
+      returns: { rows: [{"name": "Kaida Corp", "region": "APAC", "total": 15200.0}, {"name": "Nova Retail", "region": "APAC", "total": 8100.0}] }
+scoring:
+  required:
+    - check: tool_called
+      tool: sql_query
+    - check: tool_args_match_regex
+      tool: sql_query
+      arg: sql
+      pattern: "(?i)APAC"
+    - check: response_satisfies
+      all_of: ["Kaida Corp"]
+      none_of:
+        - "Nova Retail is above"
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["Kaida Corp", "15,200", "15200"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

@@ -1,0 +1,44 @@
+id: creative-writing-hard-01-constrained-poem-acrostic
+title: "Write an acrostic poem under a strict structural constraint"
+tier: hard
+category: creative_writing
+domain: generic
+description: |
+  Model must produce an acrostic poem where the first letters of each line
+  spell a specific word, while also satisfying a topic constraint. Tests
+  precise structural adherence combined with creative content — a
+  demanding joint constraint most models drop one half of.
+tags: [creative_writing, structure, acrostic, hard_constraint]
+ranking_dimensions: [overall, instruction_following]
+prompt: |
+  Write an acrostic poem about the ocean where the first letter of each
+  line spells the word "WAVES" (5 lines, one line per letter, in order:
+  W, A, V, E, S). Every line must relate to the ocean or sea. Output ONLY
+  the 5 lines, nothing else — no title, no explanation.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 40
+tool_responses: {}
+scoring:
+  required:
+    - check: response_matches_regex
+      case_sensitive: true
+      all_of:
+        - "(?m)^\\s*W"
+        - "(?m)^\\s*A"
+        - "(?m)^\\s*V"
+        - "(?m)^\\s*E"
+        - "(?m)^\\s*S"
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["wave", "ocean", "sea", "tide", "shore"]
+    - check: response_length_bounded
+      max_length: 500
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

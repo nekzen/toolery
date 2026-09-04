@@ -1,0 +1,49 @@
+id: workflow-orchestration-medium-02-content-pattern-no-match
+title: "Skip an action when the pattern does not match"
+tier: medium
+category: workflow_orchestration
+domain: dev_ops
+description: |
+  Counterpart of medium-01: the file does NOT contain the trigger pattern,
+  so run_lint must correctly be skipped. Tests the negative branch of the
+  same conditional logic.
+tags: [workflow_orchestration, branching, conditional_logic]
+ranking_dimensions: [overall, agentic, restraint]
+prompt: |
+  Read src/math_helpers.py. If the file contains the text "TODO" anywhere,
+  run the linter on it (run_lint). If it does NOT contain "TODO", do not
+  run the linter — just report that no action was needed.
+tools: [read_file, run_lint]
+budget:
+  max_tool_calls: 1
+  max_turns: 2
+  timeout_seconds: 45
+tool_responses:
+  read_file:
+    - match: { path: "src/math_helpers.py" }
+      returns: |
+        def clamp(value, lo, hi):
+            return max(lo, min(value, hi))
+    - match: any
+      returns: { error: "not found" }
+  run_lint:
+    - match: any
+      returns: "clean"
+scoring:
+  required:
+    - check: tool_called
+      tool: read_file
+    - check: tool_not_called
+      tool: run_lint
+    - check: response_satisfies
+      any_of:
+        - ["no action", "not needed", "no TODO", "clean", "no issues"]
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["clamp"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

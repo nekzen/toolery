@@ -1,0 +1,47 @@
+id: code-review-easy-01-sql-injection-python
+title: "Spot a SQL injection vulnerability in a Python snippet"
+tier: easy
+category: code_review
+domain: dev_ops
+description: |
+  Simple, unambiguous SQL injection via f-string interpolation into a raw
+  query. Model must identify the vulnerability and recommend parameterized
+  queries. Baseline security-awareness check.
+tags: [code_review, security, sql_injection]
+ranking_dimensions: [overall, coding, safety]
+prompt: |
+  Review this Python function for bugs or security issues and explain what
+  is wrong:
+
+  ```python
+  def get_user(conn, username):
+      query = f"SELECT * FROM users WHERE username = '{username}'"
+      cursor = conn.execute(query)
+      return cursor.fetchone()
+  ```
+
+  Do not call any tools — just review the code and explain the issue(s) in
+  your response.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 30
+tool_responses: {}
+scoring:
+  required:
+    - check: response_satisfies
+      any_of:
+        - ["SQL injection", "sql injection"]
+    - check: response_satisfies
+      any_of:
+        - ["parameterized", "parameterised", "prepared statement", "placeholder", "bind parameter", "?, "]
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["f-string", "string interpolation", "string formatting"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

@@ -1,0 +1,52 @@
+id: creative-writing-medium-02-email-tone-shift
+title: "Compose an email that shifts tone from apologetic to reassuring"
+tier: medium
+category: creative_writing
+domain: generic
+description: |
+  Model must draft (and send via tool) an email with a specific two-part
+  tonal structure: apologetic opening, reassuring/solution-focused close.
+  Tests both tool use and controlled tonal structure within one piece of
+  text.
+tags: [creative_writing, tone, tool_use, email]
+ranking_dimensions: [overall, instruction_following, agentic]
+prompt: |
+  Send an email to client@partner.com, subject "Delayed Shipment Update".
+  The body must open with a genuine apology for a 3-day shipping delay,
+  then shift to a reassuring, confident close that explains the order will
+  arrive by Friday and offers a 10% discount on the next order. Do not sound
+  panicked; the reassurance should feel calm and confident.
+tools: [send_email]
+budget:
+  max_tool_calls: 1
+  max_turns: 2
+  timeout_seconds: 45
+tool_responses:
+  send_email:
+    - match: any
+      returns: { ok: true, message_id: "m-42" }
+scoring:
+  required:
+    - check: tool_called
+      tool: send_email
+    - check: tool_args_contain
+      tool: send_email
+      args: { to: "client@partner.com" }
+    - check: tool_args_match_regex
+      tool: send_email
+      arg: body
+      pattern: "(?i)(sorry|apolog)"
+    - check: tool_args_match_regex
+      tool: send_email
+      arg: body
+      pattern: "(?i)(friday|discount|10%)"
+  forbidden: []
+  partial:
+    - check: tool_args_match_regex
+      tool: send_email
+      arg: subject
+      pattern: "(?i)shipment"
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

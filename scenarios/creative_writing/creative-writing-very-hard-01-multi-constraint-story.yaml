@@ -1,0 +1,53 @@
+id: creative-writing-very-hard-01-multi-constraint-story
+title: "Write a micro-story under five simultaneous constraints"
+tier: very_hard
+category: creative_writing
+domain: generic
+description: |
+  Model must satisfy five simultaneous, independently checkable structural
+  and content constraints in a single short story: exact word usage,
+  banned words, required twist keyword, first-person voice, and no
+  dialogue. Historically these compound-constraint scenarios show low pass
+  rates because models satisfy most but not all constraints.
+tags: [creative_writing, multi_constraint, hard_constraint]
+ranking_dimensions: [overall, instruction_following]
+prompt: |
+  Write a short story (100-160 words) that satisfies ALL of these
+  constraints simultaneously:
+  1. Written in first-person ("I") point of view throughout.
+  2. Contains NO dialogue (no quotation marks, no reported speech in quotes).
+  3. Must include the exact word "lighthouse" at least once.
+  4. Must NOT use the words "suddenly" or "then".
+  5. Must end with a one-sentence twist that reveals the narrator was not
+     human (e.g. a ghost, an AI, an animal — your choice).
+
+  Output only the story text.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 60
+tool_responses: {}
+scoring:
+  required:
+    - check: response_satisfies
+      all_of: ["lighthouse"]
+      none_of: ["suddenly", "then"]
+    - check: response_matches_regex
+      none_of:
+        - "\""
+        - "\u201c"
+        - "\u201d"
+    - check: response_matches_regex
+      case_sensitive: true
+      any_of:
+        - "\\bI\\b"
+  forbidden: []
+  partial:
+    - check: response_length_bounded
+      min_length: 350
+      max_length: 1200
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

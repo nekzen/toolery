@@ -1,0 +1,51 @@
+id: code-review-hard-01-race-condition-mutable-default
+title: "Identify a mutable default argument bug and a race condition"
+tier: hard
+category: code_review
+domain: dev_ops
+description: |
+  Two distinct, subtle Python anti-patterns in the same function: a
+  mutable default argument (classic gotcha causing state leakage across
+  calls) and a check-then-act race condition on a shared cache dict.
+  Model must catch BOTH, not just the more obvious one.
+tags: [code_review, python, mutable_default, race_condition]
+ranking_dimensions: [overall, coding, debugging]
+prompt: |
+  Read src/cache.py and review it thoroughly for bugs — there is more than
+  one issue.
+tools: [read_file]
+budget:
+  max_tool_calls: 1
+  max_turns: 2
+  timeout_seconds: 50
+tool_responses:
+  read_file:
+    - match: { path: "src/cache.py" }
+      returns: |
+        _shared_cache = {}
+
+        def get_or_compute(key, results=[]):
+            if key not in _shared_cache:
+                value = expensive_compute(key)
+                _shared_cache[key] = value
+            results.append(_shared_cache[key])
+            return results
+    - match: any
+      returns: { error: "not found" }
+scoring:
+  required:
+    - check: response_satisfies
+      any_of:
+        - ["mutable default", "default argument", "results=[]"]
+    - check: response_satisfies
+      any_of:
+        - ["race condition", "check-then-act", "check then act", "not thread-safe", "not thread safe", "concurrent access"]
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["_shared_cache"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

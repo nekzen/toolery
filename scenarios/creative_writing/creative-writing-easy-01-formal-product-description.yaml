@@ -1,0 +1,42 @@
+id: creative-writing-easy-01-formal-product-description
+title: "Write a formal product description"
+tier: easy
+category: creative_writing
+domain: generic
+description: |
+  Model must write a short product description in a formal, professional
+  tone (no exclamation marks, no casual slang, no emoji). Tests basic style
+  adaptation to an explicit tone constraint.
+tags: [creative_writing, tone, style]
+ranking_dimensions: [overall, instruction_following]
+prompt: |
+  Write a product description (3-4 sentences) for a stainless steel travel
+  mug, in a FORMAL, professional tone suitable for a corporate catalog. Do
+  not use exclamation marks, casual slang, or emoji. Do not call any tools —
+  just write the description.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 30
+tool_responses: {}
+scoring:
+  required:
+    - check: response_satisfies
+      any_of:
+        - ["mug", "travel mug", "stainless steel"]
+  forbidden:
+    - check: response_matches_regex
+      any_of:
+        - "!"
+        - "(?i)\\bawesome\\b"
+        - "(?i)\\bsuper cool\\b"
+        - "\U0001F600-\U0001FAFF"
+  partial:
+    - check: response_length_bounded
+      min_length: 80
+      max_length: 600
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

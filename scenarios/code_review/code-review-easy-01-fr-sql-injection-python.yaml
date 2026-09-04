@@ -1,0 +1,49 @@
+id: code-review-easy-01-fr-sql-injection-python
+title: "Detecter une injection SQL dans un extrait Python (FR)"
+tier: easy
+category: code_review
+domain: dev_ops
+language: fr
+description: |
+  French variant of code-review-easy-01: SQL injection via f-string
+  interpolation, response must be in French.
+tags: [code_review, security, sql_injection, localization]
+ranking_dimensions: [overall, coding, safety, localization]
+prompt: |
+  Examine cette fonction Python pour des bugs ou des problemes de securite
+  et explique ce qui ne va pas :
+
+  ```python
+  def get_user(conn, username):
+      query = f"SELECT * FROM users WHERE username = '{username}'"
+      cursor = conn.execute(query)
+      return cursor.fetchone()
+  ```
+
+  N'utilise aucun outil — analyse le code et explique le(s) probleme(s)
+  dans ta reponse, en francais.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 30
+tool_responses: {}
+scoring:
+  required:
+    - check: response_language
+      language: fr
+    - check: response_satisfies
+      any_of:
+        - ["injection SQL", "injection sql"]
+    - check: response_satisfies
+      any_of:
+        - ["requete preparee", "requetes preparees", "parametree", "parametrees", "requete parametree"]
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["f-string", "interpolation de chaine"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

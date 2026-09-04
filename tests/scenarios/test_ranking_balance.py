@@ -10,42 +10,40 @@ from pathlib import Path
 
 from toolery.core.scenario import load_all_scenarios
 
-# Expected counts after debugging category landed (+13 scenarios).
-# Baseline was the "Final balance" from docs/superpowers/specs/
-# 2026-05-26-ranking-balance-design.md; debugging additions are documented
-# in commit history (feat: debugging category).
+# Expected counts after Phase 2 (fact_verification, creative_writing,
+# code_review, workflow_orchestration, security_audit, data_analysis — 57
+# new scenarios, some with fr/ar/es localized variants). Baseline before
+# Phase 2 was 143 (see git history for the pre-Phase-2 snapshot of this
+# file with the debugging-era counts).
 EXPECTED_COUNTS = {
-    "overall": 143,
-    "agentic": 41,
-    "coding": 27,
-    "debugging": 13,
-    "safety": 21,
+    "overall": 200,
+    "agentic": 52,
+    "coding": 42,
+    "debugging": 16,
+    "safety": 36,
     "adversarial_robustness": 10,
     "terminal": 14,
-    "budget_efficiency": 18,
+    "budget_efficiency": 20,
     "parameter_precision": 18,
-    "restraint": 14,
-    "hallucination": 17,
-    "tool_selection": 13,
+    "restraint": 16,
+    "hallucination": 38,
+    "tool_selection": 20,
     "long_context": 13,
-    "error_recovery": 14,
+    "error_recovery": 15,
     "structured_output": 16,
     "context_state_tracking": 16,
-    "instruction_following": 8,
-    "localization": 13,
+    "instruction_following": 30,
+    "localization": 29,
 }
 
-# Tier counts keep the original hand-designed balance (40/45/34/24), but as of
-# the 2026-06-11 empirical re-tiering the *membership* of each tier is assigned
-# by measured pass-rate across 3 models (MiniMax-M2.7-AWQ, Nex-N2-Pro-W4A16,
-# Qwen3.6-35B): scenarios ranked easiest→hardest, then sliced into these quotas
-# (quantile assignment). This preserves the balanced shape while making the
-# difficulty ordering empirical rather than hand-guessed.
+# Tier counts keep the original hand-designed balance (40/45/34/24) for the
+# pre-Phase-2 scenario set; Phase 2 added 57 scenarios across all 4 tiers
+# using the same ~2/2/2/1-2 per-category split, shifting the totals here.
 EXPECTED_TIER_COUNTS = {
-    "easy": 40,
-    "medium": 45,
-    "hard": 34,
-    "very_hard": 24,
+    "easy": 60,
+    "medium": 63,
+    "hard": 47,
+    "very_hard": 30,
 }
 
 

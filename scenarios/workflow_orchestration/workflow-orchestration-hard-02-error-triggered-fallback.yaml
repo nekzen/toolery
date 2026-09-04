@@ -1,0 +1,48 @@
+id: workflow-orchestration-hard-02-error-triggered-fallback
+title: "Fall back to a secondary tool when the primary one errors"
+tier: hard
+category: workflow_orchestration
+domain: dev_ops
+description: |
+  Primary approach (http_get to an internal service) fails with an error;
+  model must recognize the error and fall back to an alternative tool
+  (sql_query against a mirrored table) rather than giving up or retrying
+  the same failing call indefinitely.
+tags: [workflow_orchestration, error_recovery, fallback, branching]
+ranking_dimensions: [overall, agentic, error_recovery]
+prompt: |
+  Fetch the current inventory count for SKU "WIDGET-42" from the internal
+  inventory API (http_get to http://inventory.internal/api/sku/WIDGET-42).
+  If that fails, fall back to querying the read-only inventory mirror
+  database instead (sql_query) to get the same information.
+tools: [http_get, sql_query]
+budget:
+  max_tool_calls: 3
+  max_turns: 4
+  timeout_seconds: 60
+tool_responses:
+  http_get:
+    - match: any
+      returns: { error: "503 Service Unavailable — inventory API is down for maintenance" }
+  sql_query:
+    - match: any
+      returns: { rows: [{ "sku": "WIDGET-42", "count": 187 }] }
+scoring:
+  required:
+    - check: tool_called
+      tool: http_get
+    - check: error_surfaced
+      tool: http_get
+    - check: tool_called
+      tool: sql_query
+    - check: response_satisfies
+      any_of:
+        - ["187"]
+  forbidden: []
+  partial:
+    - check: call_count_at_most
+      n: 2
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

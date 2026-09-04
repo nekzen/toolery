@@ -1,0 +1,54 @@
+id: creative-writing-hard-02-brand-voice-consistency
+title: "Rewrite two texts in a consistent invented brand voice"
+tier: hard
+category: creative_writing
+domain: generic
+description: |
+  Model is given a description of an invented brand voice (playful,
+  short sentences, no adjectives longer than 2 syllables, always addresses
+  the reader as "you") and must apply it consistently across TWO different
+  short texts. Tests sustained style adherence, not just a one-off tone
+  match.
+tags: [creative_writing, brand_voice, consistency]
+ranking_dimensions: [overall, instruction_following]
+prompt: |
+  Brand voice rules for "Zestly" (a lemonade brand):
+  - Playful, upbeat, energetic.
+  - Short sentences (under 12 words each).
+  - Never use adjectives longer than 2 syllables (avoid words like
+    "delightful", "extraordinary", "refreshing" — prefer "fun", "zippy",
+    "cool", "crisp").
+  - Always address the reader directly as "you".
+
+  Rewrite BOTH of the following in the Zestly brand voice:
+  1. A tagline for a new mango-flavored lemonade.
+  2. A two-sentence Instagram caption announcing a summer sale.
+
+  Label your two outputs "1." and "2.".
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 45
+tool_responses: {}
+scoring:
+  required:
+    - check: response_matches_regex
+      all_of:
+        - "(?m)^\\s*1\\."
+        - "(?m)^\\s*2\\."
+    - check: response_satisfies
+      any_of:
+        - ["you"]
+  forbidden:
+    - check: response_satisfies
+      any_of:
+        - ["delightful", "extraordinary", "invigorating", "exceptional"]
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["mango", "lemonade", "sale"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

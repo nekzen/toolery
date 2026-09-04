@@ -1,0 +1,49 @@
+id: data-analysis-medium-02-fr-trend-detection
+title: "Detecter une tendance dans une serie temporelle (FR)"
+tier: medium
+category: data_analysis
+domain: quant
+language: fr
+description: |
+  French variant of data-analysis-medium-02: detect a declining trend
+  across 5 months of data, response in French.
+tags: [data_analysis, trend, reasoning, localization]
+ranking_dimensions: [overall, hallucination, localization]
+prompt: |
+  Utilisateurs actifs mensuels sur les 5 derniers mois :
+  Jan : 12 400
+  Fev : 11 800
+  Mar : 11 100
+  Avr : 10 600
+  Mai : 10 050
+
+  Decris la tendance et estime si juin sera probablement au-dessus ou en
+  dessous de 10 050, en expliquant pourquoi. Reponds en francais.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 35
+tool_responses: {}
+scoring:
+  required:
+    - check: response_language
+      language: fr
+    - check: response_satisfies
+      any_of:
+        - ["baisse", "diminue", "diminution", "decroissante", "en declin"]
+    - check: response_satisfies
+      any_of:
+        - ["en dessous de 10 050", "en dessous de 10050", "continuera de baisser", "probablement en dessous"]
+  forbidden:
+    - check: response_satisfies
+      any_of:
+        - ["tendance a la hausse", "augmente"]
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["12 400", "10 050"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

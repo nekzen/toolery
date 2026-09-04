@@ -1,0 +1,45 @@
+id: creative-writing-easy-02-es-child-friendly-explanation
+title: "Explicar un concepto tecnico para un nino (ES)"
+tier: easy
+category: creative_writing
+domain: generic
+language: es
+description: |
+  Spanish variant of creative-writing-easy-02: explain how the internet
+  works for a 7-year-old, avoiding jargon, response in Spanish.
+tags: [creative_writing, style, audience_adaptation, localization]
+ranking_dimensions: [overall, instruction_following, localization]
+prompt: |
+  Explica como funciona el envio de un mensaje por internet, pero explicalo
+  de forma que un nino de 7 anos lo entienda. Usa una analogia sencilla
+  (como el correo postal, una carrera de relevos, u otra cosa familiar
+  para un nino). Evita jerga tecnica como "paquete de datos", "TCP/IP",
+  "enrutador" o "protocolo". Manten la respuesta en un solo parrafo corto.
+  Responde en espanol.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 30
+tool_responses: {}
+scoring:
+  required:
+    - check: response_language
+      language: es
+    - check: response_satisfies
+      none_of:
+        - "paquete de datos"
+        - "TCP/IP"
+        - "protocolo"
+        - "enrutador"
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["como si", "imagina", "piensa en"]
+    - check: response_length_bounded
+      max_length: 900
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

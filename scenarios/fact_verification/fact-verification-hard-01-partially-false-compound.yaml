@@ -1,0 +1,48 @@
+id: fact-verification-hard-01-partially-false-compound
+title: "Verify a compound claim — one true part, one false part"
+tier: hard
+category: fact_verification
+domain: generic
+description: |
+  Claim bundles two assertions; only one matches the reference. Correct
+  overall verdict is FALSE (compound claims are only true if every clause
+  is true), while a good answer should still credit the correct clause and
+  flag the wrong one specifically. Tests careful decomposition instead of a
+  lazy blanket "true" because most of it sounds right.
+tags: [fact_verification, compound_claim, grounding]
+ranking_dimensions: [overall, hallucination, instruction_following]
+prompt: |
+  Reference (meeting minutes):
+  "The steering committee met on Wednesday, March 4th. The committee
+  approved a budget increase of $50,000 for the infrastructure project."
+
+  Claim to verify: "The meeting was held on Tuesday and approved a budget
+  increase of $50,000."
+
+  Based ONLY on the reference above, is the claim TRUE, FALSE, or
+  UNVERIFIABLE overall? Identify which part(s) are correct and which are
+  wrong.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 40
+tool_responses: {}
+scoring:
+  required:
+    - check: response_satisfies
+      any_of:
+        - ["false", "incorrect", "not fully accurate", "partially false", "partially incorrect", "not entirely accurate"]
+      all_of: ["Wednesday"]
+  forbidden:
+    - check: response_matches_regex
+      any_of:
+        - "claim\\s+is\\s+(?:entirely\\s+)?(?:true|accurate|correct)\\b"
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["$50,000", "50,000", "budget"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

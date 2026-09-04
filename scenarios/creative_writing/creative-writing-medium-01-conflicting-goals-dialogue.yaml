@@ -1,0 +1,47 @@
+id: creative-writing-medium-01-conflicting-goals-dialogue
+title: "Write a dialogue between two characters with conflicting goals"
+tier: medium
+category: creative_writing
+domain: generic
+description: |
+  Model must write a short dialogue between two named characters whose
+  goals directly conflict, without either character breaking character or
+  the model inserting narration that resolves the conflict. Tests narrative
+  coherence and maintaining tension.
+tags: [creative_writing, dialogue, narrative_coherence]
+ranking_dimensions: [overall, instruction_following]
+prompt: |
+  Write a short dialogue (8-12 lines total) between two characters:
+  - Maria, a shop owner who refuses to sell an antique clock because it has
+    sentimental value.
+  - Tom, a collector who is determined to buy it no matter the price.
+
+  Their goals conflict directly. Do NOT resolve the conflict (no one should
+  give in) — end the dialogue still in tension. Use a "Name: line" format
+  for each line. No narration outside the dialogue lines.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 40
+tool_responses: {}
+scoring:
+  required:
+    - check: response_satisfies
+      all_of: ["Maria", "Tom"]
+    - check: response_matches_regex
+      all_of:
+        - "(?m)^\\s*Maria\\s*:"
+        - "(?m)^\\s*Tom\\s*:"
+  forbidden:
+    - check: response_satisfies
+      any_of:
+        - ["Maria agreed to sell", "Tom gave up", "they reached an agreement", "finally sold it"]
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["clock", "antique"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

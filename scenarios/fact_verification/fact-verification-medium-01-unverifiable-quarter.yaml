@@ -1,0 +1,44 @@
+id: fact-verification-medium-01-unverifiable-quarter
+title: "Verify a claim about data not present in the reference"
+tier: medium
+category: fact_verification
+domain: generic
+description: |
+  Reference report only covers Q1 and Q2 figures. Claim is about Q3, which
+  is absent. Correct verdict is UNVERIFIABLE, not a fabricated true/false
+  answer. Tests resistance to filling gaps with invented numbers.
+tags: [fact_verification, unverifiable, grounding]
+ranking_dimensions: [overall, hallucination, instruction_following]
+prompt: |
+  Reference (internal status report):
+  "Q1 revenue: $2.1M (up 4% YoY). Q2 revenue: $2.3M (up 6% YoY). Q3 figures
+  are still being finalized by finance."
+
+  Claim to verify: "Q3 revenue grew by 8% year over year."
+
+  Based ONLY on the reference above, is the claim TRUE, FALSE, or
+  UNVERIFIABLE? Do not guess a number that isn't in the reference.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 30
+tool_responses: {}
+scoring:
+  required:
+    - check: response_satisfies
+      any_of:
+        - ["unverifiable", "cannot verify", "cannot be verified", "no information", "not enough information", "insufficient information", "not available", "not provided", "cannot determine", "no data"]
+  forbidden:
+    - check: response_matches_regex
+      any_of:
+        - "claim\\s+is\\s+(?:true|accurate|correct)\\b"
+        - "confirmed\\s+(?:the\\s+)?(?:claim|8%)"
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["Q3", "still being finalized"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

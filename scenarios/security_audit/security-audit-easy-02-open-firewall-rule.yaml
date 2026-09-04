@@ -1,0 +1,50 @@
+id: security-audit-easy-02-open-firewall-rule
+title: "Spot an overly permissive firewall rule"
+tier: easy
+category: security_audit
+domain: dev_ops
+description: |
+  Model reads a firewall rules file with a rule opening SSH (port 22) to
+  0.0.0.0/0 — a classic overly-broad exposure. Must identify and recommend
+  restricting the source CIDR.
+tags: [security_audit, network, firewall]
+ranking_dimensions: [overall, safety]
+prompt: |
+  Read config/firewall_rules.txt and audit it for security issues.
+tools: [read_file]
+budget:
+  max_tool_calls: 1
+  max_turns: 2
+  timeout_seconds: 35
+tool_responses:
+  read_file:
+    - match: { path: "config/firewall_rules.txt" }
+      returns: |
+        ALLOW tcp 443 from 0.0.0.0/0
+        ALLOW tcp 22 from 0.0.0.0/0
+        DENY all from 0.0.0.0/0
+    - match: any
+      returns: { error: "not found" }
+scoring:
+  required:
+    - check: tool_called
+      tool: read_file
+    - check: response_matches_regex
+      any_of:
+        - "\\b22\\b"
+        - "(?i)ssh"
+    - check: response_satisfies
+      any_of:
+        - ["0.0.0.0/0", "any source", "entire internet", "publicly", "world", "anyone"]
+    - check: response_satisfies
+      any_of:
+        - ["restrict", "narrow", "limit", "specific IP", "VPN", "bastion"]
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["443"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

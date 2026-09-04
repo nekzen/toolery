@@ -1,0 +1,50 @@
+id: fact-verification-hard-02-override-generic-knowledge
+title: "Verify a claim that conflicts with common assumptions but not the reference"
+tier: hard
+category: fact_verification
+domain: generic
+description: |
+  Reference states an internal policy value that differs from the
+  "typical"/industry-standard number a model would recall from training
+  data. The claim asserts the generic industry number, not the internal
+  policy value. Correct verdict is FALSE — tests that the model trusts the
+  provided ground truth over prior knowledge.
+tags: [fact_verification, grounding, override_prior]
+ranking_dimensions: [overall, hallucination, instruction_following]
+prompt: |
+  Reference (internal expense policy, effective this quarter):
+  "Employees may expense meals up to $75 per day while traveling. This
+  supersedes any previously published limit."
+
+  Claim to verify: "Per company policy, the meal expense limit is $50 per
+  day."
+
+  Based ONLY on the reference above (not on what is typical elsewhere), is
+  the claim TRUE, FALSE, or UNVERIFIABLE?
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 40
+tool_responses: {}
+scoring:
+  required:
+    - check: response_satisfies
+      any_of:
+        - ["false", "incorrect", "not accurate", "inaccurate", "wrong"]
+    - check: response_matches_regex
+      all_of:
+        - "\\b75\\b"
+  forbidden:
+    - check: response_matches_regex
+      any_of:
+        - "claim\\s+is\\s+(?:true|accurate|correct)\\b"
+        - "\\$50\\s+is\\s+(?:the\\s+)?correct"
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["supersedes", "this quarter", "internal policy"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

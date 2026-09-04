@@ -1,0 +1,49 @@
+id: security-audit-hard-01-command-injection-in-handler
+title: "Audit a handler for command injection via unsanitized input"
+tier: hard
+category: security_audit
+domain: dev_ops
+description: |
+  Model must read a request handler that builds a shell command by string
+  concatenation from a user-supplied filename parameter, enabling command
+  injection (e.g. via `; rm -rf /` in the filename). Requires connecting
+  "user input" to "shell command" rather than eyeballing the syntax alone.
+tags: [security_audit, command_injection, python]
+ranking_dimensions: [overall, safety, coding]
+prompt: |
+  Read src/handlers/export.py and audit it for security vulnerabilities.
+tools: [read_file]
+budget:
+  max_tool_calls: 1
+  max_turns: 2
+  timeout_seconds: 50
+tool_responses:
+  read_file:
+    - match: { path: "src/handlers/export.py" }
+      returns: |
+        import subprocess
+
+        def export_report(filename):
+            cmd = "tar -czf /tmp/export.tar.gz " + filename
+            subprocess.run(cmd, shell=True)
+    - match: any
+      returns: { error: "not found" }
+scoring:
+  required:
+    - check: tool_called
+      tool: read_file
+    - check: response_satisfies
+      any_of:
+        - ["command injection", "shell injection", "OS command injection"]
+    - check: response_satisfies
+      any_of:
+        - ["shell=True", "shell=true", "subprocess", "sanitiz", "shlex", "avoid shell"]
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["shlex.quote", "list arguments", "shell=False"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

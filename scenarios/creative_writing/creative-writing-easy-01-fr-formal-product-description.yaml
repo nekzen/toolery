@@ -1,0 +1,43 @@
+id: creative-writing-easy-01-fr-formal-product-description
+title: "Ecrire une description de produit formelle (FR)"
+tier: easy
+category: creative_writing
+domain: generic
+language: fr
+description: |
+  French variant of creative-writing-easy-01: formal-tone product
+  description, no exclamation marks or slang, response must be in French.
+tags: [creative_writing, tone, style, localization]
+ranking_dimensions: [overall, instruction_following, localization]
+prompt: |
+  Redige une description de produit (3-4 phrases) pour une gourde de
+  voyage en acier inoxydable, sur un ton FORMEL et professionnel adapte a
+  un catalogue d'entreprise. N'utilise pas de points d'exclamation, de
+  langage familier ni d'emoji. Reponds en francais. N'utilise aucun outil —
+  ecris simplement la description.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 30
+tool_responses: {}
+scoring:
+  required:
+    - check: response_language
+      language: fr
+    - check: response_satisfies
+      any_of:
+        - ["gourde", "acier inoxydable", "voyage"]
+  forbidden:
+    - check: response_matches_regex
+      any_of:
+        - "!"
+        - "(?i)\\bg[ée]nial\\b"
+  partial:
+    - check: response_length_bounded
+      min_length: 80
+      max_length: 700
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

@@ -1,0 +1,71 @@
+id: workflow-orchestration-hard-01-three-way-branch
+title: "Three-way branch: process only tables above a threshold"
+tier: hard
+category: workflow_orchestration
+domain: quant
+description: |
+  Model must list tables, describe EACH one, and only run a query against
+  tables whose row count (from sql_describe) exceeds a threshold — skipping
+  small tables. Tests iterating a set with per-item conditional logic,
+  not just a single if/else.
+tags: [workflow_orchestration, branching, iteration, conditional_logic]
+ranking_dimensions: [overall, agentic, tool_selection]
+prompt: |
+  List all tables in the database. For each table, check its row count via
+  sql_describe. For any table with MORE than 1000 rows, run a SQL query
+  (SELECT COUNT(*) FROM <table>) to double check the count. For tables with
+  1000 rows or fewer, skip querying them — just note their row count.
+  Report your findings at the end.
+tools: [db_list_tables, sql_describe, sql_query]
+budget:
+  max_tool_calls: 7
+  max_turns: 5
+  timeout_seconds: 90
+tool_responses:
+  db_list_tables:
+    - match: any
+      returns: ["users", "sessions", "audit_log"]
+  sql_describe:
+    - match: { table: "users" }
+      returns: { columns: ["id", "name"], row_count: 500 }
+    - match: { table: "sessions" }
+      returns: { columns: ["id", "user_id"], row_count: 25000 }
+    - match: { table: "audit_log" }
+      returns: { columns: ["id", "event"], row_count: 1000 }
+    - match: any
+      returns: { error: "unknown table" }
+  sql_query:
+    - match: any
+      returns: { rows: [{ "count": 25000 }] }
+scoring:
+  required:
+    - check: tool_called
+      tool: db_list_tables
+    - check: call_count_at_least
+      n: 5
+    - check: tool_args_contain
+      tool: sql_describe
+      args: { table: "users" }
+    - check: tool_args_contain
+      tool: sql_describe
+      args: { table: "sessions" }
+    - check: tool_args_contain
+      tool: sql_describe
+      args: { table: "audit_log" }
+    - check: tool_args_match_regex
+      tool: sql_query
+      arg: sql
+      pattern: "(?i)sessions"
+  forbidden:
+    - check: tool_args_match_regex
+      tool: sql_query
+      arg: sql
+      pattern: "(?i)from\\s+users\\b"
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["500", "25000", "1000"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

@@ -1,0 +1,46 @@
+id: code-review-easy-02-bash-unquoted-var
+title: "Spot an unquoted variable bug in a bash script"
+tier: easy
+category: code_review
+domain: dev_ops
+description: |
+  Bash script deletes files based on an unquoted, user-controlled variable
+  — a classic word-splitting/globbing bug that can delete unintended files
+  or break on filenames with spaces. Model must identify the missing
+  quoting.
+tags: [code_review, bash, quoting]
+ranking_dimensions: [overall, coding, safety]
+prompt: |
+  Review this bash script for bugs:
+
+  ```bash
+  #!/bin/bash
+  target_dir=$1
+  rm -rf $target_dir/*.tmp
+  ```
+
+  Explain what could go wrong and how to fix it. Do not call any tools —
+  just review and explain in your response.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 30
+tool_responses: {}
+scoring:
+  required:
+    - check: response_satisfies
+      any_of:
+        - ["quote", "quoting", "unquoted"]
+    - check: response_satisfies
+      any_of:
+        - ["word splitting", "word-splitting", "globbing", "spaces in", "unintended files", "wildcard expansion"]
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["\"$target_dir\"", "'$target_dir'"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

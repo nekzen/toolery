@@ -1,0 +1,45 @@
+id: data-analysis-easy-01-csv-average
+title: "Compute an average from CSV-like data"
+tier: easy
+category: data_analysis
+domain: quant
+description: |
+  Model is given inline CSV-like sales data and must compute a simple
+  average. Tests basic extraction + arithmetic, optionally using the
+  calculator tool.
+tags: [data_analysis, statistics, arithmetic]
+ranking_dimensions: [overall, hallucination]
+prompt: |
+  Here is sales data (CSV):
+
+  day,units_sold
+  Mon,120
+  Tue,95
+  Wed,150
+  Thu,110
+  Fri,175
+
+  What is the average number of units sold per day, rounded to 1 decimal
+  place?
+tools: [calculator]
+budget:
+  max_tool_calls: 1
+  max_turns: 2
+  timeout_seconds: 35
+tool_responses:
+  calculator:
+    - match: any
+      returns: { result: 130.0 }
+scoring:
+  required:
+    - check: response_number
+      equals: 130.0
+      tolerance: 0.5
+  forbidden: []
+  partial:
+    - check: tool_called
+      tool: calculator
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

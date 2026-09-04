@@ -1,0 +1,44 @@
+id: data-analysis-hard-02-outlier-detection
+title: "Identify a statistical outlier and explain the reasoning"
+tier: hard
+category: data_analysis
+domain: quant
+description: |
+  Model given a small dataset must identify the one value that's a
+  statistical outlier (not just the max — the max here is normal, one
+  mid-range-looking value is actually the outlier due to context) and
+  explain why, using the given context (baseline range), not just picking
+  the largest number.
+tags: [data_analysis, statistics, outlier, reasoning]
+ranking_dimensions: [overall, hallucination]
+prompt: |
+  Server response times (ms) for 6 consecutive requests to the same
+  endpoint, which normally responds in 40-60ms:
+  45, 52, 48, 890, 55, 50
+
+  Which value is the outlier, and what does it suggest happened?
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 35
+tool_responses: {}
+scoring:
+  required:
+    - check: response_contains
+      patterns: ["890"]
+    - check: response_satisfies
+      any_of:
+        - ["outlier", "anomaly", "spike", "unusual"]
+  forbidden:
+    - check: response_satisfies
+      any_of:
+        - ["45 is the outlier", "52 is the outlier", "48 is the outlier"]
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["timeout", "latency spike", "slow request", "network issue", "server issue"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

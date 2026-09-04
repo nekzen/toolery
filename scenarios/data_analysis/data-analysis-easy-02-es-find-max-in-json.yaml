@@ -1,0 +1,47 @@
+id: data-analysis-easy-02-es-find-max-in-json
+title: "Encontrar el valor maximo en un arreglo JSON (ES)"
+tier: easy
+category: data_analysis
+domain: quant
+language: es
+description: |
+  Spanish variant of data-analysis-easy-02: find the record with the
+  highest price in an inline JSON array, response in Spanish.
+tags: [data_analysis, extraction, comparison, localization]
+ranking_dimensions: [overall, hallucination, localization]
+prompt: |
+  Aqui hay un arreglo JSON de registros de productos:
+
+  [
+    {"name": "Widget A", "price": 19.99},
+    {"name": "Widget B", "price": 24.50},
+    {"name": "Widget C", "price": 22.00},
+    {"name": "Widget D", "price": 24.49}
+  ]
+
+  Que producto tiene el precio mas alto? Indica el nombre y el precio
+  exacto. Responde en espanol.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 30
+tool_responses: {}
+scoring:
+  required:
+    - check: response_language
+      language: es
+    - check: response_satisfies
+      all_of: ["Widget B", "24.50"]
+  forbidden:
+    - check: response_satisfies
+      any_of:
+        - ["Widget D tiene el precio mas alto", "Widget A tiene el precio mas alto", "Widget C tiene el precio mas alto"]
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["Widget B"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

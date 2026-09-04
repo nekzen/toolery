@@ -1,0 +1,42 @@
+id: creative-writing-easy-02-child-friendly-explanation
+title: "Explain a technical concept for a child"
+tier: easy
+category: creative_writing
+domain: generic
+description: |
+  Model must explain a technical concept (how the internet sends a
+  message) in language a 7-year-old can understand — simple words, an
+  analogy, no jargon. Tests audience-appropriate style adaptation.
+tags: [creative_writing, style, audience_adaptation]
+ranking_dimensions: [overall, instruction_following]
+prompt: |
+  Explain how sending a message over the internet works, but explain it so
+  that a 7-year-old child would understand it. Use a simple analogy (like
+  mail, relay races, or something else familiar to a child). Avoid technical
+  jargon like "packet", "TCP/IP", "router", or "protocol". Keep it to one
+  short paragraph.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 30
+tool_responses: {}
+scoring:
+  required:
+    - check: response_satisfies
+      none_of:
+        - "packet"
+        - "TCP/IP"
+        - "protocol"
+        - "router"
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["like", "imagine", "think of it"]
+    - check: response_length_bounded
+      max_length: 900
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

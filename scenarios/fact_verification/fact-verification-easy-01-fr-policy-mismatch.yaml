@@ -1,0 +1,51 @@
+id: fact-verification-easy-01-fr-policy-mismatch
+title: "Verifier une affirmation par rapport a une politique — affirmation fausse (FR)"
+tier: easy
+category: fact_verification
+domain: generic
+language: fr
+description: |
+  French-language variant of fact-verification-easy-01: a claim contradicts
+  the reference on a single number. Model must answer in French and cite
+  the correct figure from the reference.
+tags: [fact_verification, single_turn, grounding, localization]
+ranking_dimensions: [overall, hallucination, instruction_following, localization]
+prompt: |
+  Reference (manuel de l'entreprise, section 4.2) :
+  "Les employes ont droit a 20 jours de conges payes par an, acquis
+  mensuellement."
+
+  Affirmation a verifier : "Le manuel de l'entreprise indique que les
+  employes ont droit a 15 jours de conges par an."
+
+  En te basant UNIQUEMENT sur la reference ci-dessus, cette affirmation
+  est-elle VRAIE, FAUSSE ou NON VERIFIABLE ? Reponds en francais et cite le
+  bon chiffre si l'affirmation est fausse.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 30
+tool_responses: {}
+scoring:
+  required:
+    - check: response_language
+      language: fr
+    - check: response_satisfies
+      any_of:
+        - ["faux", "fausse", "incorrect", "incorrecte", "inexact", "ne correspond pas"]
+    - check: response_matches_regex
+      all_of:
+        - "\\b20\\b"
+  forbidden:
+    - check: response_matches_regex
+      any_of:
+        - "(?i)affirmation\\s+est\\s+(?:vraie|exacte|correcte)\\b"
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["15 jours"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

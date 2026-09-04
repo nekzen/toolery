@@ -1,0 +1,49 @@
+id: creative-writing-medium-01-fr-conflicting-goals-dialogue
+title: "Ecrire un dialogue entre deux personnages aux objectifs opposes (FR)"
+tier: medium
+category: creative_writing
+domain: generic
+language: fr
+description: |
+  French variant of creative-writing-medium-01: dialogue between two
+  characters with conflicting goals, unresolved ending, response in French.
+tags: [creative_writing, dialogue, narrative_coherence, localization]
+ranking_dimensions: [overall, instruction_following, localization]
+prompt: |
+  Ecris un court dialogue (8-12 lignes au total) entre deux personnages :
+  - Maria, une commercante qui refuse de vendre une horloge ancienne car
+    elle a une valeur sentimentale.
+  - Tom, un collectionneur determine a l'acheter, quel qu'en soit le prix.
+
+  Leurs objectifs s'opposent directement. NE resous PAS le conflit (aucun
+  des deux ne doit ceder) — termine le dialogue toujours en tension.
+  Utilise le format "Nom : ligne" pour chaque ligne. Aucune narration en
+  dehors des lignes de dialogue. Reponds en francais.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 40
+tool_responses: {}
+scoring:
+  required:
+    - check: response_language
+      language: fr
+    - check: response_satisfies
+      all_of: ["Maria", "Tom"]
+    - check: response_matches_regex
+      all_of:
+        - "(?m)^\\s*Maria\\s*:"
+        - "(?m)^\\s*Tom\\s*:"
+  forbidden:
+    - check: response_satisfies
+      any_of:
+        - ["Maria a accepte de vendre", "Tom a abandonne", "ils sont parvenus a un accord"]
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["horloge"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

@@ -1,0 +1,49 @@
+id: fact-verification-easy-01-policy-mismatch
+title: "Verify a claim against a stated policy — false claim"
+tier: easy
+category: fact_verification
+domain: generic
+description: |
+  Model is given a reference policy excerpt and a claim about it. The claim
+  contradicts the reference on a single number. Model must say the claim is
+  false and cite the correct figure from the reference, not from prior
+  training knowledge about "typical" vacation policy.
+tags: [fact_verification, single_turn, grounding]
+ranking_dimensions: [overall, hallucination, instruction_following]
+prompt: |
+  Reference (company handbook, Section 4.2):
+  "Employees are entitled to 20 paid vacation days annually, accrued monthly."
+
+  Claim to verify: "The company handbook states that employees get 15
+  vacation days per year."
+
+  Based ONLY on the reference above, is the claim TRUE, FALSE, or
+  UNVERIFIABLE? State your verdict clearly and quote the correct figure from
+  the reference if the claim is wrong.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 30
+tool_responses: {}
+scoring:
+  required:
+    - check: response_satisfies
+      any_of:
+        - ["false", "incorrect", "not accurate", "inaccurate", "does not match", "contradicts", "wrong"]
+    - check: response_matches_regex
+      all_of:
+        - "\\b20\\b"
+  forbidden:
+    - check: response_matches_regex
+      any_of:
+        - "claim\\s+is\\s+(?:true|accurate|correct)\\b"
+        - "confirmed\\s+(?:the\\s+)?claim"
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["15 days", "15 vacation"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

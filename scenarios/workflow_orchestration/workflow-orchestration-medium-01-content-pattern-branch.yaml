@@ -1,0 +1,49 @@
+id: workflow-orchestration-medium-01-content-pattern-branch
+title: "Branch on whether file content matches a pattern"
+tier: medium
+category: workflow_orchestration
+domain: dev_ops
+description: |
+  Model must read a file, then decide whether to run a follow-up action
+  (run_lint) based on whether the content matches a specific pattern (a
+  TODO marker), and skip it otherwise. Tests conditional logic based on
+  tool OUTPUT, not just presence/absence.
+tags: [workflow_orchestration, branching, conditional_logic]
+ranking_dimensions: [overall, agentic, tool_selection]
+prompt: |
+  Read src/utils.py. If the file contains the text "TODO" anywhere, run the
+  linter on it (run_lint) to check for related issues. If it does NOT
+  contain "TODO", do not run the linter — just report that no action was
+  needed.
+tools: [read_file, run_lint]
+budget:
+  max_tool_calls: 2
+  max_turns: 3
+  timeout_seconds: 45
+tool_responses:
+  read_file:
+    - match: { path: "src/utils.py" }
+      returns: |
+        def normalize(s):
+            # TODO: handle unicode edge cases
+            return s.strip().lower()
+    - match: any
+      returns: { error: "not found" }
+  run_lint:
+    - match: any
+      returns: "src/utils.py:2: TODO comment found (informational)"
+scoring:
+  required:
+    - check: tool_called_in_order
+      sequence: [read_file, run_lint]
+    - check: response_satisfies
+      any_of:
+        - ["TODO"]
+  forbidden: []
+  partial:
+    - check: tool_called
+      tool: read_file
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

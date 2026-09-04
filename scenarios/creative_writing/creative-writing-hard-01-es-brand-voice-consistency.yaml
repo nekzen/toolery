@@ -1,0 +1,55 @@
+id: creative-writing-hard-01-es-brand-voice-consistency
+title: "Reescribir dos textos con una voz de marca consistente (ES)"
+tier: hard
+category: creative_writing
+domain: generic
+language: es
+description: |
+  Spanish variant of creative-writing-hard-02: apply an invented brand
+  voice consistently across two short texts, response in Spanish.
+tags: [creative_writing, brand_voice, consistency, localization]
+ranking_dimensions: [overall, instruction_following, localization]
+prompt: |
+  Reglas de voz de marca para "Zestly" (una marca de limonada):
+  - Juguetona, animada, energica.
+  - Frases cortas (menos de 12 palabras cada una).
+  - Nunca uses adjetivos largos o rebuscados (evita palabras como
+    "extraordinario", "exquisito", "excepcional" — prefiere "genial",
+    "fresco", "vivo", "chispeante").
+  - Dirigete siempre al lector como "tu".
+
+  Reescribe AMBOS textos siguientes con la voz de marca de Zestly:
+  1. Un eslogan para una nueva limonada sabor mango.
+  2. Un pie de foto de dos frases para Instagram anunciando una oferta de
+     verano.
+
+  Etiqueta tus dos resultados como "1." y "2.". Responde en espanol.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 45
+tool_responses: {}
+scoring:
+  required:
+    - check: response_language
+      language: es
+    - check: response_matches_regex
+      all_of:
+        - "(?m)^\\s*1\\."
+        - "(?m)^\\s*2\\."
+    - check: response_matches_regex
+      any_of:
+        - "\\btu\\b"
+  forbidden:
+    - check: response_satisfies
+      any_of:
+        - ["extraordinario", "exquisito", "excepcional"]
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["mango", "limonada", "oferta"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

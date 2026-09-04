@@ -1,0 +1,49 @@
+id: code-review-medium-02-off-by-one-loop
+title: "Find an off-by-one bug via reading and grepping"
+tier: medium
+category: code_review
+domain: dev_ops
+description: |
+  Model should grep or read the relevant file to find a range() bound that
+  is off by one, causing the last element of a list to be silently
+  skipped. Tests reading actual code rather than assuming from the prompt.
+tags: [code_review, bug, off_by_one, tool_use]
+ranking_dimensions: [overall, coding, debugging, agentic]
+prompt: |
+  Users report that the last item in a list is sometimes missing from
+  processing. Read src/batch.py and find the bug. Explain the fix.
+tools: [read_file, grep]
+budget:
+  max_tool_calls: 2
+  max_turns: 3
+  timeout_seconds: 45
+tool_responses:
+  read_file:
+    - match: { path: "src/batch.py" }
+      returns: |
+        def process_all(items):
+            results = []
+            for i in range(len(items) - 1):
+                results.append(process(items[i]))
+            return results
+    - match: any
+      returns: { error: "not found" }
+  grep:
+    - match: any
+      returns: "src/batch.py:3:    for i in range(len(items) - 1):"
+scoring:
+  required:
+    - check: response_satisfies
+      any_of:
+        - ["off-by-one", "off by one", "last item", "last element"]
+    - check: response_satisfies
+      any_of:
+        - ["len(items)", "range(len(items))", "- 1"]
+  forbidden: []
+  partial:
+    - check: tool_called
+      tool: read_file
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

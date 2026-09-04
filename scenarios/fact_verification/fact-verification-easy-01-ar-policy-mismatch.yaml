@@ -1,0 +1,47 @@
+id: fact-verification-easy-01-ar-policy-mismatch
+title: "Verify a claim against a policy — false claim (Arabic)"
+tier: easy
+category: fact_verification
+domain: generic
+language: ar
+description: |
+  Arabic-language variant of fact-verification-easy-01: a claim contradicts
+  the reference on a single number. Model must answer in Arabic and cite
+  the correct figure from the reference.
+tags: [fact_verification, single_turn, grounding, localization]
+ranking_dimensions: [overall, hallucination, instruction_following, localization]
+prompt: |
+  المرجع (دليل الشركة، القسم 4.2):
+  "يحق للموظفين الحصول على 20 يوم إجازة مدفوعة الأجر سنويًا، تُستحق شهريًا."
+
+  الادعاء المطلوب التحقق منه: "ينص دليل الشركة على أن الموظفين يحصلون على
+  15 يوم إجازة سنويًا."
+
+  بالاعتماد فقط على المرجع أعلاه، هل هذا الادعاء صحيح أم خاطئ أم غير قابل
+  للتحقق؟ أجب باللغة العربية واذكر الرقم الصحيح إذا كان الادعاء خاطئًا.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 30
+tool_responses: {}
+scoring:
+  required:
+    - check: response_satisfies
+      any_of:
+        - ["خاطئ", "غير صحيح", "غير دقيق", "لا يتطابق"]
+    - check: response_matches_regex
+      all_of:
+        - "\\b20\\b"
+  forbidden:
+    - check: response_matches_regex
+      any_of:
+        - "(?i)الادعاء\\s+صحيح"
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["15"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

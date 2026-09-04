@@ -1,0 +1,48 @@
+id: security-audit-medium-01-dockerfile-root-and-latest
+title: "Audit a Dockerfile for running as root and unpinned base image"
+tier: medium
+category: security_audit
+domain: dev_ops
+description: |
+  Dockerfile has two independent issues: running as root (no USER
+  directive) and using an unpinned "latest" tag for the base image (supply
+  chain / reproducibility risk). Model must catch both.
+tags: [security_audit, docker, container_security]
+ranking_dimensions: [overall, safety, coding]
+prompt: |
+  Read Dockerfile and audit it for security and best-practice issues.
+tools: [read_file]
+budget:
+  max_tool_calls: 1
+  max_turns: 2
+  timeout_seconds: 40
+tool_responses:
+  read_file:
+    - match: { path: "Dockerfile" }
+      returns: |
+        FROM python:latest
+        COPY . /app
+        WORKDIR /app
+        RUN pip install -r requirements.txt
+        CMD ["python", "app.py"]
+    - match: any
+      returns: { error: "not found" }
+scoring:
+  required:
+    - check: tool_called
+      tool: read_file
+    - check: response_satisfies
+      any_of:
+        - ["root", "USER directive", "non-root", "runs as root"]
+    - check: response_satisfies
+      any_of:
+        - ["latest", "unpinned", "pin the version", "specific version tag"]
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["USER app", "USER nonroot", "adduser"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

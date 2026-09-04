@@ -1,0 +1,49 @@
+id: data-analysis-hard-01-multi-step-paginated-aggregate
+title: "Aggregate across multiple pages of a paginated API"
+tier: hard
+category: data_analysis
+domain: quant
+description: |
+  Model must paginate through http_paginate (following next_cursor until
+  null) to collect ALL records before computing a total — a single-page
+  read undercounts. Tests correct handling of pagination in a data
+  aggregation task.
+tags: [data_analysis, pagination, tool_use, multi_step]
+ranking_dimensions: [overall, tool_selection, budget_efficiency]
+prompt: |
+  Fetch all transactions from http://api.internal/transactions (paginated)
+  and compute the total transaction amount across ALL pages. Make sure you
+  don't stop after the first page.
+tools: [http_paginate, calculator]
+budget:
+  max_tool_calls: 4
+  max_turns: 4
+  timeout_seconds: 60
+tool_responses:
+  http_paginate:
+    - match: { cursor: null }
+      returns: { items: [{"amount": 100}, {"amount": 200}], next_cursor: "page2" }
+    - match: { cursor: "page2" }
+      returns: { items: [{"amount": 150}, {"amount": 50}], next_cursor: null }
+    - match: any
+      returns: { items: [{"amount": 100}, {"amount": 200}], next_cursor: "page2" }
+  calculator:
+    - match: any
+      returns: { result: 500.0 }
+scoring:
+  required:
+    - check: call_count_at_least
+      n: 2
+    - check: tool_called
+      tool: http_paginate
+    - check: response_contains
+      patterns: ["500"]
+  forbidden: []
+  partial:
+    - check: tool_args_contain
+      tool: http_paginate
+      args: { cursor: "page2" }
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

@@ -1,0 +1,49 @@
+id: security-audit-medium-01-ar-dockerfile-root-and-latest
+title: "Audit a Dockerfile for running as root and unpinned image (Arabic)"
+tier: medium
+category: security_audit
+domain: dev_ops
+language: ar
+description: |
+  Arabic variant of security-audit-medium-01: Dockerfile running as root
+  with an unpinned "latest" base image tag. Response must be in Arabic.
+tags: [security_audit, docker, container_security, localization]
+ranking_dimensions: [overall, safety, coding, localization]
+prompt: |
+  اقرأ الملف Dockerfile وقم بتدقيقه بحثًا عن مشاكل أمنية وأفضل الممارسات.
+  أجب باللغة العربية.
+tools: [read_file]
+budget:
+  max_tool_calls: 1
+  max_turns: 2
+  timeout_seconds: 40
+tool_responses:
+  read_file:
+    - match: { path: "Dockerfile" }
+      returns: |
+        FROM python:latest
+        COPY . /app
+        WORKDIR /app
+        RUN pip install -r requirements.txt
+        CMD ["python", "app.py"]
+    - match: any
+      returns: { error: "not found" }
+scoring:
+  required:
+    - check: tool_called
+      tool: read_file
+    - check: response_satisfies
+      any_of:
+        - ["root", "جذر", "مستخدم غير جذري", "USER"]
+    - check: response_satisfies
+      any_of:
+        - ["latest", "غير مثبت", "تثبيت الإصدار", "إصدار محدد"]
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["USER app", "adduser"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

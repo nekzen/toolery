@@ -1,0 +1,45 @@
+id: data-analysis-hard-02-es-outlier-detection
+title: "Identificar un valor atipico y explicar el razonamiento (ES)"
+tier: hard
+category: data_analysis
+domain: quant
+language: es
+description: |
+  Spanish variant of data-analysis-hard-02: identify the statistical
+  outlier in server response times, response in Spanish.
+tags: [data_analysis, statistics, outlier, reasoning, localization]
+ranking_dimensions: [overall, hallucination, localization]
+prompt: |
+  Tiempos de respuesta del servidor (ms) para 6 solicitudes consecutivas al
+  mismo endpoint, que normalmente responde en 40-60ms:
+  45, 52, 48, 890, 55, 50
+
+  Cual valor es el atipico (outlier), y que sugiere que ocurrio? Responde
+  en espanol.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 35
+tool_responses: {}
+scoring:
+  required:
+    - check: response_language
+      language: es
+    - check: response_contains
+      patterns: ["890"]
+    - check: response_satisfies
+      any_of:
+        - ["atipico", "anomalia", "pico", "inusual"]
+  forbidden:
+    - check: response_satisfies
+      any_of:
+        - ["45 es el atipico", "52 es el atipico", "48 es el atipico"]
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["tiempo de espera", "pico de latencia", "solicitud lenta", "problema de red", "problema del servidor"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

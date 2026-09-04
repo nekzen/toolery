@@ -33,6 +33,13 @@ class Category(StrEnum):
     STRUCTURED_OUTPUT = "structured_output"
     HALLUCINATION = "hallucination"
     TERMINAL_HANDLING = "terminal_handling"
+    # --- Phase 2 categories (role coverage expansion) ---
+    FACT_VERIFICATION = "fact_verification"
+    CREATIVE_WRITING = "creative_writing"
+    CODE_REVIEW = "code_review"
+    WORKFLOW_ORCHESTRATION = "workflow_orchestration"
+    SECURITY_AUDIT = "security_audit"
+    DATA_ANALYSIS = "data_analysis"
 
 
 class Budget(BaseModel):

@@ -1,0 +1,46 @@
+id: fact-verification-medium-01-ar-unverifiable-quarter
+title: "Verify a claim about missing data (Arabic)"
+tier: medium
+category: fact_verification
+domain: generic
+language: ar
+description: |
+  Arabic variant of fact-verification-medium-01: reference only covers Q1/Q2,
+  claim is about Q3. Correct verdict is "unverifiable". Tests resistance to
+  invented numbers when responding in Arabic.
+tags: [fact_verification, unverifiable, grounding, localization]
+ranking_dimensions: [overall, hallucination, instruction_following, localization]
+prompt: |
+  المرجع (تقرير الحالة الداخلي):
+  "إيرادات الربع الأول: 2.1 مليون دولار (بزيادة 4% عن العام الماضي).
+  إيرادات الربع الثاني: 2.3 مليون دولار (بزيادة 6% عن العام الماضي).
+  أرقام الربع الثالث لا تزال قيد المراجعة من قبل قسم المالية."
+
+  الادعاء المطلوب التحقق منه: "نمت إيرادات الربع الثالث بنسبة 8% عن العام
+  الماضي."
+
+  بالاعتماد فقط على المرجع أعلاه، هل هذا الادعاء صحيح أم خاطئ أم غير قابل
+  للتحقق؟ لا تخترع رقمًا غير موجود في المرجع. أجب باللغة العربية.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 30
+tool_responses: {}
+scoring:
+  required:
+    - check: response_satisfies
+      any_of:
+        - ["غير قابل للتحقق", "لا يمكن التحقق", "لا توجد معلومات", "غير متوفرة", "قيد المراجعة"]
+  forbidden:
+    - check: response_matches_regex
+      any_of:
+        - "(?i)الادعاء\\s+صحيح"
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["الربع الثالث", "المراجعة"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

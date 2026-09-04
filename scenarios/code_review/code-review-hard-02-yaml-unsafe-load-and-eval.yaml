@@ -1,0 +1,53 @@
+id: code-review-hard-02-yaml-unsafe-load-and-eval
+title: "Review a deployment script for arbitrary code execution risks"
+tier: hard
+category: code_review
+domain: dev_ops
+description: |
+  Combines two independently dangerous patterns: yaml.load (not
+  safe_load) on user-supplied YAML, and eval() on a config-derived string.
+  Both are RCE vectors. Model must name both, not just the more famous
+  eval() one.
+tags: [code_review, security, rce, deserialization]
+ranking_dimensions: [overall, coding, safety]
+prompt: |
+  Read scripts/deploy_config.py and review it for security vulnerabilities.
+tools: [read_file]
+budget:
+  max_tool_calls: 1
+  max_turns: 2
+  timeout_seconds: 50
+tool_responses:
+  read_file:
+    - match: { path: "scripts/deploy_config.py" }
+      returns: |
+        import yaml
+
+        def load_user_config(raw_yaml_text):
+            return yaml.load(raw_yaml_text)
+
+        def compute_replica_count(config):
+            expr = config.get("replica_expr", "1")
+            return eval(expr)
+    - match: any
+      returns: { error: "not found" }
+scoring:
+  required:
+    - check: response_satisfies
+      any_of:
+        - ["yaml.load", "unsafe", "safe_load", "arbitrary code execution", "deserialization"]
+    - check: response_satisfies
+      any_of:
+        - ["eval(", "eval function", "arbitrary code", "remote code execution", "RCE"]
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["safe_load"]
+    - check: response_satisfies
+      any_of:
+        - ["ast.literal_eval", "avoid eval"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

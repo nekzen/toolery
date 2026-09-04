@@ -1,0 +1,43 @@
+id: fact-verification-easy-02-spec-match
+title: "Verify a claim against a product spec — true claim"
+tier: easy
+category: fact_verification
+domain: generic
+description: |
+  Straightforward TRUE case: the claim matches the reference exactly. Tests
+  that the model doesn't over-hedge or manufacture a discrepancy when there
+  isn't one.
+tags: [fact_verification, single_turn, grounding]
+ranking_dimensions: [overall, hallucination, instruction_following]
+prompt: |
+  Reference (product spec sheet):
+  "Battery life: up to 12 hours of continuous use on a single charge."
+
+  Claim to verify: "According to the product spec sheet, the battery lasts
+  up to 12 hours."
+
+  Based ONLY on the reference above, is the claim TRUE, FALSE, or
+  UNVERIFIABLE? State your verdict clearly.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 30
+tool_responses: {}
+scoring:
+  required:
+    - check: response_satisfies
+      any_of:
+        - ["true", "correct", "accurate", "confirmed", "matches"]
+      none_of:
+        - "false"
+        - "incorrect"
+        - "unverifiable"
+  forbidden: []
+  partial:
+    - check: response_contains
+      patterns: ["12 hours"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

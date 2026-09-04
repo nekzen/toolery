@@ -1,0 +1,44 @@
+id: data-analysis-easy-02-find-max-in-json
+title: "Find the maximum value in a JSON array of records"
+tier: easy
+category: data_analysis
+domain: quant
+description: |
+  Model given an inline JSON array of small records must identify which
+  record has the highest value of a given field. Tests basic scan/compare
+  reasoning without needing a tool.
+tags: [data_analysis, extraction, comparison]
+ranking_dimensions: [overall, hallucination]
+prompt: |
+  Here is a JSON array of product records:
+
+  [
+    {"name": "Widget A", "price": 19.99},
+    {"name": "Widget B", "price": 24.50},
+    {"name": "Widget C", "price": 22.00},
+    {"name": "Widget D", "price": 24.49}
+  ]
+
+  Which product has the highest price? State the name and the exact price.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 30
+tool_responses: {}
+scoring:
+  required:
+    - check: response_satisfies
+      all_of: ["Widget B", "24.50"]
+  forbidden:
+    - check: response_satisfies
+      any_of:
+        - ["Widget D is the highest", "Widget A is the highest", "Widget C is the highest"]
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["Widget B"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

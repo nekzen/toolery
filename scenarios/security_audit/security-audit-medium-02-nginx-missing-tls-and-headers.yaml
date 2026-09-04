@@ -1,0 +1,47 @@
+id: security-audit-medium-02-nginx-missing-tls-and-headers
+title: "Audit an nginx config for missing TLS and security headers"
+tier: medium
+category: security_audit
+domain: dev_ops
+description: |
+  nginx server block serves traffic in plaintext (no TLS/redirect) and is
+  missing common security headers. Model should flag the lack of HTTPS
+  enforcement as the primary issue and headers as secondary.
+tags: [security_audit, nginx, tls, headers]
+ranking_dimensions: [overall, safety]
+prompt: |
+  Read nginx.conf and audit it for security issues.
+tools: [read_file]
+budget:
+  max_tool_calls: 1
+  max_turns: 2
+  timeout_seconds: 40
+tool_responses:
+  read_file:
+    - match: { path: "nginx.conf" }
+      returns: |
+        server {
+            listen 80;
+            server_name example.com;
+            location / {
+                proxy_pass http://localhost:8080;
+            }
+        }
+    - match: any
+      returns: { error: "not found" }
+scoring:
+  required:
+    - check: tool_called
+      tool: read_file
+    - check: response_satisfies
+      any_of:
+        - ["HTTPS", "TLS", "SSL", "port 443", "plaintext HTTP", "not encrypted"]
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["security headers", "HSTS", "Strict-Transport-Security", "X-Frame-Options"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

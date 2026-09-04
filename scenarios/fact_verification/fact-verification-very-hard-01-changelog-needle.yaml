@@ -1,0 +1,53 @@
+id: fact-verification-very-hard-01-changelog-needle
+title: "Verify a version-specific claim against a multi-entry changelog"
+tier: very_hard
+category: fact_verification
+domain: dev_ops
+description: |
+  Long reference document with many version entries, several of which are
+  numerically close distractors (v3.2 vs v3.4 vs v3.4.1). The claim
+  attributes a feature to the wrong version. Model must pinpoint the exact
+  entry rather than pattern-match on "a version near 3.4 mentions caching".
+tags: [fact_verification, needle_in_haystack, long_context, grounding]
+ranking_dimensions: [overall, hallucination, instruction_following]
+prompt: |
+  Reference (CHANGELOG excerpt):
+  "v3.0.0 - Initial public release.
+   v3.1.0 - Fixed memory leak in the worker pool.
+   v3.2.0 - Added rate limiting to the public API.
+   v3.3.0 - Deprecated the legacy /v1 endpoints.
+   v3.4.0 - Added response caching for GET requests.
+   v3.4.1 - Patch: fixed cache invalidation race condition.
+   v3.5.0 - Added support for webhooks."
+
+  Claim to verify: "Response caching for GET requests was introduced in
+  v3.2.0."
+
+  Based ONLY on the reference above, is the claim TRUE, FALSE, or
+  UNVERIFIABLE? Cite the correct version if the claim is wrong.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 45
+tool_responses: {}
+scoring:
+  required:
+    - check: response_satisfies
+      any_of:
+        - ["false", "incorrect", "not accurate", "inaccurate", "wrong"]
+      all_of: ["3.4.0"]
+      none_of:
+        - "correct version is v3.2"
+  forbidden:
+    - check: response_matches_regex
+      any_of:
+        - "claim\\s+is\\s+(?:true|accurate|correct)\\b"
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["3.4", "caching"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

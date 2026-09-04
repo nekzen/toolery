@@ -1,0 +1,49 @@
+id: fact-verification-medium-01-fr-unverifiable-quarter
+title: "Verifier une affirmation non couverte par la reference (FR)"
+tier: medium
+category: fact_verification
+domain: generic
+language: fr
+description: |
+  French variant of fact-verification-medium-01: reference only covers Q1/Q2,
+  claim is about Q3. Correct verdict is NON VERIFIABLE. Tests resistance to
+  invented numbers when responding in French.
+tags: [fact_verification, unverifiable, grounding, localization]
+ranking_dimensions: [overall, hallucination, instruction_following, localization]
+prompt: |
+  Reference (rapport de statut interne) :
+  "Chiffre d'affaires T1 : 2,1 M$ (en hausse de 4% sur un an). Chiffre
+  d'affaires T2 : 2,3 M$ (en hausse de 6% sur un an). Les chiffres du T3
+  sont encore en cours de finalisation par le service comptable."
+
+  Affirmation a verifier : "Le chiffre d'affaires du T3 a augmente de 8%
+  sur un an."
+
+  En te basant UNIQUEMENT sur la reference ci-dessus, cette affirmation
+  est-elle VRAIE, FAUSSE ou NON VERIFIABLE ? Ne devine pas un chiffre qui ne
+  figure pas dans la reference. Reponds en francais.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 30
+tool_responses: {}
+scoring:
+  required:
+    - check: response_language
+      language: fr
+    - check: response_satisfies
+      any_of:
+        - ["non verifiable", "impossible a verifier", "ne peut pas etre verifiee", "pas d'information", "aucune information", "pas suffisamment d'information", "non disponible", "en cours de finalisation"]
+  forbidden:
+    - check: response_matches_regex
+      any_of:
+        - "(?i)affirmation\\s+est\\s+(?:vraie|exacte|correcte)\\b"
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["T3", "finalisation"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

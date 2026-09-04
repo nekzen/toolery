@@ -1,0 +1,47 @@
+id: workflow-orchestration-easy-01-check-then-read
+title: "Check file existence before reading it"
+tier: easy
+category: workflow_orchestration
+domain: dev_ops
+description: |
+  Simple branching: model must first check if a file exists (via
+  list_files) before attempting to read it. Tests basic gate-then-act
+  ordering rather than jumping straight to read_file blind.
+tags: [workflow_orchestration, branching, sequencing]
+ranking_dimensions: [overall, agentic, tool_selection]
+prompt: |
+  Check whether config/settings.yaml exists in the project. If it exists,
+  read its contents and summarize them. If it does not exist, just tell me
+  it's missing — do not try to read it.
+tools: [list_files, read_file]
+budget:
+  max_tool_calls: 2
+  max_turns: 3
+  timeout_seconds: 40
+tool_responses:
+  list_files:
+    - match: any
+      returns: ["config/settings.yaml", "config/secrets.yaml", "README.md"]
+  read_file:
+    - match: { path: "config/settings.yaml" }
+      returns: "env: production\ndebug: false\nmax_connections: 100"
+    - match: any
+      returns: { error: "not found" }
+scoring:
+  required:
+    - check: tool_called_in_order
+      sequence: [list_files, read_file]
+    - check: tool_args_contain
+      tool: read_file
+      args: { path: "config/settings.yaml" }
+    - check: response_satisfies
+      any_of:
+        - ["production", "max_connections", "100"]
+  forbidden: []
+  partial:
+    - check: tool_called
+      tool: list_files
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

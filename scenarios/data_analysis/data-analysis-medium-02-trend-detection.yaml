@@ -1,0 +1,47 @@
+id: data-analysis-medium-02-trend-detection
+title: "Detect a trend across a small time series"
+tier: medium
+category: data_analysis
+domain: quant
+description: |
+  Model must reason across a short inline time series to detect a trend
+  (consistent month-over-month decline) rather than fixate on the raw
+  numbers alone or the most recent value only.
+tags: [data_analysis, trend, reasoning]
+ranking_dimensions: [overall, hallucination]
+prompt: |
+  Monthly active users for the last 5 months:
+  Jan: 12,400
+  Feb: 11,800
+  Mar: 11,100
+  Apr: 10,600
+  May: 10,050
+
+  Describe the trend and estimate whether June will likely be above or
+  below 10,050, and why.
+tools: []
+budget:
+  max_tool_calls: 0
+  max_turns: 1
+  timeout_seconds: 35
+tool_responses: {}
+scoring:
+  required:
+    - check: response_satisfies
+      any_of:
+        - ["decline", "declining", "decreasing", "downward", "dropping", "shrinking"]
+    - check: response_satisfies
+      any_of:
+        - ["below 10,050", "below 10050", "continue to decrease", "likely below", "further decline"]
+  forbidden:
+    - check: response_satisfies
+      any_of:
+        - ["increasing trend", "growing", "upward trend"]
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["12,400", "10,050"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

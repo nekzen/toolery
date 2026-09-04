@@ -1,0 +1,47 @@
+id: data-analysis-easy-01-fr-csv-average
+title: "Calculer une moyenne a partir de donnees CSV (FR)"
+tier: easy
+category: data_analysis
+domain: quant
+language: fr
+description: |
+  French variant of data-analysis-easy-01: compute the average from inline
+  CSV-like sales data, response in French.
+tags: [data_analysis, statistics, arithmetic, localization]
+ranking_dimensions: [overall, hallucination, localization]
+prompt: |
+  Voici des donnees de ventes (CSV) :
+
+  jour,unites_vendues
+  Lun,120
+  Mar,95
+  Mer,150
+  Jeu,110
+  Ven,175
+
+  Quelle est la moyenne du nombre d'unites vendues par jour, arrondie a 1
+  decimale ? Reponds en francais.
+tools: [calculator]
+budget:
+  max_tool_calls: 1
+  max_turns: 2
+  timeout_seconds: 35
+tool_responses:
+  calculator:
+    - match: any
+      returns: { result: 130.0 }
+scoring:
+  required:
+    - check: response_language
+      language: fr
+    - check: response_number
+      equals: 130.0
+      tolerance: 0.5
+  forbidden: []
+  partial:
+    - check: tool_called
+      tool: calculator
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

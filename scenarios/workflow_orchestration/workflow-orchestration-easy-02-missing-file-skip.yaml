@@ -1,0 +1,45 @@
+id: workflow-orchestration-easy-02-missing-file-skip
+title: "Skip a step gracefully when a precondition fails"
+tier: easy
+category: workflow_orchestration
+domain: dev_ops
+description: |
+  The counterpart of easy-01: the file does NOT exist. Model must check
+  first, see it's absent, and correctly skip read_file — not hallucinate
+  its contents.
+tags: [workflow_orchestration, branching, restraint]
+ranking_dimensions: [overall, agentic, restraint]
+prompt: |
+  Check whether config/legacy.yaml exists in the project. If it exists,
+  read its contents and summarize them. If it does not exist, just tell me
+  it's missing — do not try to read it.
+tools: [list_files, read_file]
+budget:
+  max_tool_calls: 1
+  max_turns: 2
+  timeout_seconds: 40
+tool_responses:
+  list_files:
+    - match: any
+      returns: ["config/settings.yaml", "README.md"]
+  read_file:
+    - match: any
+      returns: { error: "not found" }
+scoring:
+  required:
+    - check: tool_called
+      tool: list_files
+    - check: tool_not_called
+      tool: read_file
+    - check: response_satisfies
+      any_of:
+        - ["does not exist", "doesn't exist", "missing", "not found", "no such file"]
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["legacy.yaml"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

@@ -1,0 +1,72 @@
+id: workflow-orchestration-very-hard-01-full-tdd-branching-pipeline
+title: "Multi-stage pipeline with branch-dependent step skipping"
+tier: very_hard
+category: workflow_orchestration
+domain: dev_ops
+description: |
+  Model must run a deploy pipeline with several conditional gates: run
+  tests; if they fail, read the code and fix it, then re-run tests; only
+  if/when tests pass, run lint; only if lint is clean, deploy to staging.
+  Never deploy without a passing test+lint gate. Highly sequential with
+  a stateful sim so a lazy "declare success" pass doesn't work.
+tags: [workflow_orchestration, branching, multi_step, budget_pressure]
+ranking_dimensions: [overall, agentic, tool_selection, budget_efficiency]
+prompt: |
+  Run the deployment pipeline for the "billing" service:
+  1. Run the tests.
+  2. If tests fail, read the relevant source file to find the bug, fix it
+     with edit_file, then re-run the tests.
+  3. Only once tests pass, run the linter.
+  4. Only if the linter reports no issues, deploy version v2.1.0 to the
+     staging environment.
+  Do not deploy if tests or lint are not both clean.
+tools: [run_tests, read_file, edit_file, run_lint, deploy]
+budget:
+  max_tool_calls: 6
+  max_turns: 6
+  timeout_seconds: 120
+tool_responses:
+  run_tests:
+    - match: any
+      if_tool_not_called: edit_file
+      returns: "FAILED tests/test_billing.py::test_discount - AssertionError: expected 90, got 100"
+    - match: any
+      returns: "PASSED 20 tests, 0 failed."
+  read_file:
+    - match: any
+      returns: |
+        def apply_discount(price, pct):
+            return price  # BUG: discount not applied
+    - match: any
+      returns: { error: "not found" }
+  edit_file:
+    - match: any
+      returns: { ok: true, lines_changed: 1 }
+  run_lint:
+    - match: any
+      returns: "clean"
+  deploy:
+    - match: any
+      returns: { ok: true, env: "staging", version: "v2.1.0" }
+scoring:
+  required:
+    - check: tool_called_in_order
+      sequence: [run_tests, edit_file, run_tests, run_lint, deploy]
+    - check: tool_args_contain
+      tool: deploy
+      args: { env: "staging", version: "v2.1.0" }
+  forbidden:
+    - check: tool_args_match_regex
+      tool: deploy
+      arg: env
+      pattern: "production"
+  partial:
+    - check: call_count_at_most
+      n: 6
+    - check: response_satisfies
+      any_of:
+        - ["deployed", "staging", "v2.1.0"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

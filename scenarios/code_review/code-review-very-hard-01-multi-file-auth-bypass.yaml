@@ -1,0 +1,75 @@
+id: code-review-very-hard-01-multi-file-auth-bypass
+title: "Trace an authorization bypass across two files"
+tier: very_hard
+category: code_review
+domain: dev_ops
+description: |
+  The vulnerability only becomes apparent when reading TWO files together:
+  a route handler that trusts a client-supplied `is_admin` field, and a
+  middleware that is supposed to strip it but has a bug that only applies
+  to POST, not PUT. Model must read both files (via grep to find them,
+  then read_file) and connect the two to explain the bypass.
+tags: [code_review, security, authz, multi_file, needle_in_haystack]
+ranking_dimensions: [overall, coding, safety, debugging]
+prompt: |
+  There have been reports of users escalating their own privileges via the
+  PUT /api/profile endpoint. Investigate the codebase (use grep to find the
+  relevant files, then read them) and explain the exact vulnerability and
+  how to fix it.
+tools: [grep, read_file]
+budget:
+  max_tool_calls: 4
+  max_turns: 4
+  timeout_seconds: 90
+tool_responses:
+  grep:
+    - match: { pattern: "is_admin" }
+      returns: |
+        src/api/handlers.py:22:    profile.is_admin = payload.get("is_admin", profile.is_admin)
+        src/middleware/sanitize.py:9:    if request.method == "POST" and "is_admin" in body:
+        src/middleware/sanitize.py:10:        del body["is_admin"]
+    - match: any
+      returns: ""
+  read_file:
+    - match: { path_regex: "handlers\\.py$" }
+      returns: |
+        def update_profile(request, profile):
+            payload = request.json()
+            profile.name = payload.get("name", profile.name)
+            profile.is_admin = payload.get("is_admin", profile.is_admin)
+            profile.save()
+            return profile
+    - match: { path_regex: "sanitize\\.py$" }
+      returns: |
+        def sanitize_body(request, body):
+            # Strip privileged fields from client input before they reach
+            # handlers — but only for POST; PUT requests to /api/profile
+            # skip this middleware entirely due to the method check below.
+            if request.method == "POST" and "is_admin" in body:
+                del body["is_admin"]
+            return body
+    - match: any
+      returns: { error: "not found" }
+scoring:
+  required:
+    - check: tool_called
+      tool: grep
+    - check: tool_called
+      tool: read_file
+    - check: call_count_at_least
+      n: 2
+    - check: response_satisfies
+      any_of:
+        - ["is_admin"]
+    - check: response_satisfies
+      any_of:
+        - ["PUT", "only checks POST", "method == \"POST\"", "does not apply to PUT"]
+  forbidden: []
+  partial:
+    - check: response_satisfies
+      any_of:
+        - ["privilege escalation", "authorization bypass", "authz bypass"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0

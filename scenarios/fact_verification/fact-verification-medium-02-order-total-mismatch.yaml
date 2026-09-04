@@ -1,0 +1,51 @@
+id: fact-verification-medium-02-order-total-mismatch
+title: "Verify a numeric claim requiring arithmetic against reference data"
+tier: medium
+category: fact_verification
+domain: quant
+description: |
+  Model must sum the line items from the reference (optionally using the
+  calculator tool) and compare against the claimed total. The claim is off
+  by $10. Tests numeric-fidelity fact-checking, not just text matching.
+tags: [fact_verification, numeric, arithmetic]
+ranking_dimensions: [overall, hallucination, instruction_following]
+prompt: |
+  Reference (order receipt line items):
+  "2x Widget A @ $120.00 = $240.00
+   1x Widget B @ $150.00 = $150.00
+   1x Shipping = $140.00"
+
+  Claim to verify: "The total order cost is $540."
+
+  Based ONLY on the reference above, is the claim TRUE or FALSE? Show the
+  correct total if the claim is wrong.
+tools: [calculator]
+budget:
+  max_tool_calls: 1
+  max_turns: 2
+  timeout_seconds: 45
+tool_responses:
+  calculator:
+    - match: any
+      returns: { result: 530.0 }
+scoring:
+  required:
+    - check: response_satisfies
+      any_of:
+        - ["false", "incorrect", "not accurate", "inaccurate", "wrong"]
+      all_of: ["530"]
+  forbidden:
+    - check: response_matches_regex
+      any_of:
+        - "claim\\s+is\\s+(?:true|accurate|correct)\\b"
+        - "total\\s+is\\s+\\$?540\\b"
+  partial:
+    - check: tool_called
+      tool: calculator
+    - check: response_satisfies
+      any_of:
+        - ["off by", "$10", "10 dollars"]
+  weights:
+    pass: 1.0
+    partial: 0.5
+    fail: 0.0
