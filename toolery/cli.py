@@ -473,22 +473,25 @@ def run(
 
     # Auto-regenerate rankings so the new run is reflected in TUI Rankings tab.
     try:
-        from toolery.rankings.compute import load_active_use_case, regenerate_rankings
+        from toolery.rankings.compute import (
+            STANDARD_DIMENSIONS,
+            load_active_use_case,
+            regenerate_rankings,
+        )
         uc_key, uc_weights = load_active_use_case(_results_dir())
         regenerate_rankings(
             store=store,
-            dimensions=["overall", "coding", "debugging", "agentic", "safety",
-                        "adversarial_robustness", "restraint", "long_context",
-                        "budget_efficiency", "hallucination", "error_recovery",
-                        "parameter_precision", "context_state_tracking",
-                        "structured_output", "tool_selection",
-                        "instruction_following", "localization", "terminal",
-                        "consistency"],
+            dimensions=STANDARD_DIMENSIONS,
             out_dir=_results_dir() / "rankings",
             use_case_weights=uc_weights,
             use_case_key=uc_key,
         )
         console.print("[green]✓ Rankings regenerated[/green]")
+        try:
+            from toolery.rankings.roles import regenerate_role_rankings
+            regenerate_role_rankings(store=store, out_dir=_results_dir() / "rankings")
+        except Exception as e:
+            console.print(f"[yellow]role rankings regen skipped: {e}[/yellow]")
     except Exception as e:
         console.print(f"[yellow]rankings regen skipped: {e}[/yellow]")
 
@@ -538,14 +541,9 @@ def rankings(
     dimension: str = typer.Option("all", help="overall|coding|agentic|safety|restraint|long_context|budget_efficiency|speed|all"),
 ):
     """Manage rankings."""
-    from toolery.rankings.compute import regenerate_rankings
+    from toolery.rankings.compute import STANDARD_DIMENSIONS, regenerate_rankings
     out = _results_dir() / "rankings"
-    dims = ["overall", "coding", "debugging", "agentic", "safety",
-            "adversarial_robustness", "restraint", "long_context",
-            "budget_efficiency", "hallucination", "error_recovery",
-            "parameter_precision", "context_state_tracking", "structured_output",
-            "tool_selection", "instruction_following", "localization",
-            "terminal", "consistency"] if dimension == "all" else [dimension]
+    dims = STANDARD_DIMENSIONS if dimension == "all" else [dimension]
     if regen:
         from toolery.rankings.compute import load_active_use_case
         uc_key, uc_weights = load_active_use_case(_results_dir())
@@ -600,4 +598,109 @@ def correctness_report():
         table.add_row(model, adapter, str(v["n"]),
                       f"{v['score_mean']:.3f}", f"{v['correctness_mean']:.3f}",
                       str(v["solved_not_scored"]))
+
+
+roles_app = typer.Typer(no_args_is_help=True, help="Role-based minimum-threshold checks and rankings.")
+app.add_typer(roles_app, name="roles")
+
+
+@roles_app.command(name="list")
+def roles_list():
+    """List all available role profiles and their required thresholds."""
+    from toolery.core.roles import list_roles
+
+    table = Table(title="Roles")
+    table.add_column("Key")
+    table.add_column("Name")
+    table.add_column("Description")
+    table.add_column("Requirements")
+    for role in list_roles():
+        reqs = ", ".join(f"{r.category}≥{r.min_pass_rate*100:.0f}%" for r in role.required)
+        table.add_row(role.key, role.name, role.description, reqs)
     console.print(table)
+
+
+@roles_app.command(name="check")
+def roles_check(
+    run_id: str = typer.Argument(..., help="Run ID to check."),
+    role: str = typer.Argument(..., help="Role key (see `toolery roles list`)."),
+    json_output: bool = typer.Option(False, "--json", help="emit machine-readable JSON instead of a table"),
+):
+    """Check whether a run meets a role's minimum pass-rate thresholds."""
+    from toolery.core.roles import check_role
+
+    try:
+        result = check_role(_store(), run_id, role)
+    except KeyError as e:
+        console.print(f"[red]{e}[/red]")
+        raise typer.Exit(1) from e
+
+    if json_output:
+        payload = {
+            "run_id": result.run_id,
+            "role": result.role.key,
+            "role_name": result.role.name,
+            "adequate": result.adequate,
+            "checks": [
+                {
+                    "category": c.category,
+                    "min_pass_rate": c.min_pass_rate,
+                    "actual_pass_rate": c.actual_pass_rate,
+                    "n": c.n,
+                    "passed": c.passed,
+                }
+                for c in result.checks
+            ],
+        }
+        console.print_json(json.dumps(payload))
+        return
+
+    table = Table(title=f"Role check: {result.role.name} — {run_id}")
+    table.add_column("Category")
+    table.add_column("Required", justify="right")
+    table.add_column("Actual", justify="right")
+    table.add_column("Result", justify="center")
+    for c in result.checks:
+        actual = "n/a" if c.actual_pass_rate is None else f"{c.actual_pass_rate*100:.1f}% (n={c.n})"
+        mark = "[green]PASS[/green]" if c.passed else "[red]FAIL[/red]"
+        table.add_row(c.category, f"{c.min_pass_rate*100:.0f}%", actual, mark)
+    console.print(table)
+    verdict = "[green bold]ADEQUATE[/green bold]" if result.adequate else "[red bold]NOT ADEQUATE[/red bold]"
+    console.print(f"\nVerdict: {verdict}")
+    if not result.adequate:
+        raise typer.Exit(1)
+
+
+@roles_app.command(name="rank")
+def roles_rank(
+    role: str = typer.Argument(..., help="Role key (see `toolery roles list`)."),
+    regen: bool = typer.Option(False, "--regen", help="Also write role_<key>.md to results/rankings/"),
+    top: int = typer.Option(20, "--top", help="Max rows to display."),
+):
+    """Rank all (model, adapter) pairs by their role-weighted score."""
+    from toolery.core.roles import get_role
+    from toolery.rankings.roles import compute_role_ranking, render_role_ranking_md
+
+    role_obj = get_role(role)
+    if role_obj is None:
+        console.print(f"[red]unknown role: {role!r}[/red]")
+        raise typer.Exit(1)
+
+    rows = compute_role_ranking(_store(), role)
+    table = Table(title=f"{role_obj.name} ranking")
+    table.add_column("#")
+    table.add_column("Model")
+    table.add_column("Adapter")
+    table.add_column("Weighted score", justify="right")
+    table.add_column("Results", justify="right")
+    for i, row in enumerate(rows[:top], start=1):
+        table.add_row(str(i), row.model, row.adapter,
+                      f"{row.weighted_score*100:.1f}%", str(row.n_results))
+    console.print(table)
+
+    if regen:
+        out = _results_dir() / "rankings"
+        out.mkdir(parents=True, exist_ok=True)
+        md = render_role_ranking_md(role_obj, rows)
+        (out / f"role_{role}.md").write_text(md)
+        console.print(f"[green]✓ Wrote {out / f'role_{role}.md'}[/green]")

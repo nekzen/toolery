@@ -15,6 +15,70 @@ _TEMPLATES_DIR = Path(__file__).parent.parent / "core" / "templates"
 _env = Environment(loader=FileSystemLoader(_TEMPLATES_DIR))
 
 
+# Ranking dimensions derived directly from a scenario's `category` column
+# rather than its `ranking_dimensions` tag list. This lets Phase 3 add
+# category-level rankings (fact_verification, creative_writing, code_review,
+# workflow_orchestration, security, data_analysis) without touching any
+# scenario YAML — the mapping value is the underlying Category enum value.
+CATEGORY_DERIVED_DIMENSIONS: dict[str, str] = {
+    "fact_verification": "fact_verification",
+    "creative_writing": "creative_writing",
+    "code_review": "code_review",
+    "workflow_orchestration": "workflow_orchestration",
+    "security": "security_audit",
+    "data_analysis": "data_analysis",
+}
+
+# The full, canonical list of ranking dimensions the tool knows how to
+# compute. Combines the original tag-derived dimensions with the Phase 3
+# category-derived ones plus the synthetic 'consistency' dimension. Callers
+# (CLI, TUI) should prefer this over hand-rolled lists so new dimensions
+# automatically show up everywhere.
+STANDARD_DIMENSIONS: list[str] = [
+    "overall",
+    "hallucination",
+    "coding",
+    "debugging",
+    "agentic",
+    "safety",
+    "adversarial_robustness",
+    "restraint",
+    "error_recovery",
+    "parameter_precision",
+    "context_state_tracking",
+    "structured_output",
+    "tool_selection",
+    "instruction_following",
+    "long_context",
+    "localization",
+    "budget_efficiency",
+    "terminal",
+    "consistency",
+    # --- Phase 3: category-derived dimensions ---
+    "fact_verification",
+    "creative_writing",
+    "code_review",
+    "workflow_orchestration",
+    "security",
+    "data_analysis",
+]
+
+
+def _result_matches_dimension(dim: str, ranking_dims: list[str], category: str) -> bool:
+    """True if a scenario_results row belongs to ranking dimension `dim`.
+
+    'overall' always matches. Category-derived dimensions match on the
+    row's `category` column. Everything else falls back to the legacy
+    behavior: membership in the scenario's `ranking_dimensions` tag list.
+    """
+    if dim == "overall":
+        return True
+    target_category = CATEGORY_DERIVED_DIMENSIONS.get(dim)
+    if target_category is not None:
+        return category == target_category
+    return dim in ranking_dims
+
+
 def _population_stddev(values: list[float]) -> float:
     if not values:
         return 0.0
@@ -136,7 +200,7 @@ def regenerate_rankings(*, store: Store, dimensions: list[str], out_dir: Path,
         results_by_run: dict[str, list[dict]] = defaultdict(list)
         for r in results:
             dims = json.loads(r["ranking_dims_json"] or "[]")
-            if dim != "overall" and dim not in dims:
+            if not _result_matches_dimension(dim, dims, r.get("category") or ""):
                 continue
             results_by_run[r["run_id"]].append(r)
 
@@ -614,7 +678,7 @@ def compute_matrix(
         if (r.get("status") or "") == "pass":
             rc["passed"] += 1
         for dim in dimensions:
-            if dim != "overall" and dim not in dims_for_r:
+            if not _result_matches_dimension(dim, dims_for_r, r.get("category") or ""):
                 continue
             pairs[key][dim].append({
                 "run_id": r["run_id"],

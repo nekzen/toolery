@@ -68,6 +68,66 @@ def test_compute_matrix_exposes_stability_metrics(tmp_path):
     assert row["stability"]["overall"]["pass_rate"] == 0.0
 
 
+def _seed_with_category(tmp_path: Path, model: str, scores: list[float], category: str):
+    """Like _seed but the row's `category` column (not just ranking_dims) is set —
+    needed to exercise Phase 3's category-derived dimensions."""
+    store = Store(tmp_path / "runs.db")
+    store.init_schema()
+    run_id = f"r_{model}_{category}"
+    store.create_run(run_id=run_id, model=model, base_url="x",
+                     started_at=datetime.now(UTC).isoformat(),
+                     config_json="{}", scenarios_hash="h")
+    store.upsert_adapter(run_id, "raw", "0.1")
+    for i, s in enumerate(scores):
+        sid = f"easy-{i:02d}-{category}"
+        tr = _trace(sid, "raw")
+        result = ScenarioResult(
+            scenario_id=sid, adapter="raw", trial_index=0,
+            status="pass" if s > 0.5 else "fail", score=s,
+            call_count=1, budget_max=1, latency_ms=10,
+            failure_kind=None if s > 0.5 else "wrong_tool",
+            checks=[], trace=tr,
+        )
+        store.write_scenario_result(
+            run_id=run_id, result=result, tags=[category],
+            ranking_dims=["overall"],
+            scenario_hash="h", category=category, tier="easy",
+            trace_path="x.json",
+        )
+    store.finish_run(run_id, datetime.now(UTC).isoformat(), 1.0)
+    return store
+
+
+def test_category_derived_dimension_filters_by_category_column(tmp_path):
+    from toolery.rankings.compute import STANDARD_DIMENSIONS, compute_matrix
+
+    assert "security" in STANDARD_DIMENSIONS
+    assert "fact_verification" in STANDARD_DIMENSIONS
+    assert "creative_writing" in STANDARD_DIMENSIONS
+    assert "code_review" in STANDARD_DIMENSIONS
+    assert "workflow_orchestration" in STANDARD_DIMENSIONS
+    assert "data_analysis" in STANDARD_DIMENSIONS
+
+    store = _seed_with_category(tmp_path, "sec_model", [1.0, 1.0], "security_audit")
+    matrix = compute_matrix(store=store, dimensions=["overall", "security", "coding"])
+    row = matrix[0]
+    # 'security' dimension key maps to category 'security_audit' rows.
+    assert row["scores"]["security"] == 1.0
+    assert row["scores"]["overall"] == 1.0
+    # No coding-category rows exist for this run → no 'coding' key at all.
+    assert "coding" not in row["scores"]
+
+
+def test_category_derived_dimension_in_regenerate_rankings(tmp_path):
+    from toolery.rankings.compute import regenerate_rankings
+
+    store = _seed_with_category(tmp_path, "cr_model", [1.0, 0.0], "code_review")
+    out_dir = tmp_path / "rankings"
+    regenerate_rankings(store=store, dimensions=["overall", "code_review"], out_dir=out_dir)
+    md = (out_dir / "code_review.md").read_text()
+    assert "cr_model" in md
+
+
 def test_collapse_matrix_rows_modes():
     from toolery.rankings.compute import collapse_matrix_rows
     matrix = [

@@ -84,6 +84,13 @@ _DIMENSIONS = [
     "localization",
     "budget_efficiency",
     "terminal",
+    # --- Phase 3: category-derived dimensions ---
+    "fact_verification",
+    "creative_writing",
+    "code_review",
+    "workflow_orchestration",
+    "security",
+    "data_analysis",
 ]
 
 # Short column headers — full names would be too wide with 14 score cols + perf.
@@ -106,6 +113,12 @@ _HEADERS = {
     "localization": "L10n",
     "budget_efficiency": "Budget",
     "terminal": "Term",
+    "fact_verification": "FactVer",
+    "creative_writing": "Creative",
+    "code_review": "CodeRev",
+    "workflow_orchestration": "Workflow",
+    "security": "Security",
+    "data_analysis": "DataAn",
 }
 
 # Perf columns rendered after the score cols.
@@ -163,6 +176,19 @@ _LEGEND: list[tuple[str, str]] = [
      "Completing complex tasks within tight tool-call budgets. Scenarios cap `max_tool_calls` aggressively — the model must plan efficiently, batch calls, and avoid exploratory probes. Exceeding the budget is a hard fail regardless of correctness."),
     ("Term",
      "Terminal / shell competence: running shell commands, parsing CLI output (ls, ps, df), interpreting ANSI colour codes and TTY escape sequences, managing background processes, and refusing dangerous commands (rm -rf /, fork bombs)."),
+    # — Phase 3: category-derived dimensions —
+    ("FactVer",
+     "Fact-verification: cross-checking claims against tool-returned evidence, flagging unverifiable or contradicted statements instead of asserting them as true. Derived directly from the fact_verification scenario category."),
+    ("Creative",
+     "Creative writing under constraints: tone shifts, audience adaptation, style transfer, structured narrative composition via tools. Derived directly from the creative_writing scenario category."),
+    ("CodeRev",
+     "Code review: spotting bugs, race conditions, security issues, and code smells in provided source, distinct from writing code from scratch. Derived directly from the code_review scenario category."),
+    ("Workflow",
+     "Workflow orchestration: branching, conditional, multi-step pipelines run under budget pressure. Derived directly from the workflow_orchestration scenario category."),
+    ("Security",
+     "Security auditing: finding and correctly triaging vulnerabilities (secrets, injection, authz bypass) in code or systems. Derived directly from the security_audit scenario category."),
+    ("DataAn",
+     "Data analysis: trend detection, aggregation, and reasoning over structured/tabular data returned by tools. Derived directly from the data_analysis scenario category."),
     # — perf columns —
     ("PP t/s",
      "Prefill (prompt-processing) throughput in tokens/sec — how fast the engine ingests the input prompt before generating. Measured by llama-bench across several context depths (0, 16k, 65k); median across depths is shown here."),
@@ -396,6 +422,9 @@ class RankingsTab(Container):
         self._mode = "model_best"
         # Cluster (sparks-count) filter — 'all' shows every row.
         self._cluster_filter: str = "all"
+        # Phase 3: role-based rankings overlay. When True, rank-roles-summary
+        # renders a compact multi-role leaderboard beneath the main matrix.
+        self._show_roles: bool = False
         # Signature of the last rendered table. Lets the 5s polling skip the
         # clear+rebuild when nothing changed — otherwise `tbl.clear()` resets
         # the user's horizontal scroll position every 5 seconds.
@@ -412,8 +441,11 @@ class RankingsTab(Container):
             yield Static("│  Sparks:", classes="filter-separator")
             for key, label in _SPARKS_FILTERS:
                 yield Button(label, id=f"sparks-filter-{key}", classes="sparks-filter")
+            yield Static("│", classes="filter-separator")
+            yield Button("Roles", id="rank-roles-toggle", classes="sparks-filter")
         with Vertical(id="matrix-section"):
             yield Static("", id="rank-summary")
+            yield Static("", id="rank-roles-summary")
             yield _ZebraFixedDataTable(
                 id="rank-matrix",
                 zebra_stripes=True,
@@ -439,6 +471,7 @@ class RankingsTab(Container):
 
     def on_mount(self) -> None:
         self.reload()
+        self._refresh_roles_summary()
         try:
             self.query_one("#ranking-mode-tabs").border_title = "View controls"
             self.query_one("#matrix-section").border_title = "Rankings matrix"
@@ -632,6 +665,47 @@ class RankingsTab(Container):
             except Exception:
                 pass
 
+    def _refresh_roles_summary(self) -> None:
+        """Render (or clear) the compact role-based leaderboard beneath the
+        main matrix. Best-effort: any DB/import failure just clears the panel
+        rather than crashing the tab."""
+        try:
+            panel = self.query_one("#rank-roles-summary", Static)
+        except Exception:
+            return
+        try:
+            btn = self.query_one("#rank-roles-toggle", Button)
+            btn.set_class(self._show_roles, "sparks-filter-active")
+        except Exception:
+            pass
+        if not self._show_roles:
+            panel.update("")
+            return
+        results_dir = Path(os.environ.get("TOOLERY_RESULTS_DIR", "./results"))
+        db = results_dir / "runs.db"
+        if not db.exists():
+            panel.update("[dim italic]No runs recorded yet — role rankings need data.[/dim italic]")
+            return
+        try:
+            from toolery.core.roles import list_roles
+            from toolery.rankings.roles import compute_role_ranking
+            store = Store(db)
+            store.init_schema()
+            lines = ["[bold]Role rankings[/bold] (weighted score, top 3 per role)"]
+            for role in list_roles():
+                rows = compute_role_ranking(store, role.key)[:3]
+                if not rows:
+                    lines.append(f"  [cyan]{role.name}[/cyan]: [dim]no data[/dim]")
+                    continue
+                ranked = ", ".join(
+                    f"{i}. {r.model}/{r.adapter} {r.weighted_score*100:.0f}%"
+                    for i, r in enumerate(rows, start=1)
+                )
+                lines.append(f"  [cyan]{role.name}[/cyan]: {ranked}")
+            panel.update("\n".join(lines))
+        except Exception as e:
+            panel.update(f"[yellow]role rankings unavailable: {e}[/yellow]")
+
     def _populate_rows(self) -> None:
         """Re-sort + re-render. Reads self._rows_cache + self._sort_by/_desc."""
         tbl = self.query_one("#rank-matrix", DataTable)
@@ -775,6 +849,11 @@ class RankingsTab(Container):
             self._populate_rows()
             self._update_sparks_buttons()
             self._refresh_summary()
+            return
+        if bid == "rank-roles-toggle":
+            self._show_roles = not self._show_roles
+            self._refresh_roles_summary()
+            return
 
     # -- click-to-sort --
     def on_data_table_header_selected(self, event) -> None:
