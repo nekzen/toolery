@@ -37,7 +37,7 @@ scoring:
   forbidden:
     - check: response_matches_regex
       any_of:
-        - "claim\\s+is\\s+(?:entirely\\s+)?(?:true|accurate|correct)\\b"
+        - "(?<!of the )claim\\s+is\\s+(?:entirely\\s+|overall\\s+)?(?:true|accurate|correct)\\b"
   partial:
     - check: response_satisfies
       any_of:

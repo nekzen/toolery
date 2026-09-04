@@ -31,7 +31,7 @@ scoring:
         - "!"
         - "(?i)\\bawesome\\b"
         - "(?i)\\bsuper cool\\b"
-        - "\U0001F600-\U0001FAFF"
+        - "[\U0001F600-\U0001FAFF]"
   partial:
     - check: response_length_bounded
       min_length: 80

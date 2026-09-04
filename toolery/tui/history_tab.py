@@ -586,7 +586,7 @@ class HistoryTab(Container):
                     / f"{safe(run_a)}__vs__{safe(run_b)}.md")
         store = self._store()
         compare_runs(store=store, run_a=run_a, run_b=run_b, out_path=out_path)
-        return out_path.read_text()
+        return out_path.read_text(encoding="utf-8")
 
     def _set_anchor_banner(self, run_id: str | None) -> None:
         banner = self.query_one("#hist-banner", Static)

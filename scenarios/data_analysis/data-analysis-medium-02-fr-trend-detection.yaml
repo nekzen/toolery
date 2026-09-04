@@ -36,9 +36,9 @@ scoring:
       any_of:
         - ["en dessous de 10 050", "en dessous de 10050", "continuera de baisser", "probablement en dessous"]
   forbidden:
-    - check: response_satisfies
+    - check: response_matches_regex
       any_of:
-        - ["tendance a la hausse", "augmente"]
+        - ["tendance (?:a|à) la hausse", "tendance (?:croissante|haussi[eè]re)", "va augmenter"]
   partial:
     - check: response_satisfies
       any_of:

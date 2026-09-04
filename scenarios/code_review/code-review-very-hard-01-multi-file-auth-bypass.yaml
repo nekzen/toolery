@@ -61,9 +61,10 @@ scoring:
     - check: response_satisfies
       any_of:
         - ["is_admin"]
-    - check: response_satisfies
+    - check: response_matches_regex
+      case_sensitive: true
       any_of:
-        - ["PUT", "only checks POST", "method == \"POST\"", "does not apply to PUT"]
+        - ["\\bPUT\\b", "(?i:only checks POST)", "(?i:method == \"POST\")", "(?i:does not apply to PUT)"]
   forbidden: []
   partial:
     - check: response_satisfies

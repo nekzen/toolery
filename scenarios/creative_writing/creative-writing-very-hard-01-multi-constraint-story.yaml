@@ -32,7 +32,10 @@ scoring:
   required:
     - check: response_satisfies
       all_of: ["lighthouse"]
-      none_of: ["suddenly", "then"]
+    - check: response_matches_regex
+      none_of:
+        - "\\bsuddenly\\b"
+        - "\\bthen\\b"
     - check: response_matches_regex
       none_of:
         - "\""
@@ -47,6 +50,9 @@ scoring:
     - check: response_length_bounded
       min_length: 350
       max_length: 1200
+    - check: response_satisfies
+      any_of:
+        - ["ghost", "spirit", "AI", "artificial intelligence", "robot", "android", "machine", "cat", "dog", "animal", "not human", "never human", "no longer human"]
   weights:
     pass: 1.0
     partial: 0.5

@@ -280,7 +280,7 @@ class ProfilesTab(Container):
         if not p.exists():
             return None
         try:
-            return json.loads(p.read_text()).get("active_use_case")
+            return json.loads(p.read_text(encoding="utf-8")).get("active_use_case")
         except (json.JSONDecodeError, OSError):
             return None
 
@@ -298,7 +298,7 @@ class ProfilesTab(Container):
             p.unlink(missing_ok=True)
             return
         self._results_dir.mkdir(parents=True, exist_ok=True)
-        p.write_text(json.dumps({"version": 1, "active_use_case": key}, indent=2))
+        p.write_text(json.dumps({"version": 1, "active_use_case": key}, indent=2), encoding="utf-8")
 
     # ---- events ----
 

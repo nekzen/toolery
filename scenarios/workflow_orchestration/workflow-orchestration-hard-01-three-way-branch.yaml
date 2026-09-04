@@ -61,6 +61,10 @@ scoring:
       tool: sql_query
       arg: sql
       pattern: "(?i)from\\s+users\\b"
+    - check: tool_args_match_regex
+      tool: sql_query
+      arg: sql
+      pattern: "(?i)from\\s+audit_log\\b"
   partial:
     - check: response_satisfies
       any_of:

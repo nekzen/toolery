@@ -171,7 +171,7 @@ def _render_consistency_ranking(store: Store, out_dir: Path, now: datetime,
         window=history_window_runs, half_life=half_life_days,
         bootstrap_iters=bootstrap_iters,
     )
-    (out_dir / "consistency.md").write_text(md)
+    (out_dir / "consistency.md").write_text(md, encoding="utf-8")
 
 
 def regenerate_rankings(*, store: Store, dimensions: list[str], out_dir: Path,
@@ -279,7 +279,7 @@ def regenerate_rankings(*, store: Store, dimensions: list[str], out_dir: Path,
             window=history_window_runs, half_life=half_life_days,
             bootstrap_iters=bootstrap_iters,
         )
-        (out_dir / f"{dim}.md").write_text(md)
+        (out_dir / f"{dim}.md").write_text(md, encoding="utf-8")
 
     # Emit an extra use_case_<key>.md when a persona is active.
     if use_case_weights is not None and use_case_key is not None:
@@ -363,7 +363,7 @@ def regenerate_rankings(*, store: Store, dimensions: list[str], out_dir: Path,
             window=history_window_runs, half_life=half_life_days,
             bootstrap_iters=bootstrap_iters,
         )
-        (out_dir / f"use_case_{use_case_key}.md").write_text(md)
+        (out_dir / f"use_case_{use_case_key}.md").write_text(md, encoding="utf-8")
 
 
 def _parse_iso(s: str) -> datetime:
@@ -423,7 +423,7 @@ def load_active_use_case(results_dir: Path) -> tuple[str | None, dict[str, float
     if not setup_path.exists():
         return (None, None)
     try:
-        data = json.loads(setup_path.read_text())
+        data = json.loads(setup_path.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
         return (None, None)
     key = data.get("active_use_case")

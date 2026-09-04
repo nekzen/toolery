@@ -51,7 +51,7 @@ def _backfill_correctness_run(store, run_id: str, results_dir: Path, scenarios: 
         if not tp.exists():
             skipped += 1
             continue
-        trace = TraceResult.model_validate_json(tp.read_text())
+        trace = TraceResult.model_validate_json(tp.read_text(encoding="utf-8"))
         result = evaluate(scenario, trace)
         store.update_correctness_score(row["result_id"], result.correctness_score)
         updated += 1
@@ -404,7 +404,7 @@ def run(
             # Incremental: persist trace + DB row immediately so the Live tab sees progress.
             s = sc_by_id[r.scenario_id]
             trace_filename = f"{r.scenario_id}__{r.adapter}__t{r.trial_index}.json"
-            (run_dir / "traces" / trace_filename).write_text(r.trace.model_dump_json(indent=2))
+            (run_dir / "traces" / trace_filename).write_text(r.trace.model_dump_json(indent=2), encoding="utf-8")
             store.write_scenario_result(
                 run_id=run_id, result=r,
                 tags=s.tags, ranking_dims=s.ranking_dimensions,
@@ -438,14 +438,14 @@ def run(
         for s in xs:
             md = render_scenario(scenario_id=s.id, results=results, title=s.title,
                                  tier=s.tier.value, category=s.category.value)
-            (run_dir / "scenarios" / f"{s.id}.md").write_text(md)
+            (run_dir / "scenarios" / f"{s.id}.md").write_text(md, encoding="utf-8")
         duration = (datetime.now(UTC) - started).total_seconds()
         md = render_summary(
             run_id=run_id, model=model, adapters=list(adapters),
             trials=trials, duration_s=duration, results=results, perf_rows=[],
             tier_lookup=tier_lookup,
         )
-        (run_dir / "summary.md").write_text(md)
+        (run_dir / "summary.md").write_text(md, encoding="utf-8")
 
     if with_perf or perf_only:
         from toolery.perf.benchy import run_benchy
@@ -702,5 +702,5 @@ def roles_rank(
         out = _results_dir() / "rankings"
         out.mkdir(parents=True, exist_ok=True)
         md = render_role_ranking_md(role_obj, rows)
-        (out / f"role_{role}.md").write_text(md)
+        (out / f"role_{role}.md").write_text(md, encoding="utf-8")
         console.print(f"[green]✓ Wrote {out / f'role_{role}.md'}[/green]")

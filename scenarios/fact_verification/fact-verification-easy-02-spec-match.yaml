@@ -29,11 +29,10 @@ scoring:
     - check: response_satisfies
       any_of:
         - ["true", "correct", "accurate", "confirmed", "matches"]
-      none_of:
-        - "false"
-        - "incorrect"
-        - "unverifiable"
-  forbidden: []
+  forbidden:
+    - check: response_matches_regex
+      any_of:
+        - ["claim\\s+is\\s+(?:false|incorrect|inaccurate|unverifiable)", "verdict\\s*:?\\s*\\**\\s*(?:false|unverifiable)"]
   partial:
     - check: response_contains
       patterns: ["12 hours"]

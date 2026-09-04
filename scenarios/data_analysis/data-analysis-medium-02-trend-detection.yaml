@@ -34,9 +34,9 @@ scoring:
       any_of:
         - ["below 10,050", "below 10050", "continue to decrease", "likely below", "further decline"]
   forbidden:
-    - check: response_satisfies
+    - check: response_matches_regex
       any_of:
-        - ["increasing trend", "growing", "upward trend"]
+        - ["increasing trend", "upward trend", "trend is (?:growing|increasing)", "will (?:grow|increase)"]
   partial:
     - check: response_satisfies
       any_of:

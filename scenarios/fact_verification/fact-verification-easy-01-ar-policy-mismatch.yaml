@@ -31,8 +31,8 @@ scoring:
       any_of:
         - ["خاطئ", "غير صحيح", "غير دقيق", "لا يتطابق"]
     - check: response_matches_regex
-      all_of:
-        - "\\b20\\b"
+      any_of:
+        - ["\\b20\\b", "٢٠"]
   forbidden:
     - check: response_matches_regex
       any_of:

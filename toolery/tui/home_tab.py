@@ -303,7 +303,7 @@ def _detail_block(scenario_id: str, adapter: str, trial: int, status: str,
     if run_dir is not None and trace_path:
         try:
             trace = TraceResult.model_validate_json(
-                (Path(run_dir) / trace_path).read_text())
+                (Path(run_dir) / trace_path).read_text(encoding="utf-8"))
         except Exception:
             trace = None  # missing/corrupt trace → fall back to path only
     if trace is not None:
@@ -990,7 +990,7 @@ class HomeTab(Container):
         if rel and self._store is not None and self._current_run_id:
             run_dir = self._store.path.parent / "runs" / self._current_run_id
             try:
-                trace = TraceResult.model_validate_json((run_dir / rel).read_text())
+                trace = TraceResult.model_validate_json((run_dir / rel).read_text(encoding="utf-8"))
             except Exception:
                 trace = None
         title = f"trace — row {tbl.cursor_row}" if rel else "no trace for this row"

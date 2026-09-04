@@ -6,6 +6,7 @@ import json
 import math
 import os
 import re
+import unicodedata
 from collections.abc import Callable
 
 import jsonschema
@@ -255,6 +256,16 @@ _MATCH_CHAR_TRANS = str.maketrans({
 _MD_EMPHASIS = re.compile(r"[*_`]+")
 
 
+def _fold_diacritics(s: str) -> str:
+    """Strip combining marks so "requête préparée" matches an ASCII pattern
+    like "requete preparee" (and vice versa). Scenario YAMLs are typically
+    authored accent-free while well-formed FR/ES responses carry accents."""
+    return "".join(
+        c for c in unicodedata.normalize("NFD", s)
+        if unicodedata.category(c) != "Mn"
+    )
+
+
 def _pattern_found(text: str, pattern: object) -> bool:
     """Case-insensitive literal match with safer handling for tiny tokens.
 
@@ -265,12 +276,13 @@ def _pattern_found(text: str, pattern: object) -> bool:
 
     Models routinely emit curly apostrophes ("can’t") and markdown bold
     ("does **not** include") while phrase lists in scenario YAMLs are plain
-    ASCII, so both sides are unicode-folded, and the text additionally gets a
-    second markdown-stripped matching attempt. Patterns themselves are never
-    markdown-stripped — a pattern like ``"```"`` must keep matching fences.
+    ASCII, so both sides are unicode-folded (quotes, dashes, and diacritics),
+    and the text additionally gets a second markdown-stripped matching
+    attempt. Patterns themselves are never markdown-stripped — a pattern like
+    ``"```"`` must keep matching fences.
     """
-    pat = str(pattern).translate(_MATCH_CHAR_TRANS)
-    raw = text.translate(_MATCH_CHAR_TRANS)
+    pat = _fold_diacritics(str(pattern).translate(_MATCH_CHAR_TRANS))
+    raw = _fold_diacritics(text.translate(_MATCH_CHAR_TRANS))
     candidates = (raw, _MD_EMPHASIS.sub("", raw))
 
     if re.fullmatch(r"[+-]?\d+(?:\.\d+)?", pat):
@@ -474,6 +486,12 @@ _LANG_MARKERS = {
     "de": ["der", "die", "das", "und", "ist", "nicht", "mit", "ein", "von",
            "auf", "in", "bewölkt", "bewoelkt", "grad", "wetter", "stadt",
            "regen", "sonnig", "temperatur", "heute"],
+    "fr": ["le", "les", "est", "et", "une", "des", "que", "qui", "pour",
+           "dans", "pas", "cette", "sont", "être", "etre", "vous", "sur",
+           "d'une", "l'affirmation", "n'est"],
+    "es": ["el", "los", "las", "es", "una", "que", "para", "con", "por",
+           "del", "más", "mas", "como", "pero", "está", "esta", "son",
+           "tiene", "según", "segun"],
 }
 
 # Diacritic / character-set fallback signals — used when a response is too
@@ -481,6 +499,8 @@ _LANG_MARKERS = {
 _LANG_DIACRITIC_HINTS = {
     "pl": "ąćęłńóśźżĄĆĘŁŃÓŚŹŻ",
     "de": "äöüßÄÖÜẞ",
+    "fr": "àâçèêëîïôùûœÀÂÇÈÊËÎÏÔÙÛŒ",
+    "es": "ñíó¿¡ÑÍÓ",
 }
 
 

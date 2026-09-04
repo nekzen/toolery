@@ -26,11 +26,7 @@ scoring:
     - check: response_matches_regex
       case_sensitive: true
       all_of:
-        - "(?m)^\\s*W"
-        - "(?m)^\\s*A"
-        - "(?m)^\\s*V"
-        - "(?m)^\\s*E"
-        - "(?m)^\\s*S"
+        - "(?m)^\\s*W[^\\n]*\\n\\s*A[^\\n]*\\n\\s*V[^\\n]*\\n\\s*E[^\\n]*\\n\\s*S"
   forbidden: []
   partial:
     - check: response_satisfies

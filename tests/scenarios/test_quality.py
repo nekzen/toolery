@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[2] / "scenarios"
 
 def _scenarios():
     for path in sorted(ROOT.rglob("*.yaml")):
-        yield path, yaml.safe_load(path.read_text())
+        yield path, yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
 def _text_patterns(check: dict) -> list[str]:

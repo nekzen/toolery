@@ -118,7 +118,7 @@ def regenerate_role_rankings(*, store: Store, out_dir) -> None:
     for role in list_roles():
         rows = compute_role_ranking(store, role.key)
         md = render_role_ranking_md(role, rows)
-        (out_dir / f"role_{role.key}.md").write_text(md)
+        (out_dir / f"role_{role.key}.md").write_text(md, encoding="utf-8")
 
 
 def render_role_check_md(result: RoleCheckResult) -> str:

@@ -43,7 +43,7 @@ scoring:
   forbidden:
     - check: response_satisfies
       any_of:
-        - ["delightful", "extraordinary", "invigorating", "exceptional"]
+        - ["delightful", "extraordinary", "invigorating", "exceptional", "refreshing"]
   partial:
     - check: response_satisfies
       any_of:

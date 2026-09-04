@@ -40,7 +40,7 @@ scoring:
         - "(?m)^\\s*2\\."
     - check: response_matches_regex
       any_of:
-        - "\\btu\\b"
+        - "\\bt[uú]\\b"
   forbidden:
     - check: response_satisfies
       any_of:

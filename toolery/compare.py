@@ -27,7 +27,7 @@ def compare_runs(*, store: Store, run_a: str, run_b: str, out_path: Path) -> Non
         identical_count=summary["identical_count"],
     )
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(md)
+    out_path.write_text(md, encoding="utf-8")
 
 
 def compare_summary(*, store: Store, run_a: str, run_b: str) -> dict:

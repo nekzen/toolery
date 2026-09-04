@@ -50,7 +50,7 @@ def run_benchy(*, model: str, base_url: str, pp: int = 4096, tg: int = 512,
         raise RuntimeError(
             f"llama-benchy failed (exit {completed.returncode}):\n{tail}{hint}"
         )
-    data = json.loads(Path(output_file).read_text())
+    data = json.loads(Path(output_file).read_text(encoding="utf-8"))
     # Normalise new (0.3.8+) `benchmarks` schema into the flat per-depth rows
     # the rest of the pipeline expects (pp_tps, tg_tps, ttft_ms, …).
     raw_rows = data.get("benchmarks") or data.get("runs") or []
