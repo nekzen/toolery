@@ -538,11 +538,15 @@ def tui():
 @app.command()
 def rankings(
     regen: bool = typer.Option(False, "--regen", help="Regenerate rankings .md"),
-    dimension: str = typer.Option("all", help="overall|coding|agentic|safety|restraint|long_context|budget_efficiency|speed|all"),
+    dimension: str = typer.Option("all", help="A ranking dimension or 'all'; an invalid value lists the valid dimensions."),
 ):
     """Manage rankings."""
     from toolery.rankings.compute import STANDARD_DIMENSIONS, regenerate_rankings
     out = _results_dir() / "rankings"
+    if dimension != "all" and dimension not in STANDARD_DIMENSIONS:
+        raise typer.BadParameter(
+            f"unknown dimension {dimension!r}; valid: {', '.join(STANDARD_DIMENSIONS)}, or 'all'"
+        )
     dims = STANDARD_DIMENSIONS if dimension == "all" else [dimension]
     if regen:
         from toolery.rankings.compute import load_active_use_case

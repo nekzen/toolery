@@ -100,12 +100,11 @@ ROLES: dict[str, Role] = {
         required=[
             RoleRequirement("creative_writing", 0.70),
             RoleRequirement("instruction_following", 0.65),
-            RoleRequirement("language_adaptation", 0.60),
             RoleRequirement("overall", 0.50),
         ],
         weights={
             "creative_writing": 3.0, "instruction_following": 2.0,
-            "language_adaptation": 1.5, "overall": 1.0,
+            "overall": 1.0,
         },
     ),
     "data_analyst": Role(

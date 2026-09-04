@@ -51,7 +51,7 @@ Requires **Python 3.11+**. The project uses
 [uv](https://docs.astral.sh/uv/) and a `hatchling` build backend.
 
 ```bash
-# From PyPI (if published)
+# Straight from GitHub (not published on PyPI)
 pip install git+https://github.com/nekzen/toolery.git
 
 # With uv (recommended — manages an isolated virtualenv for you)
@@ -63,6 +63,8 @@ cd toolery
 uv sync                 # base install
 uv sync --extra dev     # + pytest, ruff, mypy (needed for tests)
 uv sync --extra perf    # + llama-benchy (throughput benchmarking)
+uv sync --extra mcp     # + MCP bridge exposing the mock tools to MCP-aware
+                        #   agents like hermes (see docs/hermes-mcp-bridge.md)
 ```
 
 Everything below is invoked as `uv run toolery …` when installed from
@@ -252,7 +254,14 @@ to permanently remove a run's data, delete its rows/files directly from the
 
 ## Scenario format
 
-Scenarios live under `scenarios/<category>/*.yaml`, one file per scenario.
+Scenarios live under `scenarios/`, one YAML file per scenario. The loader
+recurses the whole tree, so the directory name is a filing convention, not
+a semantic one — the `category` field inside the YAML is authoritative.
+Two layouts coexist: the original scenario set is filed by tier
+(`scenarios/easy/`, `scenarios/medium/`, …) while the newer categories
+each have their own directory (`scenarios/code_review/`, …). **New
+scenarios should go in a directory named after their `category`.**
+
 **All scenario prompts, titles, and descriptions must be written in
 English** — this keeps checks (regex, keyword, structured-output matching)
 consistent across the whole set. Non-English *variants* of a scenario are
@@ -266,7 +275,7 @@ the base scenario in another language.
 id: code-review-easy-01-sql-injection-python   # unique, matches the filename (no .yaml)
 title: "Spot a SQL injection vulnerability in a Python snippet"
 tier: easy                                     # easy | medium | hard | very_hard
-category: code_review                          # must match the containing directory name
+category: code_review                          # authoritative; new scenarios: also name the directory after it
 domain: dev_ops                                # free-text grouping tag (e.g. dev_ops, quant, travel)
 # language: fr                                 # optional — see "Multilingual variants" below
 
@@ -303,14 +312,23 @@ scoring:
     - check: response_satisfies
       any_of: [["SQL injection", "sql injection"]]
   forbidden: []                                # ANY passing means the trial fails
-  partial:                                     # optional: partial credit if required checks
-    - check: response_satisfies                # fail but these pass
+  partial:                                     # informational only — recorded in the trial's
+    - check: response_satisfies                # check list but never changes the score
       any_of: [["f-string", "string interpolation"]]
   weights:
     pass: 1.0
     partial: 0.5
     fail: 0.0
 ```
+
+**Scoring semantics.** By default scoring is binary: all `required` pass
+(and no `forbidden` fires, budget respected, no hallucinated tool) ⇒
+`weights.pass`, anything else ⇒ `weights.fail`. `partial` checks are
+recorded in the trial's check list for inspection but **never affect the
+score**. Setting `TOOLERY_PARTIAL_GRADIENT=on` restores a partial-credit
+mode where a clean-but-incomplete trial scores `weights.partial ×
+(required checks passed / total required)` — note this gradient is driven
+by the *required* checks, still not by the `partial` list.
 
 ### Tiers
 
@@ -332,16 +350,12 @@ All 20 categories (directory name under `scenarios/` == `category` value):
 | `multi_step_chains` | Sequential/parallel multi-tool workflows. |
 | `restraint_refusal` | Knowing when *not* to call a tool. |
 | `error_recovery` | Recovering from timeouts, 429s, malformed/partial tool results. |
-| `structured_reasoning` | Step-by-step reasoning before acting. |
 | `instruction_following` | Strict format/length/negative-constraint compliance. |
 | `context_state_tracking` | Reusing prior turns'/tool calls' results correctly. |
 | `coding` | TDD loops, refactors, file operations, git discipline. |
 | `debugging` | Root-cause analysis from tracebacks/regressions. |
 | `safety_boundaries` | Refusing an explicit unsafe request. |
 | `adversarial_robustness` | Resisting prompt injection in untrusted tool/RAG output. |
-| `toolset_scale` | Behaving correctly with large tool catalogs. |
-| `autonomous_planning` | Open-ended multi-step planning and composition. |
-| `creative_composition` | Generating styled/creative content on request. |
 | `structured_output` | Non-JSON structured formats — CSV, YAML, markdown tables. |
 | `hallucination` | Calibration — refusing/hedging on ungrounded questions instead of fabricating. |
 | `terminal_handling` | Shell pipes, CLI/ANSI parsing, destructive-command refusal. |
@@ -420,11 +434,16 @@ entry is `{check: <name>, ...check-specific fields}`.
 
 Add `language: <code>` (e.g. `fr`, `ar`, `es`) at the top level of a
 scenario to mark it as a non-English *variant* of an existing English
-scenario. The `prompt` for that variant is written in the target language
-and the scenario is expected to check `response_language` for that same
-code. The base/original scenario prompt must still be in English — the
+scenario. The `prompt` for that variant is written in the target language.
+The base/original scenario prompt must still be in English — the
 `language` field exists precisely so localization coverage doesn't force
 the whole scenario set into multiple languages.
+
+The `response_language` check supports `en`, `fr`, `es`, `de`, and `pl`;
+use it whenever the variant's language is one of those. For other
+languages (e.g. the `ar` variants), the detector has no marker set — those
+scenarios instead assert target-language keywords directly in their
+`response_satisfies` checks.
 
 ```yaml
 id: data-analysis-easy-01-fr-csv-average
@@ -501,7 +520,7 @@ category, and a run is only **ADEQUATE** if it clears *every* gate.
 | **Orchestrator** | `workflow_orchestration` ≥ 65%, `tool_selection` ≥ 60%, `multi_step_chains` ≥ 60%, `overall` ≥ 50% |
 | **Fact-Checker** | `fact_verification` ≥ 75%, `hallucination` ≥ 70%, `instruction_following` ≥ 65%, `overall` ≥ 55% |
 | **Security-Auditor** | `security_audit` ≥ 70%, `code_review` ≥ 65%, `adversarial_robustness` ≥ 60%, `overall` ≥ 55% |
-| **Creative-Writer** | `creative_writing` ≥ 70%, `instruction_following` ≥ 65%, `language_adaptation` ≥ 60%, `overall` ≥ 50% |
+| **Creative-Writer** | `creative_writing` ≥ 70%, `instruction_following` ≥ 65%, `overall` ≥ 50% |
 | **Data-Analyst** | `data_analysis` ≥ 70%, `parameter_precision` ≥ 65%, `structured_output` ≥ 60%, `overall` ≥ 55% |
 | **General-Assistant** | `overall` ≥ 50%, `instruction_following` ≥ 55%, `tool_selection` ≥ 50% |
 
@@ -541,6 +560,15 @@ Role keys (for `<role_key>` above): `coder`, `orchestrator`,
 ---
 
 ## Advanced usage
+
+**Environment variables.**
+
+| Variable | Effect |
+|---|---|
+| `TOOLERY_BASE_URL` | Default endpoint for the `raw`/`cloud` adapters (overridden by `--base-url`). |
+| `TOOLERY_RESULTS_DIR` | Where the SQLite store, traces, and rankings are written (default `./results`). |
+| `TOOLERY_SCENARIOS_DIR` | Scenario set root (default `./scenarios`). |
+| `TOOLERY_PARTIAL_GRADIENT` | `on` enables the partial-credit scoring gradient (see [Scoring semantics](#yaml-structure)); default `off` = binary pass/fail. |
 
 **Retry logic.** `--max-retries`, `--retry-backoff-base`,
 `--retry-backoff-max` retry only *transient* adapter failures (429,
