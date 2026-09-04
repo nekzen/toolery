@@ -52,10 +52,10 @@ Requires **Python 3.11+**. The project uses
 
 ```bash
 # From PyPI (if published)
-pip install toolery
+pip install git+https://github.com/nekzen/toolery.git
 
 # With uv (recommended — manages an isolated virtualenv for you)
-uv pip install toolery
+uv pip install git+https://github.com/nekzen/toolery.git
 
 # From source
 git clone https://github.com/nekzen/toolery.git
