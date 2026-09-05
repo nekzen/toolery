@@ -1,5 +1,4 @@
-# Unify commit identities: "neuro" is nekzen's local lab (Fedora server admin
-# account); "rahueme" is the original author's workstation identity.
+# Unify commit identities: "neuro" is nekzen's local lab; "rahueme" is the original author's workstation identity.
 nekzen <nekozenji@gmail.com> neuro <neuro@localhost.localdomain>
 nekzen <nekozenji@gmail.com> nekzen <nekozenji@gmail.com>
 Karol <karol.palys@gmail.com> rahueme <rahueme@localhost>
