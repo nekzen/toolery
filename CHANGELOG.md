@@ -6,6 +6,78 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-09-05
+
+First release of the nekzen fork. Everything below diverges from
+karol.palys' toolery at 0.4.1 (commit `36c8c0c`); versions 0.4.1 and
+earlier are the original author's work.
+
+### Added
+- **6 new scenario categories, 57 scenarios**: `fact_verification`,
+  `creative_writing`, `code_review`, `workflow_orchestration`,
+  `security_audit`, `data_analysis` — including French, Spanish, and Arabic
+  localization variants (Phase 2).
+- **Category-derived ranking dimensions** (`fact_verification`,
+  `creative_writing`, `code_review`, `workflow_orchestration`, `security`,
+  `data_analysis`) matched on the scenario `category` column, plus the
+  synthetic `consistency` dimension (score variance across trials) (Phase 3).
+- **Role-based thresholds**: 7 job profiles (Coder, Orchestrator,
+  Fact-Checker, Security-Auditor, Creative-Writer, Data-Analyst,
+  General-Assistant) with per-category minimum pass-rate gates and an
+  ADEQUATE / NOT ADEQUATE verdict — `toolery roles list|check|rank` (Phase 3).
+- **Profiles tab: role viability board** — one row per model (latest run),
+  one ✓/✗ column per role, with a `✗·gap` marker distinguishing "below
+  threshold" from "required category not covered by that run".
+- New checks: `response_diff` (near-duplicate/regurgitation detection) and
+  `response_length_bounded` (padding/truncation gate) (Phase 1).
+- CLI: `--json` output (`list`, `scenarios`, `run --dry-run`, `compare`,
+  `roles check`), `--dry-run` planning, transient-failure retry
+  (`--max-retries` + exponential backoff), run soft-delete/restore
+  (`delete-run` / `restore-run`) (Phase 1).
+- Use-case personas can now weight the category-derived dimensions; all 7
+  personas gained weights for the 6 new dimensions (17 → 23 each).
+- `rankings --dimension` validates its value and lists the valid dimensions.
+
+### Fixed
+- `response_language` could never detect French or Spanish (the detector
+  only knew pl/en/de), making all 12 FR/ES scenarios unpassable; fr/es
+  marker sets and diacritic hints added.
+- `_pattern_found` now folds diacritics on both sides, so ASCII-authored
+  patterns ("requete preparee") match accented responses ("requête préparée").
+- Scenario audit: bracketed a malformed emoji character class, scored the
+  previously-unverified 5th constraint of the multi-constraint story,
+  word-bounded substring traps (`then`, `PUT`, `growing`, `false`), fixed
+  self-contradicting forbidden patterns, acrostic letter-order check,
+  Arabic-Indic numeral acceptance, and a missing boundary-case guard in the
+  three-way-branch workflow scenario.
+- Creative-Writer role required a `language_adaptation` category that no
+  scenario has ever carried — the role could never be ADEQUATE. Gate removed
+  (localization remains its own ranking dimension).
+- Windows portability: `encoding="utf-8"` on every bare
+  `read_text()`/`write_text()` call site — the cp1252 default broke 8 tests
+  and crashed trace-writing on any emoji in a model response.
+- TUI drift: rankings columns now derive from `STANDARD_DIMENSIONS`; run
+  profile folds category-derived dimensions in; `raw` adapter filter added
+  to Profiles; octa cluster rendering in Compare; perf/L10n legend
+  corrections.
+- `run_benchy` prefers the venv-installed (version-locked) `llama-benchy`
+  over the `uvx` fallback, which always fetches the latest PyPI release.
+
+### Removed
+- Four phantom `Category` enum members (`structured_reasoning`,
+  `toolset_scale`, `autonomous_planning`, `creative_composition`) — no
+  scenario at any revision ever used them.
+- One-off scripts tied to the original author's hardware and runs:
+  `rescore_minimax.py`, `test.sh`, `scripts/codex_self_eval.py`.
+
+### Changed
+- `golden_probe.py` and `patch_timeouts_merge.py` moved to `scripts/`;
+  `patch_timeouts_merge.py` honors `TOOLERY_RESULTS_DIR`.
+- Project metadata: repository URLs point to the fork; nekzen added as
+  maintainer (karol.palys remains the author).
+- README rewritten and re-verified against the codebase (categories, roles,
+  scoring semantics, environment variables, install extras).
+
 ## [0.4.1] - 2026-06-16
 
 ### Added

@@ -16,11 +16,15 @@ Usage:
 
 Without --apply it does a dry run (prints what it would change).
 """
-import argparse, sqlite3, shutil, sys
+import argparse
+import os
+import shutil
+import sqlite3
 from pathlib import Path
 
-DB = Path("results/runs.db")
-RUNS = Path("results/runs")
+_RESULTS = Path(os.environ.get("TOOLERY_RESULTS_DIR", "results"))
+DB = _RESULTS / "runs.db"
+RUNS = _RESULTS / "runs"
 
 # columns copied from patch row -> orig row (everything that describes the result)
 COPY_COLS = [

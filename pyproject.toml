@@ -4,12 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "toolery"
-version = "0.4.1"
+version = "0.5.0"
 description = "Deterministic 4-tier LLM tool-calling benchmark"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.11"
 authors = [{ name = "karol.palys" }]
+maintainers = [{ name = "nekzen", email = "nekozenji@gmail.com" }]
 keywords = ["llm", "benchmark", "tool-calling", "evaluation", "tui", "agents"]
 classifiers = [
   "License :: OSI Approved :: MIT License",
@@ -51,9 +52,9 @@ dev = [
 toolery = "toolery.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/karolpalys/toolery"
-Repository = "https://github.com/karolpalys/toolery"
-Issues = "https://github.com/karolpalys/toolery/issues"
+Homepage = "https://github.com/nekzen/toolery"
+Repository = "https://github.com/nekzen/toolery"
+Issues = "https://github.com/nekzen/toolery/issues"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

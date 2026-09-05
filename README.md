@@ -45,6 +45,20 @@ job X?" (see [Role-based thresholds](#role-based-thresholds)).
 
 ---
 
+## Screenshots
+
+Illustrative captures of the TUI (`toolery tui`), rendered from seeded
+**demo data** — the `demo-*` models and every score shown are fictional.
+
+![Rankings tab — capability matrix with per-column podium](docs/screenshots/rankings.svg)
+
+| | |
+|---|---|
+| ![Profiles tab — persona ranking + role viability board](docs/screenshots/profiles.svg) | ![Compare tab — head-to-head](docs/screenshots/compare.svg) |
+| ![Scenarios tab — per-scenario cross-model view](docs/screenshots/scenarios.svg) | ![History tab — recorded runs](docs/screenshots/history.svg) |
+
+---
+
 ## Installation
 
 Requires **Python 3.11+**. The project uses
@@ -638,6 +652,11 @@ toolery/
    uv run toolery scenarios --tier all       # loads without errors
    uv run toolery run --model smoke-test --ids <new-id> --dry-run
    ```
+   For scoring logic, prove the scenario is actually passable with
+   `scripts/golden_probe.py`: it replays a hand-authored ideal tool
+   sequence through the live mock runtime and scorer, so an unpassable
+   check (a substring trap, an impossible regex, a mock/scoring mismatch)
+   surfaces before any model ever runs it.
 3. If you're changing code (adapters, scorer, CLI, rankings), add or
    update tests under `tests/` and run:
    ```bash

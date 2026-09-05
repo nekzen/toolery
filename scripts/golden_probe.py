@@ -15,14 +15,19 @@ Returns (status, failing_required_checks). Prints a verdict line.
 """
 from __future__ import annotations
 
+import sys
 from pathlib import Path
-from toolery.core.scenario import load_all_scenarios
-from toolery.core.scorer import evaluate
-from toolery.core.models import TraceResult, ToolCall, Message
-from toolery.tools.mock_runtime import MockToolRuntime
-from toolery.tools import api_db, domain, generic, terminal  # noqa: F401
 
-_SCEN = {s.id: s for s in load_all_scenarios(Path(__file__).resolve().parent / "scenarios")}
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_REPO_ROOT))
+
+from toolery.core.models import Message, ToolCall, TraceResult  # noqa: E402
+from toolery.core.scenario import load_all_scenarios  # noqa: E402
+from toolery.core.scorer import evaluate  # noqa: E402
+from toolery.tools import api_db, domain, generic, terminal  # noqa: E402,F401
+from toolery.tools.mock_runtime import MockToolRuntime  # noqa: E402
+
+_SCEN = {s.id: s for s in load_all_scenarios(_REPO_ROOT / "scenarios")}
 
 
 def probe(scenario_id: str, calls: list[tuple[str, dict]], final: str | None):
