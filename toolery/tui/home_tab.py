@@ -183,6 +183,14 @@ _DIM_LABEL = {
     "long_context": "long-context retrieval",
     "localization": "non-English / localization",
     "budget_efficiency": "staying within tool-call budget",
+    "terminal": "terminal / shell competence",
+    # Category-derived dimensions (Phase 3).
+    "fact_verification": "verifying claims against evidence",
+    "creative_writing": "constrained creative writing",
+    "code_review": "reviewing code for bugs/vulns",
+    "workflow_orchestration": "branching multi-step workflows",
+    "security": "security auditing",
+    "data_analysis": "reasoning over structured data",
 }
 
 
@@ -348,6 +356,8 @@ def _profile_run(results: list[dict]) -> Text:
     if not results:
         return Text("(no scenario results)", style="dim")
 
+    from toolery.rankings.compute import DIMENSION_FOR_CATEGORY
+
     by_dim: dict[str, list[float]] = defaultdict(list)
     by_tier: dict[str, list[float]] = defaultdict(list)
     statuses: dict[str, int] = defaultdict(int)
@@ -356,6 +366,12 @@ def _profile_run(results: list[dict]) -> Text:
             dims = json.loads(r.get("ranking_dims_json") or '["overall"]')
         except json.JSONDecodeError:
             dims = ["overall"]
+        # Category-derived dimensions live in the `category` column, not the
+        # tag list — fold them in so e.g. code_review scenarios show up in the
+        # strong/weak profile under their own dimension.
+        derived = DIMENSION_FOR_CATEGORY.get(r.get("category") or "")
+        if derived is not None and derived not in dims:
+            dims.append(derived)
         score = r.get("score") or 0.0
         for d in dims:
             by_dim[d].append(score)

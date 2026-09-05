@@ -31,6 +31,13 @@ _DIM_LABEL = {
     "localization": "loc",
     "budget_efficiency": "budget",
     "hallucination": "hallucin",
+    # Category-derived dimensions (Phase 3) — weightable like any other.
+    "fact_verification": "factVer",
+    "creative_writing": "creative",
+    "code_review": "codeRev",
+    "workflow_orchestration": "workflow",
+    "security": "security",
+    "data_analysis": "dataAn",
 }
 
 _DIM_ORDER = [
@@ -39,6 +46,8 @@ _DIM_ORDER = [
     "parameter_precision", "context_state_tracking", "structured_output",
     "tool_selection", "instruction_following", "long_context",
     "localization", "budget_efficiency", "hallucination",
+    "fact_verification", "creative_writing", "code_review",
+    "workflow_orchestration", "security", "data_analysis",
 ]
 
 
@@ -83,7 +92,8 @@ class ProfilesTab(Container):
     ProfilesTab #ranking-section,
     ProfilesTab #selector-section,
     ProfilesTab #weights-section,
-    ProfilesTab #sparks-section {
+    ProfilesTab #sparks-section,
+    ProfilesTab #roles-section {
         border: round $primary;
         border-title-color: $primary;
         background: $surface;
@@ -111,7 +121,7 @@ class ProfilesTab(Container):
     }
 
     ProfilesTab #weights-section {
-        height: 5;
+        height: 7;
         margin-bottom: 1;
     }
 
@@ -152,6 +162,15 @@ class ProfilesTab(Container):
         margin-bottom: 1;
     }
 
+    ProfilesTab #roles-section {
+        height: 1fr;
+        margin-bottom: 1;
+    }
+
+    ProfilesTab #roles-table {
+        height: 1fr;
+    }
+
     ProfilesTab #uc-rank-title {
         height: auto;
         text-style: bold;
@@ -183,6 +202,7 @@ class ProfilesTab(Container):
     # Adapter button id suffix → adapter value in DB. `all` clears the filter.
     _ADAPTER_TO_DB = {
         "all": None,
+        "raw": "raw",
         "cloud": "cloud",
         "hermes": "hermes",
     }
@@ -224,7 +244,7 @@ class ProfilesTab(Container):
                     yield Button(label, id=f"sparks-{key}",
                                  variant=self._sparks_variant_for(key))
             with Horizontal(id="adapter-row"):
-                for key in ("all", "cloud", "hermes"):
+                for key in ("all", "raw", "cloud", "hermes"):
                     label = "ALL" if key == "all" else key
                     yield Button(label, id=f"adapter-filter-{key}",
                                  variant=self._adapter_variant_for(key))
@@ -234,6 +254,16 @@ class ProfilesTab(Container):
                          id="uc-rank-title")
             yield DataTable(
                 id="uc-rank-table",
+                zebra_stripes=True,
+                cursor_type="row",
+            )
+        # Role viability board: ADEQUATE/NOT ADEQUATE per role for each
+        # model's most recent run — the pass/fail complement to the weighted
+        # persona ranking above.
+        with Vertical(id="roles-section"):
+            yield Static("", id="roles-title")
+            yield DataTable(
+                id="roles-table",
                 zebra_stripes=True,
                 cursor_type="row",
             )
@@ -247,8 +277,17 @@ class ProfilesTab(Container):
                 "SPARKS (cluster nodes) — adapter (run harness)"
             )
             self.query_one("#ranking-section").border_title = "Profile ranking"
+            self.query_one("#roles-section").border_title = (
+                "Role viability — latest run per model"
+            )
         except Exception:
             pass
+        self._render_roles_table()
+
+    def on_show(self) -> None:
+        """Refresh the role viability board when the tab becomes visible —
+        picks up runs that finished while the user was on another tab."""
+        self._render_roles_table()
 
     # ---- helpers ----
 
@@ -377,6 +416,76 @@ class ProfilesTab(Container):
 
     def _refresh_status(self) -> None:
         self.query_one("#setup-status", Static).update(self._status_text())
+
+    # ---- role viability board ----
+
+    def _render_roles_table(self) -> None:
+        """One row per model (its most recent run), one column per role,
+        cells ✓ ADEQUATE / ✗ NOT ADEQUATE from check_role() — missing-category
+        data counts as ✗, mirroring `toolery roles check` semantics."""
+        from toolery.core.roles import check_role, list_roles
+        from toolery.core.store import Store
+
+        try:
+            title = self.query_one("#roles-title", Static)
+            tbl = self.query_one("#roles-table", DataTable)
+        except Exception:
+            return
+        tbl.clear(columns=True)
+        roles = list_roles()
+        db = self._results_dir / "runs.db"
+        if not db.exists():
+            title.update("[dim italic]No runs database yet — role verdicts "
+                         "need data.[/dim italic]")
+            return
+        store = Store(db)
+        store.init_schema()
+        runs = store.fetch_all_runs()
+        # Latest run per model (fetch_all_runs is already newest-first).
+        latest_by_model: dict[str, dict] = {}
+        for r in runs:
+            latest_by_model.setdefault(r["model"], r)
+        if not latest_by_model:
+            title.update("[dim italic]No runs recorded yet.[/dim italic]")
+            return
+
+        tbl.add_column("Model", key="model")
+        tbl.add_column("Run", key="run")
+        for role in roles:
+            tbl.add_column(role.name, key=f"role:{role.key}")
+
+        for model, run in sorted(latest_by_model.items()):
+            cells: list[Text] = [
+                Text(model, style="bold"),
+                Text(str(run["run_id"])[:12], style="dim"),
+            ]
+            for role in roles:
+                try:
+                    result = check_role(store, run["run_id"], role.key)
+                except Exception:
+                    cells.append(Text("?", style="dim"))
+                    continue
+                if result.adequate:
+                    cells.append(Text("✓", style="bold green"))
+                else:
+                    # Distinguish "failed a threshold" from "never tested the
+                    # required categories" — the latter is a coverage gap, not
+                    # a capability verdict.
+                    missing = any(c.actual_pass_rate is None for c in result.checks)
+                    cells.append(Text("✗·gap" if missing else "✗",
+                                      style="dim yellow" if missing else "bold red"))
+            tbl.add_row(*cells)
+
+        gates = " · ".join(
+            f"[cyan]{role.name}[/cyan]: "
+            + ", ".join(f"{req.category}≥{req.min_pass_rate * 100:.0f}%"
+                        for req in role.required)
+            for role in roles
+        )
+        title.update(
+            f"[dim]✓ ADEQUATE · ✗ below threshold · ✗·gap = required category "
+            f"not covered by that run\n{gates}[/dim]"
+        )
 
     # ---- inline ranking table ----
 

@@ -29,6 +29,25 @@ def test_scenario_dim_weight_empty_or_overall_only_defaults_to_one():
     assert _scenario_dim_weight(["overall"], _PERSONA) == 1.0
 
 
+def test_scenario_dim_weight_category_derived_dimension_counts():
+    # A code_review scenario carries no code_review tag — the dimension comes
+    # from its category column and must still pick up the persona weight.
+    persona = {"code_review": 2.5, "coding": 1.5}
+    assert _scenario_dim_weight(
+        ["overall", "coding"], persona, category="code_review") == 2.5
+
+
+def test_scenario_dim_weight_security_category_maps_to_security_dim():
+    # Category 'security_audit' feeds the 'security' dimension.
+    persona = {"security": 3.0}
+    assert _scenario_dim_weight([], persona, category="security_audit") == 3.0
+
+
+def test_scenario_dim_weight_unmapped_category_is_ignored():
+    persona = {"coding": 2.0}
+    assert _scenario_dim_weight(["overall"], persona, category="coding") == 1.0
+
+
 # --- Integration tests for compute_matrix dim-weight application ---
 
 import json

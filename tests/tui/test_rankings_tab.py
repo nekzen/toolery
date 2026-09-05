@@ -206,3 +206,20 @@ async def test_horizontal_scroll_survives_reload(tmp_path, monkeypatch):
         tab.reload()
         await pilot.pause()
         assert tbl.scroll_x == pytest.approx(target, abs=1.0)
+
+
+def test_dimensions_track_standard_dimensions():
+    """TUI columns must stay in lockstep with the canonical dimension list —
+    'consistency' is the single deliberate exclusion (redundant with the
+    stability sigma column)."""
+    from toolery.rankings.compute import STANDARD_DIMENSIONS
+    from toolery.tui.rankings_tab import _DIMENSIONS
+    assert _DIMENSIONS == [d for d in STANDARD_DIMENSIONS if d != "consistency"]
+
+
+def test_every_dimension_has_header_and_legend_entry():
+    from toolery.tui.rankings_tab import _DIMENSIONS
+    assert set(_DIMENSIONS) <= set(_HEADERS)
+    legend_headers = {h for h, _ in _LEGEND}
+    for dim in _DIMENSIONS:
+        assert _HEADERS[dim] in legend_headers, f"no legend entry for {dim}"

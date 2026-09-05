@@ -42,3 +42,21 @@ def test_clear_when_no_file_does_not_raise():
         tab._results_dir = results_dir
         tab._save_active_use_case(None)
         assert not (results_dir / "setup.json").exists()
+
+
+def test_dim_order_covers_all_persona_weight_keys():
+    """Every dimension a persona weights must be visible in the weight
+    preview — a weighted-but-hidden dimension silently skews the ranking."""
+    from toolery.rankings.presets import USE_CASES
+    from toolery.tui.profiles_tab import _DIM_LABEL, _DIM_ORDER
+    for uc in USE_CASES:
+        missing = set(uc.weights) - set(_DIM_ORDER)
+        assert not missing, f"{uc.key} weights not shown in preview: {missing}"
+    assert set(_DIM_ORDER) <= set(_DIM_LABEL)
+
+
+def test_adapter_filter_includes_every_adapter():
+    assert ProfilesTab._ADAPTER_TO_DB.get("raw") == "raw"
+    assert ProfilesTab._ADAPTER_TO_DB.get("cloud") == "cloud"
+    assert ProfilesTab._ADAPTER_TO_DB.get("hermes") == "hermes"
+    assert ProfilesTab._ADAPTER_TO_DB.get("all") is None

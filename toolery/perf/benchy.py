@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 import tempfile
 from dataclasses import dataclass
@@ -26,8 +27,14 @@ def run_benchy(*, model: str, base_url: str, pp: int = 4096, tg: int = 512,
     benchy_base = base_url.rstrip("/")
     if not benchy_base.endswith("/v1"):
         benchy_base += "/v1"
+    # Prefer the llama-benchy installed in the current environment (the
+    # version pinned by `uv sync --extra perf`); `uvx` is only the fallback —
+    # it fetches the LATEST PyPI release into an isolated env, so its output
+    # schema can drift ahead of what the parser below understands.
+    benchy_exe = shutil.which("llama-benchy")
+    launcher = [benchy_exe] if benchy_exe else ["uvx", "llama-benchy"]
     cmd = [
-        "uvx", "llama-benchy",
+        *launcher,
         "--base-url", benchy_base, "--model", model,
         "--pp", str(pp), "--tg", str(tg),
         "--depth", *(str(d) for d in depth),

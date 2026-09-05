@@ -15,21 +15,20 @@ class Tier(StrEnum):
 
 
 class Category(StrEnum):
+    # Values mirror the categories the scenario set actually uses — an enum
+    # member with zero scenarios is a phantom filter option, so members are
+    # removed when their last scenario goes.
     TOOL_SELECTION = "tool_selection"
     PARAMETER_PRECISION = "parameter_precision"
     MULTI_STEP_CHAINS = "multi_step_chains"
     RESTRAINT_REFUSAL = "restraint_refusal"
     ERROR_RECOVERY = "error_recovery"
-    STRUCTURED_REASONING = "structured_reasoning"
     INSTRUCTION_FOLLOWING = "instruction_following"
     CONTEXT_STATE_TRACKING = "context_state_tracking"
     CODING = "coding"
     DEBUGGING = "debugging"
     SAFETY_BOUNDARIES = "safety_boundaries"
     ADVERSARIAL_ROBUSTNESS = "adversarial_robustness"
-    TOOLSET_SCALE = "toolset_scale"
-    AUTONOMOUS_PLANNING = "autonomous_planning"
-    CREATIVE_COMPOSITION = "creative_composition"
     STRUCTURED_OUTPUT = "structured_output"
     HALLUCINATION = "hallucination"
     TERMINAL_HANDLING = "terminal_handling"

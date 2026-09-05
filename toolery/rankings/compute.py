@@ -29,6 +29,13 @@ CATEGORY_DERIVED_DIMENSIONS: dict[str, str] = {
     "data_analysis": "data_analysis",
 }
 
+# Inverse mapping: scenario `category` value → the ranking dimension it feeds.
+# Lets persona weighting and per-run profiles treat a category-derived
+# dimension exactly like a tag-derived one.
+DIMENSION_FOR_CATEGORY: dict[str, str] = {
+    cat: dim for dim, cat in CATEGORY_DERIVED_DIMENSIONS.items()
+}
+
 # The full, canonical list of ranking dimensions the tool knows how to
 # compute. Combines the original tag-derived dimensions with the Phase 3
 # category-derived ones plus the synthetic 'consistency' dimension. Callers
@@ -296,10 +303,11 @@ def regenerate_rankings(*, store: Store, dimensions: list[str], out_dir: Path,
             if not meta:
                 continue
             model = meta["model"]
-            by_adapter_uc: dict[str, list[tuple[float, str, str]]] = defaultdict(list)
+            by_adapter_uc: dict[str, list[tuple[float, str, str, str]]] = defaultdict(list)
             for r in rs:
                 by_adapter_uc[r["adapter"]].append(
-                    (r["score"], r["tier"], r["ranking_dims_json"] or "[]")
+                    (r["score"], r["tier"], r["ranking_dims_json"] or "[]",
+                     r.get("category") or "")
                 )
             for adapter, scored in by_adapter_uc.items():
                 per_pair_runs_uc[(model, adapter)].append({
@@ -318,15 +326,15 @@ def regenerate_rankings(*, store: Store, dimensions: list[str], out_dir: Path,
                 items = r["scores"]
                 weights_per_item = [
                     _TIER_WEIGHTS.get(t, 1.0) * _scenario_dim_weight(
-                        json.loads(d), use_case_weights
+                        json.loads(d), use_case_weights, category=c
                     )
-                    for _, t, d in items
+                    for _, t, d, c in items
                 ]
                 w_sum = sum(weights_per_item)
                 if w_sum <= 0:
                     continue
                 run_mean = sum(
-                    s * w for (s, _, _), w in zip(items, weights_per_item, strict=False)
+                    s * w for (s, *_), w in zip(items, weights_per_item, strict=False)
                 ) / w_sum
                 age_days = max(
                     (now - _parse_iso(r["started_at"])).total_seconds() / 86400, 0
@@ -395,6 +403,7 @@ def _assign_ranks(rows: list[dict]) -> list[dict]:
 def _scenario_dim_weight(
     ranking_dims: list[str],
     weights_map: dict[str, float],
+    category: str | None = None,
 ) -> float:
     """Compute the per-scenario weight for a use-case persona column.
 
@@ -402,11 +411,20 @@ def _scenario_dim_weight(
     dimensions; dimensions absent from `weights_map` fall back to 1.0, and an
     empty or overall-only dim list yields 1.0.
 
+    `category` (the scenario_results row's category column) folds the
+    category-derived dimension into the candidate set — a code_review scenario
+    is weighted by the persona's `code_review` weight even though that
+    dimension never appears in `ranking_dims` tags.
+
     Used ONLY for use-case persona columns. The standard `overall` column (and
     every per-dimension column) applies no per-dimension weighting — scenarios
     count at their tier weight alone, i.e. every dimension is effectively 1.0.
     """
-    weights = [weights_map.get(d, 1.0) for d in ranking_dims if d != "overall"]
+    dims = [d for d in ranking_dims if d != "overall"]
+    derived = DIMENSION_FOR_CATEGORY.get(category or "")
+    if derived is not None:
+        dims.append(derived)
+    weights = [weights_map.get(d, 1.0) for d in dims]
     return max(weights) if weights else 1.0
 
 
@@ -686,6 +704,7 @@ def compute_matrix(
                 "score": r["score"],
                 "tier": r["tier"],
                 "ranking_dims_json": r["ranking_dims_json"] or "[]",
+                "category": r.get("category") or "",
             })
 
     matrix: list[dict] = []
@@ -694,10 +713,12 @@ def compute_matrix(
         stability: dict[str, dict] = {}
         total_runs = 0
         for dim, items in dim_results.items():
-            by_run: dict[str, list[tuple[float, str, str]]] = defaultdict(list)
+            by_run: dict[str, list[tuple[float, str, str, str]]] = defaultdict(list)
             run_started: dict[str, str] = {}
             for it in items:
-                by_run[it["run_id"]].append((it["score"], it["tier"], it["ranking_dims_json"]))
+                by_run[it["run_id"]].append(
+                    (it["score"], it["tier"], it["ranking_dims_json"],
+                     it.get("category") or ""))
                 run_started[it["run_id"]] = it["started_at"]
             runs_sorted = sorted(by_run.keys(), key=lambda rid: run_started[rid], reverse=True)
             recent = runs_sorted[:history_window_runs]
@@ -707,12 +728,12 @@ def compute_matrix(
                 items_in_run = by_run[rid]
                 # Tier-weighted only for every column, Overall included; the
                 # use-case persona column below re-weights by dimension.
-                weights = [_TIER_WEIGHTS.get(t, 1.0) for _, t, _ in items_in_run]
+                weights = [_TIER_WEIGHTS.get(t, 1.0) for _, t, _, _ in items_in_run]
                 w_sum = sum(weights)
                 if w_sum <= 0:
                     continue
                 weighted_mean = sum(
-                    s * w for (s, _, _), w in zip(items_in_run, weights, strict=False)
+                    s * w for (s, *_), w in zip(items_in_run, weights, strict=False)
                 ) / w_sum
                 run_scores.append(weighted_mean)
                 age = max((now - _parse_iso(run_started[rid])).total_seconds() / 86400, 0)
@@ -730,15 +751,15 @@ def compute_matrix(
                     items_in_run = by_run[rid]
                     uc_weights = [
                         _TIER_WEIGHTS.get(t, 1.0) * _scenario_dim_weight(
-                            json.loads(d), use_case_weights
+                            json.loads(d), use_case_weights, category=c
                         )
-                        for _, t, d in items_in_run
+                        for _, t, d, c in items_in_run
                     ]
                     uc_w_sum = sum(uc_weights)
                     if uc_w_sum <= 0:
                         continue
                     uc_weighted_mean = sum(
-                        s * w for (s, _, _), w in zip(items_in_run, uc_weights, strict=False)
+                        s * w for (s, *_), w in zip(items_in_run, uc_weights, strict=False)
                     ) / uc_w_sum
                     age = max(
                         (now - _parse_iso(run_started[rid])).total_seconds() / 86400, 0

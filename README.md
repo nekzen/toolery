@@ -165,7 +165,7 @@ toolery run --model my-model [options]
 | `--retry-backoff-base` | Seconds — base of the exponential backoff between retries (`base * 2**attempt`). Default 1.0. |
 | `--retry-backoff-max` | Seconds — cap on the exponential backoff delay. Default 30.0. |
 | `--resume <run_id>` | Rehydrate model/adapter/tier/trials/etc. from a previous run's stored config and continue from the next not-yet-run unit. |
-| `--with-perf` | Also run the llama-benchy throughput benchmark for this run. |
+| `--with-perf` | Also run the llama-benchy throughput benchmark for this run. The PP t/s / Gen t/s columns (TUI rankings, compare) only fill in for runs that included this phase — a plain `run` records no throughput. The TUI launch modal defaults to "Eval + perf"; the CLI defaults to eval only. |
 | `--perf-only` | Skip the eval phase; run only llama-benchy. |
 
 Not every flag listed above appears literally in `--help` (some, like

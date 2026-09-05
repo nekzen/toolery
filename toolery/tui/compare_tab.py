@@ -272,7 +272,9 @@ class CompareTab(Container):
                                        i in winners_perf[p]))
             cells.append(Text(str(r.get("runs", 0))))
             cluster = r.get("cluster")
-            if cluster == "quad":
+            if cluster == "octa":
+                cells.append(Text("⚡⚡⚡⚡ octa", style="magenta"))
+            elif cluster == "quad":
                 cells.append(Text("⚡⚡⚡ quad", style="cyan"))
             elif cluster == "triple":
                 cells.append(Text("⚡⚡ triple", style="cyan"))

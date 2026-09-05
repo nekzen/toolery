@@ -11,7 +11,11 @@ from textual.widgets import Button, DataTable, Static
 
 from toolery.core.scenario import load_all_scenarios
 from toolery.core.store import Store
-from toolery.rankings.compute import collapse_matrix_rows, compute_matrix
+from toolery.rankings.compute import (
+    STANDARD_DIMENSIONS,
+    collapse_matrix_rows,
+    compute_matrix,
+)
 
 
 class _ZebraFixedDataTable(DataTable):
@@ -64,34 +68,12 @@ _STABILITY_HEADERS = {
     "stddev": "σ",
 }
 
-# Score-column order, left-to-right.
-_DIMENSIONS = [
-    "overall",
-    "hallucination",
-    "coding",
-    "debugging",
-    "agentic",
-    "safety",
-    "adversarial_robustness",
-    "restraint",
-    "error_recovery",
-    "parameter_precision",
-    "context_state_tracking",
-    "structured_output",
-    "tool_selection",
-    "instruction_following",
-    "long_context",
-    "localization",
-    "budget_efficiency",
-    "terminal",
-    # --- Phase 3: category-derived dimensions ---
-    "fact_verification",
-    "creative_writing",
-    "code_review",
-    "workflow_orchestration",
-    "security",
-    "data_analysis",
-]
+# Score-column order, left-to-right — the canonical STANDARD_DIMENSIONS list,
+# minus 'consistency': as a column it would duplicate the stability σ (it is
+# 1 - min(σ, 0.5)/0.5, a pure transform), and the matrix is wide enough.
+# `toolery rankings --dimension consistency` still renders its dedicated
+# markdown ranking.
+_DIMENSIONS = [d for d in STANDARD_DIMENSIONS if d != "consistency"]
 
 # Short column headers — full names would be too wide with 14 score cols + perf.
 _HEADERS = {
@@ -141,7 +123,7 @@ _LEGEND: list[tuple[str, str]] = [
      "Tier-weighted mean across every scored scenario. Per-scenario weights: easy=1·, medium=2·, hard=3·, very_hard=4·. Aggregated across the last 5 runs with exponential time decay (half-life 14 days), so older runs influence less but are not dropped."),
     ("Passed",
      "Raw passed-trial count from this pair's MOST RECENT run — e.g. 512/715 means 512 of 715 trials (143 scenarios × 5 trials) scored a full pass; partials don't count. Unweighted and single-run, so it complements Overall (which is tier-weighted and time-decayed). Totals can differ across rows when a run used an older scenario set."),
-    # — 14 capability dimensions —
+    # — capability dimensions (tag-derived) —
     ("Calibr.",
      "Calibrated uncertainty / hallucination resistance. The model has to refuse, ask for clarification, or hedge when the prompt asks for something it cannot ground in tools or context — instead of confidently fabricating an answer."),
     ("Coding",
@@ -171,7 +153,7 @@ _LEGEND: list[tuple[str, str]] = [
     ("LongCtx",
      "Needle-in-haystack retrieval from long contexts — facts buried at varied depths in 16k-200k token documents. Tests both whether the model finds the needle and whether it ignores plausible decoys planted nearby."),
     ("L10n",
-     "Localization — Polish, Japanese, Arabic, mixed-script prompts. Tests that the model responds in the user's language, handles non-ASCII tool arguments correctly, and doesn't silently fall back to English mid-conversation."),
+     "Localization — Polish, German, French, Spanish, and Arabic scenario variants. Tests that the model responds in the user's language, handles non-ASCII tool arguments correctly, and doesn't silently fall back to English mid-conversation."),
     ("Budget",
      "Completing complex tasks within tight tool-call budgets. Scenarios cap `max_tool_calls` aggressively — the model must plan efficiently, batch calls, and avoid exploratory probes. Exceeding the budget is a hard fail regardless of correctness."),
     ("Term",
@@ -191,9 +173,9 @@ _LEGEND: list[tuple[str, str]] = [
      "Data analysis: trend detection, aggregation, and reasoning over structured/tabular data returned by tools. Derived directly from the data_analysis scenario category."),
     # — perf columns —
     ("PP t/s",
-     "Prefill (prompt-processing) throughput in tokens/sec — how fast the engine ingests the input prompt before generating. Measured by llama-bench across several context depths (0, 16k, 65k); median across depths is shown here."),
+     "Prefill (prompt-processing) throughput in tokens/sec — how fast the engine ingests the input prompt before generating. Measured by llama-benchy across context depths 0/4096/8192; the value shown is the mean across depths and runs. Only recorded when the run included the perf phase (--with-perf, or the launch modal's 'Eval + perf' mode) — '—' means no perf phase ran for that pair."),
     ("Gen t/s",
-     "Generation (decode) throughput in tokens/sec — how fast the engine emits output tokens once prefill is done. Measured by llama-bench across the same depths as PP; median reported. This is what end-users perceive as 'speed'."),
+     "Generation (decode) throughput in tokens/sec — how fast the engine emits output tokens once prefill is done. Measured by llama-benchy across the same depths as PP; mean reported. This is what end-users perceive as 'speed'. '—' means the run skipped the perf phase."),
     # — run-level metadata —
     ("Runs",
      "How many distinct benchmark runs of this (model, adapter) pair are aggregated into this row. More runs = lower variance in the score, but the time-decay weighting means very old runs barely contribute even if counted."),

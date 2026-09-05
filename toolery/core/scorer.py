@@ -415,7 +415,7 @@ def check_response_csv(calls, chk, response):
 
     def row_eq(exp_row: list, got_row: list) -> bool:
         return len(exp_row) == len(got_row) and all(
-            cell_eq(e, g) for e, g in zip(exp_row, got_row)
+            cell_eq(e, g) for e, g in zip(exp_row, got_row, strict=False)
         )
 
     for expected in expected_rows:

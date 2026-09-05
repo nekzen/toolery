@@ -6,6 +6,9 @@ EXPECTED_DIMS = {
     "parameter_precision", "context_state_tracking", "structured_output",
     "tool_selection", "instruction_following", "long_context", "localization",
     "budget_efficiency", "hallucination",
+    # Category-derived dimensions (Phase 3).
+    "fact_verification", "creative_writing", "code_review",
+    "workflow_orchestration", "security", "data_analysis",
 }
 
 
@@ -25,7 +28,7 @@ def test_persona_keys_are_snake_case():
         assert "-" not in uc.key
 
 
-def test_every_persona_has_all_17_dims():
+def test_every_persona_has_all_dims():
     for uc in USE_CASES:
         assert set(uc.weights.keys()) == EXPECTED_DIMS, (
             f"{uc.key} missing dims: {EXPECTED_DIMS - set(uc.weights.keys())}, "

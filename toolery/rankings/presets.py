@@ -23,6 +23,9 @@ USE_CASES: list[UseCase] = [
             "tool_selection": 2.0, "instruction_following": 2.0,
             "long_context": 0.75, "localization": 0.3,
             "budget_efficiency": 1.5, "hallucination": 1.5,
+            "code_review": 2.5, "workflow_orchestration": 1.5,
+            "security": 1.5, "data_analysis": 1.0,
+            "fact_verification": 1.0, "creative_writing": 0.3,
         },
     ),
     UseCase(
@@ -37,6 +40,9 @@ USE_CASES: list[UseCase] = [
             "tool_selection": 1.0, "instruction_following": 2.0,
             "long_context": 2.5, "localization": 0.75,
             "budget_efficiency": 0.75, "hallucination": 3.0,
+            "code_review": 1.0, "workflow_orchestration": 1.0,
+            "security": 1.0, "data_analysis": 2.5,
+            "fact_verification": 3.0, "creative_writing": 0.5,
         },
     ),
     UseCase(
@@ -51,6 +57,9 @@ USE_CASES: list[UseCase] = [
             "tool_selection": 2.5, "instruction_following": 1.5,
             "long_context": 1.0, "localization": 0.3,
             "budget_efficiency": 2.0, "hallucination": 1.0,
+            "code_review": 1.0, "workflow_orchestration": 3.0,
+            "security": 1.0, "data_analysis": 1.5,
+            "fact_verification": 1.0, "creative_writing": 0.3,
         },
     ),
     UseCase(
@@ -65,6 +74,9 @@ USE_CASES: list[UseCase] = [
             "tool_selection": 1.0, "instruction_following": 2.0,
             "long_context": 2.0, "localization": 1.5,
             "budget_efficiency": 0.5, "hallucination": 3.0,
+            "code_review": 1.0, "workflow_orchestration": 0.5,
+            "security": 2.5, "data_analysis": 1.0,
+            "fact_verification": 3.0, "creative_writing": 0.5,
         },
     ),
     UseCase(
@@ -79,6 +91,9 @@ USE_CASES: list[UseCase] = [
             "tool_selection": 1.0, "instruction_following": 2.5,
             "long_context": 1.0, "localization": 3.0,
             "budget_efficiency": 0.75, "hallucination": 2.0,
+            "code_review": 0.3, "workflow_orchestration": 1.0,
+            "security": 0.5, "data_analysis": 0.5,
+            "fact_verification": 2.0, "creative_writing": 2.0,
         },
     ),
     UseCase(
@@ -93,6 +108,9 @@ USE_CASES: list[UseCase] = [
             "tool_selection": 2.0, "instruction_following": 2.5,
             "long_context": 2.0, "localization": 0.5,
             "budget_efficiency": 1.0, "hallucination": 1.5,
+            "code_review": 0.5, "workflow_orchestration": 1.5,
+            "security": 0.5, "data_analysis": 3.0,
+            "fact_verification": 2.0, "creative_writing": 0.3,
         },
     ),
     UseCase(
@@ -107,6 +125,9 @@ USE_CASES: list[UseCase] = [
             "tool_selection": 2.0, "instruction_following": 2.0,
             "long_context": 1.5, "localization": 0.3,
             "budget_efficiency": 2.0, "hallucination": 1.5,
+            "code_review": 2.5, "workflow_orchestration": 2.0,
+            "security": 2.0, "data_analysis": 1.0,
+            "fact_verification": 1.0, "creative_writing": 0.3,
         },
     ),
 ]
