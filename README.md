@@ -52,10 +52,13 @@ Illustrative captures of the TUI (`toolery tui`), rendered from seeded
 
 ![Rankings tab — capability matrix with per-column podium](docs/screenshots/rankings.svg)
 
-| | |
+| Profiles — persona ranking + role viability | Compare — head-to-head |
 |---|---|
-| ![Profiles tab — persona ranking + role viability board](docs/screenshots/profiles.svg) | ![Compare tab — head-to-head](docs/screenshots/compare.svg) |
-| ![Scenarios tab — per-scenario cross-model view](docs/screenshots/scenarios.svg) | ![History tab — recorded runs](docs/screenshots/history.svg) |
+| ![Profiles tab](docs/screenshots/profiles.svg) | ![Compare tab](docs/screenshots/compare.svg) |
+
+| Scenarios — cross-model view | History — recorded runs |
+|---|---|
+| ![Scenarios tab](docs/screenshots/scenarios.svg) | ![History tab](docs/screenshots/history.svg) |
 
 ---
 
