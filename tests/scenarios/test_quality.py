@@ -144,3 +144,21 @@ def test_tool_responses_keys_match_scenario_tools():
                 f"{sorted(orphan_mocks)} but doesn't declare them in `tools`")
     assert not offenders, (
         "tool_responses keys must subset `tools`:\n" + "\n".join(offenders))
+
+
+def test_call_budget_is_reachable_one_call_per_turn():
+    """The adapter allows max_turns + 1 requests. If that is below
+    max_tool_calls, a model that issues one tool call per turn (common on
+    local servers) is cut off before it can use the budget the scenario —
+    and often its prompt — grants: a hidden requirement to batch parallel
+    calls. Only scenarios that explicitly test batching may do that."""
+    offenders = []
+    for path, data in _scenarios():
+        budget = data.get("budget") or {}
+        calls, turns = budget.get("max_tool_calls", 0), budget.get("max_turns", 1)
+        tags = {str(t).lower() for t in data.get("tags", [])}
+        if calls > turns + 1 and "parallel" not in tags:
+            offenders.append(f"{path.relative_to(ROOT.parent)}: {data['id']} "
+                             f"max_tool_calls={calls} but max_turns={turns}")
+    assert not offenders, ("call budget unreachable sequentially (raise max_turns, "
+                           "or tag the scenario 'parallel'):\n" + "\n".join(offenders))

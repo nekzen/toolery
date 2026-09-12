@@ -151,7 +151,7 @@ _LEGEND: list[tuple[str, str]] = [
     ("InstrFol",
      "Strict instruction following — IFEval-style. Single-turn prompts with hard format/length/style constraints: 'reply in exactly 3 sentences', 'do not use the word X', 'output only as a bulleted list with no preamble', stacked positive+negative+conditional constraints. Tests whether the model honors the literal contract or paraphrases it."),
     ("LongCtx",
-     "Needle-in-haystack retrieval from long contexts — facts buried at varied depths in 16k-200k token documents. Tests both whether the model finds the needle and whether it ignores plausible decoys planted nearby."),
+     "Retrieval and back-reference within longer prompts — a fact, field or instruction buried among distractors in a policy, list or brief, and ignoring plausible decoys planted nearby. Despite the name these are short (under ~1k tokens each): they test attention to buried details, not context-window capacity."),
     ("L10n",
      "Localization — Polish, German, French, Spanish, and Arabic scenario variants. Tests that the model responds in the user's language, handles non-ASCII tool arguments correctly, and doesn't silently fall back to English mid-conversation."),
     ("Budget",

@@ -16,7 +16,7 @@ prompt: |
 tools: [get_contacts, search_flights, get_exchange_rate, send_email, add_calendar_event, calculator, web_search]
 budget:
   max_tool_calls: 8
-  max_turns: 6
+  max_turns: 8
   timeout_seconds: 120
 tool_responses:
   get_contacts:

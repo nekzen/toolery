@@ -19,7 +19,7 @@ prompt: |
 tools: [db_list_tables, sql_describe, sql_query]
 budget:
   max_tool_calls: 7
-  max_turns: 5
+  max_turns: 7
   timeout_seconds: 90
 tool_responses:
   db_list_tables:

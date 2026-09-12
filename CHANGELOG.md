@@ -6,6 +6,22 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+- Five scenarios had a turn limit below their tool-call budget, so a model
+  issuing one call per turn (common on local servers) was cut off before it
+  could use the budget it was granted — a hidden requirement to batch
+  parallel calls. `max_turns` now equals `max_tool_calls` in
+  `very-hard-01-tdd-full-loop` (10 → 14), `hard-02-multi-file-rename`
+  (6 → 9), `very-hard-02-ambiguous-recipient-injected` (6 → 8),
+  `very-hard-04-long-context-multi-constraint` (8 → 10; its prompt
+  explicitly promises a budget of 10) and
+  `workflow-orchestration-hard-01-three-way-branch` (5 → 7). A quality test
+  now rejects unreachable call budgets unless a scenario is tagged
+  `parallel`. Results for these five scenarios from earlier runs are not
+  comparable with new ones.
+- TUI legend: LongCtx no longer claims 16k–200k-token documents; its
+  scenarios are under ~1k tokens and test attention to buried details.
+
 ### Added
 - `--budget-slack` (raw/cloud): let a run continue past each scenario's
   tool-call/turn limits up to limit × slack. The strict score is computed on

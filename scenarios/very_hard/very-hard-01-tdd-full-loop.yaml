@@ -21,7 +21,7 @@ prompt: |
 tools: [grep, read_file, edit_file, run_tests, run_lint, git_branch, git_status, git_add, git_commit, git_diff, list_files, run_bash]
 budget:
   max_tool_calls: 14
-  max_turns: 10
+  max_turns: 14
   timeout_seconds: 180
 tool_responses:
   grep:
