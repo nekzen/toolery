@@ -174,6 +174,7 @@ toolery run --model my-model [options]
 | `--trials` | Number of trials per scenario (default 5). |
 | `--concurrency` | Number of scenarios executed in parallel (default 4). |
 | `--timeout-scale` | Multiplier applied to each scenario's `timeout_seconds` (default 2.0). Raise for slow cloud/reasoning endpoints. |
+| `--budget-slack` | Let `raw`/`cloud` runs continue past each scenario's tool-call/turn limits up to limit × SLACK (default 1.0 = off). Strict scores are unchanged; `correctness_score` reflects the finished run. See [Budget slack](#advanced-usage). |
 | `--base-url` | Endpoint for `raw`/`cloud` adapters (default `http://localhost:8000`). |
 | `--cluster` | Deployment topology label: `single \| dual \| triple \| quad \| octa`. Purely metadata — tracks which node configuration produced a run. |
 | `--json` | With `--dry-run`, emit the plan as JSON instead of text. |
@@ -598,6 +599,25 @@ machine — while the TUI watches. `runs.db` uses SQLite WAL journaling, so
 readers never block a run's writes and competing writers wait (up to 30s)
 instead of failing. Keep `results/` on a local disk: WAL is not safe on
 network filesystems (NFS/SMB).
+
+**Budget slack.** A scenario's budget (tool calls, turns) is a hard
+gate: a normal run cuts the model off at the limit, so an overrun never
+shows whether the model would have gotten there. `--budget-slack 2.0` lets
+it continue up to twice the limit — "it failed, but here is what it would
+have done":
+
+- The **strict score is identical** to a normal run: it is computed on the
+  trace truncated exactly where a normal run would have stopped
+  (the model never sees its budget, so its trajectory up to the limit is
+  unchanged).
+- **`correctness_score`** is computed on the full trace, ignoring the
+  budget — compare with `toolery correctness-report`.
+- `hermes` ignores the flag (its budget is part of the prompt, so raising
+  it would change the model's behavior).
+- The extra work takes time: pair it with a generous `--timeout-scale`, or
+  the finished run may time out instead. The factor is recorded in the
+  run's config, so avoid mixing slack and non-slack runs of the same model
+  in `correctness-report`.
 
 **Retry logic.** `--max-retries`, `--retry-backoff-base`,
 `--retry-backoff-max` retry only *transient* adapter failures (429,

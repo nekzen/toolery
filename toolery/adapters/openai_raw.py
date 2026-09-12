@@ -43,6 +43,11 @@ def _normalise_base_url(base_url: str) -> str:
 class OpenAIRawAdapter:
     name = "raw"
     version = "0.2"
+    # The budget is enforced here but never shown to the model, so raising the
+    # cutoff (Runner.budget_slack) leaves the model's trajectory unchanged up
+    # to the strict limit — which is what makes strict_view() exact. Adapters
+    # that put the budget in the prompt (hermes) must not opt in.
+    supports_budget_slack = True
 
     def __init__(self, base_url: str, api_key: str = "", concurrency: int = 4,
                  max_retries: int = 4) -> None:

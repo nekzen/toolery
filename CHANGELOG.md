@@ -6,6 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- `--budget-slack` (raw/cloud): let a run continue past each scenario's
+  tool-call/turn limits up to limit × slack. The strict score is computed on
+  the trace truncated exactly where a normal run would have stopped, so it is
+  identical by construction; `correctness_score` is computed on the finished
+  run — "it failed, but here is what it would have done". Recorded in the run
+  config; hermes (budget in its prompt) is excluded.
+
 ### Fixed
 - Parallel runs sharing one `results/` no longer crash with `database is
   locked`: `runs.db` now uses WAL journaling (readers such as the TUI

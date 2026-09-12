@@ -173,6 +173,12 @@ def run(
                                              "(default 2.0 — scale-1.0 budgets killed reasoning "
                                              "models mid-answer); bump for slow cloud/reasoning "
                                              "endpoints (e.g. 4.0)"),
+    budget_slack: float = typer.Option(
+        1.0, "--budget-slack",
+        help="let raw/cloud runs continue past each scenario's tool-call/turn "
+             "limits up to limit × SLACK (e.g. 2.0). Strict scores are "
+             "unchanged; correctness_score reflects the finished run. "
+             "1.0 = off. Pair with a generous --timeout-scale."),
     no_tui: bool = typer.Option(True, "--no-tui/--tui", help="MVP: --no-tui only"),
     with_perf: bool = typer.Option(False, "--with-perf"),
     perf_only: bool = typer.Option(False, "--perf-only",
@@ -232,6 +238,7 @@ def run(
         trials = int(_rcfg.get("trials", trials) or trials)
         concurrency = int(_rcfg.get("concurrency", concurrency) or concurrency)
         timeout_scale = float(_rcfg.get("timeout_scale", timeout_scale) or timeout_scale)
+        budget_slack = float(_rcfg.get("budget_slack", budget_slack) or budget_slack)
         with_perf = bool(_rcfg.get("with_perf", with_perf))
         perf_only = bool(_rcfg.get("perf_only", perf_only))
         cluster = _rcfg.get("cluster", cluster)
@@ -298,6 +305,9 @@ def run(
         console.print("[red]No scenarios match filter.[/red]")
         raise typer.Exit(2)
 
+    if budget_slack < 1.0:
+        console.print(f"[red]--budget-slack must be >= 1.0 (got {budget_slack}).[/red]")
+        raise typer.Exit(2)
     if dry_run:
         total_units_planned = 0 if perf_only else len(xs) * len(adapters) * trials
         plan = {
@@ -306,6 +316,7 @@ def run(
             "ids": sorted(id_set) if id_set else [],
             "trials": trials, "scenarios_count": 0 if perf_only else len(xs),
             "concurrency": concurrency, "total_units": total_units_planned,
+            "timeout_scale": timeout_scale, "budget_slack": budget_slack,
             "with_perf": bool(with_perf or perf_only), "perf_only": bool(perf_only),
             "cluster": cluster,
             "max_retries": max_retries,
@@ -355,6 +366,7 @@ def run(
     cfg = {"model": model, "served_model": api_model, "adapter": list(adapters),
            "tier": tier, "category": category, "trials": trials, "base_url": base_url,
            "concurrency": concurrency, "timeout_scale": timeout_scale,
+           "budget_slack": budget_slack,
            "total_units": total_units,
            "scenarios_count": 0 if perf_only else len(xs),
            "with_perf": bool(with_perf or perf_only),
@@ -413,12 +425,21 @@ def run(
             adapters=adapters, trials=trials, model=api_model, concurrency=concurrency,
             on_start=_on_start, on_end=_on_end, skip=resume_skip,
             timeout_scale=timeout_scale,
+            budget_slack=budget_slack,
             max_retries=max_retries,
             retry_backoff_base=retry_backoff_base,
             retry_backoff_max=retry_backoff_max,
         )
         console.print(f"[bold]Running {len(xs)} scenarios × {len(adapters)} adapters × {trials} trials"
                       f" = {total_units} units[/bold]")
+        if budget_slack > 1.0:
+            console.print(f"[cyan]Budget slack ×{budget_slack:g}: strict scores unchanged; "
+                          f"correctness_score reflects the finished run.[/cyan]")
+            ignored = sorted(n for n, a in adapters.items()
+                             if not getattr(a, "supports_budget_slack", False))
+            if ignored:
+                console.print(f"[yellow]Budget slack ignored for {', '.join(ignored)} "
+                              f"(the budget is part of its prompt).[/yellow]")
 
         sc_by_id = {s.id: s for s in xs}
         tier_lookup = {s.id: s.tier.value for s in xs}
