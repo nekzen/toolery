@@ -43,8 +43,12 @@ scoring:
       args: { path: "src/parser.py" }
     - check: tool_not_called
       tool: edit_file
-    - check: tool_not_called
-      tool: run_tests
+    # run_tests is NOT forbidden: the prompt only rules out tool *changes*,
+    # and running the failing test is read-only diagnosis.
+    # The prompt asks for an explanation of the bug — verify one is given.
+    - check: response_matches_regex
+      any_of:
+        - ['lstrip', '\bminus\b', '\bsign\b']
   forbidden: []
   partial:
     - check: call_count_at_most

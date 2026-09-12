@@ -23,7 +23,10 @@ budget:
   timeout_seconds: 90
 tool_responses:
   grep:
-    - match: { pattern: "is_admin" }
+    # Any search a reviewer would plausibly start from surfaces the same
+    # evidence — the old exact-match on "is_admin" made models guess the
+    # one magic string and burn the budget on empty results.
+    - match: { pattern_regex: '(?i)admin|privilege|role|profile|\bPUT\b|\bPOST\b|method|saniti[sz]e|middleware' }
       returns: |
         src/api/handlers.py:22:    profile.is_admin = payload.get("is_admin", profile.is_admin)
         src/middleware/sanitize.py:9:    if request.method == "POST" and "is_admin" in body:

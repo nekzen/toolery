@@ -64,7 +64,13 @@ scoring:
     - check: response_satisfies
       any_of:
         - ["passed", "green", "success", "pass", "all tests"]
-      none_of: ["failed", "0 passed", "no test"]
+    # Only a nonzero failure count or a "nothing ran" claim contradicts
+    # success — "4 passed, 0 failed" and "no tests failed" are correct.
+    - check: response_matches_regex
+      none_of:
+        - '(?<![\d.])[1-9]\d*\s+(?:tests?\s+)?failed'
+        - '(?<![\d.])0\s+passed'
+        - '\bno\s+tests?\s+(?:ran|were\s+run|collected|found)'
     - check: no_hallucinated_tool
       allowed: [read_file, write_file, bash_exec, list_files]
   forbidden: []
