@@ -22,3 +22,14 @@ htmlcov/
 
 # Throwaway endpoint smoke scripts (local scratch, never released)
 smoke_*.py
+
+# Private keys and credentials — never versioned, whatever their name.
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+*.pem
+*.key
+*.ppk
+*.p12
+*.pfx
