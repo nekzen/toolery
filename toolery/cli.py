@@ -552,9 +552,15 @@ def perf(model: str = typer.Option(..., "--model"),
     from toolery.perf.benchy import run_benchy
     res = run_benchy(model=model, base_url=base_url, pp=pp, tg=tg,
                      depth=[int(x) for x in depth.split(",")], runs=runs)
+    def fmt(value: float | None, spec: str, unit: str = "") -> str:
+        # A missing metric (e.g. a depth that didn't fit in the server's
+        # context) prints as n/a, never as a misleading 0.
+        return "n/a" if value is None else f"{value:{spec}}{unit}"
+
     for row in res.rows:
-        console.print(f"depth={row['depth']:>7} pp_tps={row.get('pp_tps',0):.1f} "
-                      f"tg_tps={row.get('tg_tps',0):.2f} ttft={row.get('ttft_ms',0):.0f}ms")
+        console.print(f"depth={row['depth']:>7} pp_tps={fmt(row.get('pp_tps'), '.1f')} "
+                      f"tg_tps={fmt(row.get('tg_tps'), '.2f')} "
+                      f"ttft={fmt(row.get('ttft_ms'), '.0f', 'ms')}")
 
 
 @app.command()

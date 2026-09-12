@@ -1,11 +1,60 @@
 from __future__ import annotations
 
 import json
+import math
 import shutil
 import subprocess
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
+
+
+def _mean(metric: dict | None) -> float | None:
+    return metric.get("mean") if isinstance(metric, dict) else None
+
+
+def _p95(metric: dict | None) -> float | None:
+    """95th percentile (nearest rank) of a llama-benchy BenchmarkMetric's
+    per-request ``values`` — the metric itself only carries mean/std."""
+    values = sorted((metric or {}).get("values") or []) if isinstance(metric, dict) else []
+    if not values:
+        return None
+    return values[max(0, math.ceil(0.95 * len(values)) - 1)]
+
+
+def parse_benchy_json(data: dict) -> list[dict]:
+    """Flatten a llama-benchy JSON report into one row per measured depth
+    (pp_tps, tg_tps, ttft_ms, ...).
+
+    llama-benchy's BenchmarkRun (0.3.x-0.4.x) reports time to first token as
+    ``e2e_ttft`` (ms) — there is no ``ttft`` field — and each metric is
+    {mean, std, values}, with no precomputed p95. For depths > 0 it can also
+    emit a separate context-prefill run (``is_context_prefill_phase``,
+    "ctx_pp @ dN") before the real test at the same depth: that run only
+    measures loading the context and generates nothing, so it is skipped.
+    A metric is None when a depth produced no data (e.g. it did not fit in
+    the server's context); the row keeps None rather than a fake 0.
+    """
+    raw_rows = data.get("benchmarks") or data.get("runs") or []
+    rows = []
+    for r in raw_rows:
+        if "pp_throughput" not in r:  # legacy schema — pass through
+            rows.append(r)
+            continue
+        if r.get("is_context_prefill_phase"):
+            continue
+        ttft = r.get("e2e_ttft") or r.get("ttft")
+        rows.append({
+            "depth": r.get("context_size", 0),
+            "pp_tps": _mean(r.get("pp_throughput")),
+            "tg_tps": _mean(r.get("tg_throughput")),
+            "ttft_ms": _mean(ttft),
+            "ttft_p95_ms": _p95(ttft),
+            "pp_tokens": r.get("prompt_size"),
+            "tg_tokens": r.get("response_size"),
+            "n_runs": len((r.get("pp_throughput") or {}).get("values") or []),
+        })
+    return rows
 
 
 @dataclass
@@ -58,22 +107,5 @@ def run_benchy(*, model: str, base_url: str, pp: int = 4096, tg: int = 512,
             f"llama-benchy failed (exit {completed.returncode}):\n{tail}{hint}"
         )
     data = json.loads(Path(output_file).read_text(encoding="utf-8"))
-    # Normalise new (0.3.8+) `benchmarks` schema into the flat per-depth rows
-    # the rest of the pipeline expects (pp_tps, tg_tps, ttft_ms, …).
-    raw_rows = data.get("benchmarks") or data.get("runs") or []
-    rows = []
-    for r in raw_rows:
-        if "pp_throughput" in r:  # new schema
-            rows.append({
-                "depth": r.get("context_size", 0),
-                "pp_tps": (r.get("pp_throughput") or {}).get("mean"),
-                "tg_tps": (r.get("tg_throughput") or {}).get("mean"),
-                "ttft_ms": (r.get("ttft") or {}).get("mean") if r.get("ttft") else None,
-                "ttft_p95_ms": (r.get("ttft") or {}).get("p95") if r.get("ttft") else None,
-                "pp_tokens": r.get("prompt_size"),
-                "tg_tokens": r.get("response_size"),
-                "n_runs": len((r.get("pp_throughput") or {}).get("values", []) or []),
-            })
-        else:  # legacy schema — pass through
-            rows.append(r)
+    rows = parse_benchy_json(data)
     return BenchyResult(model=data.get("model", model), rows=rows)

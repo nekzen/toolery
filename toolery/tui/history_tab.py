@@ -308,11 +308,13 @@ def _build_details_md(run: dict, results: list[dict],
         lines.append("| Depth | PP t/s | Gen t/s | TTFT ms |")
         lines.append("|------:|-------:|--------:|--------:|")
         for p in sorted(perf_rows, key=lambda x: x.get("depth") or 0):
+            def cell(value, spec):
+                return "—" if value is None else f"{value:{spec}}"
             lines.append(
                 f"| {p.get('depth',0)} | "
-                f"{(p.get('pp_tps') or 0):.1f} | "
-                f"{(p.get('tg_tps') or 0):.2f} | "
-                f"{(p.get('ttft_ms') or 0):.0f} |"
+                f"{cell(p.get('pp_tps'), '.1f')} | "
+                f"{cell(p.get('tg_tps'), '.2f')} | "
+                f"{cell(p.get('ttft_ms'), '.0f')} |"
             )
         lines.append("")
     lines.append("### Config")

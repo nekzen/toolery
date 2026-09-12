@@ -6,42 +6,47 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- `--budget-slack` (raw/cloud): let a run continue past each scenario's
+  tool-call/turn limits up to limit × slack. The strict score is computed on
+  the trace truncated exactly where a normal run would have stopped, so it
+  is identical by construction; `correctness_score` is computed on the
+  finished run — "it failed, but here is what it would have done". Recorded
+  in the run config; hermes (budget in its prompt) is excluded.
+
 ### Fixed
+- Perf parsing: time to first token was never captured — llama-benchy
+  reports it as `e2e_ttft`, and the parser looked for a `ttft` field that
+  does not exist in any version, so `ttft_ms` was always empty and `toolery
+  perf` crashed on the first row ("unsupported format string passed to
+  NoneType.__format__"). Depths > 0 also produced a second row from llama-
+  benchy's context-prefill run, which is now skipped. Missing metrics (e.g.
+  a depth larger than the server's context) print as `n/a` / `—` instead of
+  crashing or showing a misleading 0.
 - Five scenarios had a turn limit below their tool-call budget, so a model
   issuing one call per turn (common on local servers) was cut off before it
   could use the budget it was granted — a hidden requirement to batch
-  parallel calls. `max_turns` now equals `max_tool_calls` in
-  `very-hard-01-tdd-full-loop` (10 → 14), `hard-02-multi-file-rename`
-  (6 → 9), `very-hard-02-ambiguous-recipient-injected` (6 → 8),
-  `very-hard-04-long-context-multi-constraint` (8 → 10; its prompt
-  explicitly promises a budget of 10) and
-  `workflow-orchestration-hard-01-three-way-branch` (5 → 7). A quality test
-  now rejects unreachable call budgets unless a scenario is tagged
-  `parallel`. Five more scenarios allowed their full call budget
-  but left no turn to deliver the scored answer (3 calls, 2 turns):
-  `hard-24-pl-strict-schema`, `hard-26-recover-then-format`,
-  `medium-15-so-csv-output`, `medium-17-so-markdown-table`,
-  `medium-42-adv-search-result-poisoning` now have `max_turns: 3`; the guard
-  requires `max_turns ≥ max_tool_calls` whenever the answer is scored. Results for these five scenarios from earlier runs are not
-  comparable with new ones.
+  parallel calls. `max_turns` now equals `max_tool_calls` in `very-
+  hard-01-tdd-full-loop` (10 → 14), `hard-02-multi-file-rename` (6 → 9),
+  `very-hard-02-ambiguous-recipient-injected` (6 → 8), `very-hard-04-long-
+  context-multi-constraint` (8 → 10; its prompt explicitly promises a budget
+  of 10) and `workflow-orchestration-hard-01-three-way-branch` (5 → 7). A
+  quality test now rejects unreachable call budgets unless a scenario is
+  tagged `parallel`. Five more scenarios allowed their full call budget but
+  left no turn to deliver the scored answer (3 calls, 2 turns): `hard-24-pl-
+  strict-schema`, `hard-26-recover-then-format`, `medium-15-so-csv-output`,
+  `medium-17-so-markdown-table`, `medium-42-adv-search-result-poisoning` now
+  have `max_turns: 3`; the guard requires `max_turns ≥ max_tool_calls`
+  whenever the answer is scored. Results for these five scenarios from
+  earlier runs are not comparable with new ones.
 - `toolery correctness-report` built its table but never printed it; it now
   prints it (or says there is no correctness data yet).
 - TUI legend: LongCtx no longer claims 16k–200k-token documents; its
   scenarios are under ~1k tokens and test attention to buried details.
-
-### Added
-- `--budget-slack` (raw/cloud): let a run continue past each scenario's
-  tool-call/turn limits up to limit × slack. The strict score is computed on
-  the trace truncated exactly where a normal run would have stopped, so it is
-  identical by construction; `correctness_score` is computed on the finished
-  run — "it failed, but here is what it would have done". Recorded in the run
-  config; hermes (budget in its prompt) is excluded.
-
-### Fixed
 - Parallel runs sharing one `results/` no longer crash with `database is
-  locked`: `runs.db` now uses WAL journaling (readers such as the TUI
-  poller no longer block a run's writes) with a 30s busy timeout for
-  competing writers.
+  locked`: `runs.db` now uses WAL journaling (readers such as the TUI poller
+  no longer block a run's writes) with a 30s busy timeout for competing
+  writers.
 - `run_id` now has second resolution and is claimed atomically via its run
   directory, so two runs of the same model started together (e.g. one per
   DGX Spark) get distinct ids (`…-2`) instead of sharing a trace directory
