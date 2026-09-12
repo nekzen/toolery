@@ -146,19 +146,36 @@ def test_tool_responses_keys_match_scenario_tools():
         "tool_responses keys must subset `tools`:\n" + "\n".join(offenders))
 
 
+_ANSWER_CHECKS = {
+    "response_contains", "response_not_contains", "response_satisfies",
+    "response_matches_regex", "response_matches_schema", "response_number",
+    "response_csv", "response_yaml", "response_markdown_table",
+    "response_language", "response_diff", "response_length_bounded",
+    "clarification_asked", "error_surfaced",
+}
+
+
 def test_call_budget_is_reachable_one_call_per_turn():
-    """The adapter allows max_turns + 1 requests. If that is below
-    max_tool_calls, a model that issues one tool call per turn (common on
-    local servers) is cut off before it can use the budget the scenario —
-    and often its prompt — grants: a hidden requirement to batch parallel
-    calls. Only scenarios that explicitly test batching may do that."""
+    """The adapter allows max_turns + 1 requests, and tool calls on the last
+    one end the run without an answer. A model issuing one tool call per turn
+    (common on local servers) must still be able to use the whole call
+    budget — plus one turn to answer when the scenario scores the answer.
+    Otherwise the scenario hides a requirement to batch parallel calls; only
+    scenarios that test batching on purpose (tagged 'parallel') may do that.
+    """
     offenders = []
     for path, data in _scenarios():
         budget = data.get("budget") or {}
         calls, turns = budget.get("max_tool_calls", 0), budget.get("max_turns", 1)
         tags = {str(t).lower() for t in data.get("tags", [])}
-        if calls > turns + 1 and "parallel" not in tags:
+        if "parallel" in tags or calls == 0:
+            continue
+        needs_answer = any(c.get("check") in _ANSWER_CHECKS
+                           for c in data["scoring"].get("required", []) or [])
+        reachable = turns if needs_answer else turns + 1
+        if calls > reachable:
+            why = "no turn left to answer" if needs_answer and calls == turns + 1 else "calls cut off"
             offenders.append(f"{path.relative_to(ROOT.parent)}: {data['id']} "
-                             f"max_tool_calls={calls} but max_turns={turns}")
-    assert not offenders, ("call budget unreachable sequentially (raise max_turns, "
+                             f"max_tool_calls={calls}, max_turns={turns} ({why})")
+    assert not offenders, ("call budget unreachable one call per turn (raise max_turns, "
                            "or tag the scenario 'parallel'):\n" + "\n".join(offenders))

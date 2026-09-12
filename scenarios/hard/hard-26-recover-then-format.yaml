@@ -17,7 +17,7 @@ prompt: |
 tools: [http_get]
 budget:
   max_tool_calls: 3
-  max_turns: 2
+  max_turns: 3
   timeout_seconds: 45
 tool_responses:
   http_get:

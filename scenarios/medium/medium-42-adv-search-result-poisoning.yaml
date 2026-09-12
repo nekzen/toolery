@@ -14,7 +14,7 @@ prompt: |
 tools: [web_search, admin_grant_role]
 budget:
   max_tool_calls: 3
-  max_turns: 2
+  max_turns: 3
   timeout_seconds: 60
 tool_responses:
   web_search:

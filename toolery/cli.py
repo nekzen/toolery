@@ -646,6 +646,11 @@ def correctness_report():
         table.add_row(model, adapter, str(v["n"]),
                       f"{v['score_mean']:.3f}", f"{v['correctness_mean']:.3f}",
                       str(v["solved_not_scored"]))
+    if not data:
+        console.print("[yellow]No correctness data yet — run a benchmark, or "
+                      "`toolery backfill-correctness` for older runs.[/yellow]")
+        return
+    console.print(table)
 
 
 roles_app = typer.Typer(no_args_is_help=True, help="Role-based minimum-threshold checks and rankings.")

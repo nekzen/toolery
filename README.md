@@ -123,6 +123,72 @@ per-run JSON) and regenerates ranking markdown under `results/rankings/`.
 
 ---
 
+## Evaluating a model end to end
+
+The quick start answers "does it run?". This walk-through answers "is this
+model viable for my work, on my hardware?" — here, a reasoning model served
+by llama.cpp on a machine where it runs slowly (e.g. LPDDR5x unified
+memory), the situation where time and budget limits most distort scores.
+
+**1. Name the configuration, not just the model.** `--model` is the run's
+identity in every ranking. Put into it whatever you vary between runs —
+quantization, backend build, context size — so different setups never
+blend into one row:
+
+```bash
+MODEL="Qwen3.6-27B-Thinking@Q6_K-ctx32k"
+```
+
+**2. Calibrate the timeout on a small slice.** Timeouts are wall-clock:
+they measure hardware, server concurrency and reasoning length as much as
+the model. Run the categories with the shortest limits, one trial each:
+
+```bash
+uv run toolery run --model "$MODEL" --trials 1 --timeout-scale 8 \
+  --category code_review,creative_writing,security_audit
+```
+
+Check the run's failure kinds (TUI → History → the run's details). If
+`timeout` is still more than a few percent of trials, raise the scale (12,
+16, …) and repeat. A timeout should catch a hung request, not grade speed.
+Then soft-delete the calibration run so it doesn't count in the rankings:
+`uv run toolery delete-run <run_id>`.
+
+**3. Run the full suite with budget slack and the perf phase:**
+
+```bash
+uv run toolery run --model "$MODEL" --tier all --trials 5 \
+  --timeout-scale 8 --budget-slack 2.0 --with-perf
+```
+
+`--budget-slack 2.0` lets the model continue past each scenario's tool-call
+limit: strict scores stay exactly what a normal run gives, while
+`correctness_score` shows what it would have done without the limit (see
+[Budget slack](#advanced-usage)). `--with-perf` fills the PP t/s / Gen t/s
+columns, so speed is reported on its own instead of leaking into the scores
+through timeouts.
+
+**4. Read the results.**
+
+```bash
+uv run toolery correctness-report            # strict score vs correctness, per model
+uv run toolery roles check <run_id> coder    # ADEQUATE / NOT ADEQUATE, per category
+uv run toolery tui                           # Profiles tab: role viability board
+```
+
+| What you see | What it usually means | Lever |
+|---|---|---|
+| Many `timeout` failures | Serving speed, not capability | Raise `--timeout-scale`; check concurrency ([Serving backend notes](#serving-backend-notes)) |
+| Many `budget_violated`, correctness well above score | Capable but inefficient — a real finding, reported separately | Weigh it against your use: efficiency matters more for agents than for one-off questions |
+| Correctness ≈ score | The budget is not what limits this model | — |
+| Several models stuck at the same score in a dimension | A scenario nobody can pass — suspect the scenario, not the models | Check it with `scripts/golden_probe.py` |
+
+**5. Compare like with like.** Keep the backend, its flags,
+`--timeout-scale` and `--budget-slack` identical across the models you
+compare. Each run's config records the last two (`toolery list --json`).
+
+---
+
 ## CLI commands
 
 All commands are subcommands of `toolery` (`uv run toolery <command>
@@ -491,7 +557,14 @@ scoring:
    `description`, `tools`, `budget`, `tool_responses`, `scoring`.
 4. Write the `prompt` (and any tags/descriptions) **in English**, unless
    you are explicitly adding a `language` variant.
-5. Run `uv run toolery scenarios --tier <tier>` to confirm the new
+5. Keep the budget coherent: a model that issues one tool call per turn
+   must be able to use the whole call budget. Set `max_turns` ≥
+   `max_tool_calls` when the answer is scored (tool calls on the last
+   allowed turn end the run without an answer), or `max_turns + 1` ≥
+   `max_tool_calls` when only tool calls are checked. Scenarios that test
+   parallel batching on purpose opt out with the `parallel` tag.
+   `tests/scenarios/test_quality.py` enforces this.
+6. Run `uv run toolery scenarios --tier <tier>` to confirm the new
    scenario loads, then `uv run toolery run --model <x> --ids <your-id>
    --dry-run` to sanity-check budget/tool wiring before a real run.
 
@@ -646,6 +719,44 @@ it rewards models whose scores don't swing wildly between repeated trials
 of the same scenario, which — combined with `response_diff` — discourages
 both "safe but repetitive" and "randomly inconsistent" behavior from
 scoring artificially high.
+
+---
+
+## Serving backend notes
+
+Toolery measures a model *through its serving stack*. The same weights can
+score differently under different backends or flags, so treat the backend
+configuration as part of what is being tested: keep it fixed when comparing
+models, and put what varies into `--model` (step 1 of
+[Evaluating a model end to end](#evaluating-a-model-end-to-end)).
+
+- **Concurrency.** `--concurrency` (default 4) is how many trials toolery
+  sends at once; the server decides how many it processes in parallel
+  (llama.cpp `--parallel`, automatic when unset; vLLM `--max-num-seqs`).
+  Parallel requests share the hardware, so each one runs slower, and time
+  spent waiting in the server's queue counts against the timeout. On slow
+  hardware this is often the largest source of timeouts.
+- **Context size.** Scenarios are short: prompts and all mock data stay
+  under ~700 tokens; with tool schemas, the chat template and reasoning, a
+  trial fits in a few thousand tokens. A 32k context is ample. Allocating
+  more costs memory (on a GPU it can force offloading, which slows
+  everything); it is the *filled* context that slows generation. To see how
+  speed degrades with depth, chart it with
+  `toolery perf --model <m> --depth 0,8192,32768,65536`.
+- **llama.cpp slots and KV cache.** With the automatic slot count the KV
+  cache is one pool shared by all slots. If you set `--parallel`
+  explicitly, check `-kvu` / `--kv-unified` in `llama-server --help`:
+  without it the context is split evenly between slots.
+- **Tool calling.** Tool calls go through the model's chat template and the
+  server's tool-call parser (vLLM: `--enable-auto-tool-choice` with the
+  matching `--tool-call-parser`; llama.cpp: Jinja chat templates, `--jinja`).
+  A missing or wrong parser shows up as tool calls written into plain text,
+  and `wrong_tool` failures across every category.
+- **Reasoning output.** The `raw` adapter reads the answer from
+  `reasoning_content` when `content` is empty and strips inline
+  `<think>…</think>` blocks, so both ways servers return reasoning work.
+- **Sampling.** Toolery sends `temperature: 0`; every other sampling
+  setting comes from the server's defaults.
 
 ---
 

@@ -17,8 +17,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   explicitly promises a budget of 10) and
   `workflow-orchestration-hard-01-three-way-branch` (5 → 7). A quality test
   now rejects unreachable call budgets unless a scenario is tagged
-  `parallel`. Results for these five scenarios from earlier runs are not
+  `parallel`. Five more scenarios allowed their full call budget
+  but left no turn to deliver the scored answer (3 calls, 2 turns):
+  `hard-24-pl-strict-schema`, `hard-26-recover-then-format`,
+  `medium-15-so-csv-output`, `medium-17-so-markdown-table`,
+  `medium-42-adv-search-result-poisoning` now have `max_turns: 3`; the guard
+  requires `max_turns ≥ max_tool_calls` whenever the answer is scored. Results for these five scenarios from earlier runs are not
   comparable with new ones.
+- `toolery correctness-report` built its table but never printed it; it now
+  prints it (or says there is no correctness data yet).
 - TUI legend: LongCtx no longer claims 16k–200k-token documents; its
   scenarios are under ~1k tokens and test attention to buried details.
 

@@ -22,7 +22,7 @@ prompt: |
 tools: [db_list_tables, sql_query, http_get]
 budget:
   max_tool_calls: 3
-  max_turns: 2
+  max_turns: 3
   timeout_seconds: 60
 tool_responses:
   db_list_tables:

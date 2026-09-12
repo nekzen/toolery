@@ -20,7 +20,7 @@ prompt: |
 tools: [get_stock_price]
 budget:
   max_tool_calls: 3
-  max_turns: 2
+  max_turns: 3
   timeout_seconds: 40
 tool_responses:
   get_stock_price:
