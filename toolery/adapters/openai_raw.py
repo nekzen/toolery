@@ -16,6 +16,32 @@ _BACKOFF_BASE_SECONDS = 0.5
 _BACKOFF_MAX_SECONDS = 30.0
 
 
+# A dead or unreachable server should fail fast, not after the whole budget.
+_CONNECT_TIMEOUT_S = 10.0
+
+
+class ScenarioTimeBudgetExhausted(TimeoutError):
+    """The scenario's time budget ran out before the next request could be
+    sent or answered."""
+
+
+def _request_timeout(deadline: float | None) -> httpx.Timeout | object:
+    """Per-request timeout that follows the scenario's time budget.
+
+    The client's fixed default used to cap every request at 120s, whatever
+    --timeout-scale said: a reasoning model whose single turn took longer was
+    cut by httpx before the runner's budget ever applied. Each request now
+    gets whatever remains until the scenario deadline (read/write/pool), and a
+    short connect timeout so a dead server fails fast.
+    """
+    if deadline is None:
+        return httpx.USE_CLIENT_DEFAULT
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise ScenarioTimeBudgetExhausted("scenario time budget exhausted")
+    return httpx.Timeout(remaining, connect=min(_CONNECT_TIMEOUT_S, remaining))
+
+
 def _retry_delay(attempt: int, resp: httpx.Response) -> float:
     """Seconds to wait before the next attempt. Honors a numeric ``Retry-After``
     header (RFC 7231 delta-seconds form) when present, otherwise falls back to
@@ -59,7 +85,8 @@ class OpenAIRawAdapter:
     async def aclose(self):
         await self._client.aclose()
 
-    async def _post_with_retry(self, payload: dict, headers: dict) -> tuple[httpx.Response, int]:
+    async def _post_with_retry(self, payload: dict, headers: dict,
+                               deadline: float | None = None) -> tuple[httpx.Response, int]:
         """POST with retry on transient rate-limit (429) / server (5xx) errors.
 
         Cloud endpoints (MiniMax, OpenRouter, ...) throttle with 429 and may
@@ -74,7 +101,8 @@ class OpenAIRawAdapter:
         url = f"{self.base_url}/chat/completions"
         for attempt in range(self.max_retries + 1):
             t0 = time.monotonic()
-            resp = await self._client.post(url, json=payload, headers=headers)
+            resp = await self._client.post(url, json=payload, headers=headers,
+                                           timeout=_request_timeout(deadline))
             latency_ms = int((time.monotonic() - t0) * 1000)
             retryable = resp.status_code == 429 or 500 <= resp.status_code < 600
             if retryable and attempt < self.max_retries:
@@ -86,6 +114,11 @@ class OpenAIRawAdapter:
 
     async def run_scenario(self, scenario: Scenario, model: str, timeout: int) -> TraceResult:
         started = time.monotonic()
+        # The runner's budget for the whole scenario. Requests time out against
+        # this deadline themselves, a little before the runner's hard stop
+        # (timeout + 5s), so a slow trial returns its partial trace — how far
+        # the model got — instead of an empty one.
+        deadline = started + timeout
         runtime = MockToolRuntime(scenario)
         reg = ToolRegistry.default()
         tools_schema = reg.openai_schemas(scenario.tools)
@@ -111,7 +144,7 @@ class OpenAIRawAdapter:
                 if tools_schema:
                     payload["tools"] = tools_schema
                 headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
-                resp, req_latency_ms = await self._post_with_retry(payload, headers)
+                resp, req_latency_ms = await self._post_with_retry(payload, headers, deadline)
                 data = resp.json()
                 usage = data.get("usage") or {}
                 usage_records.append(TurnUsage(
@@ -161,6 +194,10 @@ class OpenAIRawAdapter:
                 turn_idx += 1
                 if len(tool_calls_recorded) > scenario.budget.max_tool_calls:
                     break
+        except (httpx.TimeoutException, TimeoutError) as e:
+            # Worded to classify as failure_kind "timeout" — same bucket as the
+            # runner's hard stop, but with the partial trace kept.
+            error = f"timeout: scenario time budget of {timeout}s exhausted ({type(e).__name__})"
         except Exception as e:
             error = f"{type(e).__name__}: {e}"
 

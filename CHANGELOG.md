@@ -15,6 +15,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in the run config; hermes (budget in its prompt) is excluded.
 
 ### Fixed
+- `--timeout-scale` was capped at 120 s per request for the `raw`/`cloud`
+  adapters: the HTTP client had a fixed 120 s timeout, so any single turn
+  longer than two minutes (a reasoning model on slow hardware) was cut by
+  httpx whatever the scenario budget said, and recorded as a `timeout`.
+  Each request now gets the time remaining until the scenario deadline
+  (10 s to connect), so the budget is the only authority. A trial that runs
+  out of time now keeps its partial trace instead of an empty one.
 - Perf parsing: time to first token was never captured — llama-benchy
   reports it as `e2e_ttft`, and the parser looked for a `ttft` field that
   does not exist in any version, so `ttft_ms` was always empty and `toolery
