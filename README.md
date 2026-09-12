@@ -592,6 +592,13 @@ Role keys (for `<role_key>` above): `coder`, `orchestrator`,
 | `TOOLERY_SCENARIOS_DIR` | Scenario set root (default `./scenarios`). |
 | `TOOLERY_PARTIAL_GRADIENT` | `on` enables the partial-credit scoring gradient (see [Scoring semantics](#yaml-structure)); default `off` = binary pass/fail. |
 
+**Parallel runs.** Several `toolery run` processes can share one
+`results/` directory — e.g. one per model server, launched from the same
+machine — while the TUI watches. `runs.db` uses SQLite WAL journaling, so
+readers never block a run's writes and competing writers wait (up to 30s)
+instead of failing. Keep `results/` on a local disk: WAL is not safe on
+network filesystems (NFS/SMB).
+
 **Retry logic.** `--max-retries`, `--retry-backoff-base`,
 `--retry-backoff-max` retry only *transient* adapter failures (429,
 timeout, connection reset, 5xx) with exponential backoff. A genuine model

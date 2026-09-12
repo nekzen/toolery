@@ -56,6 +56,11 @@ CREATE INDEX IF NOT EXISTS idx_results_model ON runs(model, started_at);
 CREATE INDEX IF NOT EXISTS idx_results_status ON scenario_results(status, failure_kind);
 """
 
+# How long a connection waits for a competing writer before raising
+# "database is locked". Generous on purpose: writers hold the lock for
+# milliseconds, so a long wait only matters under heavy contention.
+BUSY_TIMEOUT_S = 30.0
+
 # Lightweight migrations for runs added in Phase 13 (live progress) and later.
 # Applied idempotently in init_schema(). Older DBs auto-upgrade on first open.
 _MIGRATIONS = [
@@ -77,9 +82,17 @@ class Store:
 
     @contextmanager
     def conn(self):
-        c = sqlite3.connect(self.path)
+        # Several toolery processes (parallel runs, the TUI poller, each run's
+        # heartbeat thread) share one runs.db. Wait up to BUSY_TIMEOUT_S for a
+        # competing writer instead of failing with "database is locked" after
+        # sqlite3's default 5s.
+        c = sqlite3.connect(self.path, timeout=BUSY_TIMEOUT_S)
         c.row_factory = sqlite3.Row
+        c.execute(f"PRAGMA busy_timeout = {int(BUSY_TIMEOUT_S * 1000)}")
         c.execute("PRAGMA foreign_keys = ON")
+        # Durable in WAL mode (only a power loss can drop the very last commit)
+        # and far fewer fsyncs than the FULL default on per-result writes.
+        c.execute("PRAGMA synchronous = NORMAL")
         try:
             yield c
             c.commit()
@@ -88,6 +101,17 @@ class Store:
 
     def init_schema(self) -> None:
         with self.conn() as c:
+            # WAL lets readers (TUI polling, rankings) proceed while a run
+            # writes, and serializes writers through busy_timeout instead of
+            # erroring. The mode is persistent in the database file, so this
+            # is a no-op after the first open. Not safe on network
+            # filesystems (NFS/SMB) — keep results/ on local disk.
+            try:
+                c.execute("PRAGMA journal_mode = WAL")
+            except sqlite3.OperationalError:
+                # Another process holds the file mid-switch; it will be WAL
+                # on a later open. Rollback mode + busy_timeout still works.
+                pass
             c.executescript(SCHEMA)
             existing = {row[1] for row in c.execute("PRAGMA table_info(runs)").fetchall()}
             for stmt in _MIGRATIONS:

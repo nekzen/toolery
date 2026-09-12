@@ -6,6 +6,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+- Parallel runs sharing one `results/` no longer crash with `database is
+  locked`: `runs.db` now uses WAL journaling (readers such as the TUI
+  poller no longer block a run's writes) with a 30s busy timeout for
+  competing writers.
+- `run_id` now has second resolution and is claimed atomically via its run
+  directory, so two runs of the same model started together (e.g. one per
+  DGX Spark) get distinct ids (`…-2`) instead of sharing a trace directory
+  and colliding on the runs primary key.
+
 ## [0.5.0] - 2026-09-05
 
 First release of the nekzen fork. Everything below diverges from

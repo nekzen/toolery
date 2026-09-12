@@ -47,7 +47,7 @@ def main():
     ap.add_argument("--apply", action="store_true")
     args = ap.parse_args()
 
-    c = sqlite3.connect(DB)
+    c = sqlite3.connect(DB, timeout=30.0)  # wait out a concurrent run's writes
     c.row_factory = sqlite3.Row
 
     targets = timeout_trials(c, args.orig)

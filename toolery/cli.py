@@ -33,6 +33,29 @@ def _store() -> Store:
     return s
 
 
+def _claim_run_id(runs_dir: Path, safe_model: str, now: datetime | None = None) -> str:
+    """Reserve a unique run_id by atomically creating its run directory.
+
+    Two runs of the same model started in the same second (e.g. one per DGX
+    Spark, launched from one machine) would otherwise share a run_id: the
+    second process would write into the first one's trace directory and then
+    crash on the runs primary key. ``mkdir(exist_ok=False)`` is atomic across
+    processes, so whichever process creates the directory owns the id; the
+    other falls through to a ``-2``, ``-3``, ... suffix.
+    """
+    stamp = (now or datetime.now(UTC)).strftime("%Y-%m-%dT%H-%M-%S")
+    base = f"{stamp}_{safe_model}"
+    runs_dir.mkdir(parents=True, exist_ok=True)
+    run_id = base
+    for n in range(2, 1000):
+        try:
+            (runs_dir / run_id).mkdir(exist_ok=False)
+            return run_id
+        except FileExistsError:
+            run_id = f"{base}-{n}"
+    raise RuntimeError(f"could not claim a unique run_id for {base!r}")
+
+
 def _backfill_correctness_run(store, run_id: str, results_dir: Path, scenarios: dict) -> tuple[int, int]:
     """Recompute correctness_score for one run from its stored trace files.
     Returns (updated, skipped). Rows whose scenario or trace file is missing
@@ -311,7 +334,7 @@ def run(
     if resuming:
         run_id = resume
     else:
-        run_id = f"{datetime.now(UTC).strftime('%Y-%m-%dT%H-%M')}_{safe_model}"
+        run_id = _claim_run_id(_results_dir() / "runs", safe_model)
     run_dir = _results_dir() / "runs" / run_id
     (run_dir / "scenarios").mkdir(parents=True, exist_ok=True)
     (run_dir / "traces").mkdir(parents=True, exist_ok=True)
