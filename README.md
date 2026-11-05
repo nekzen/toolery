@@ -328,6 +328,30 @@ Rank all (model, adapter) pairs by a role's weighted score.
 toolery roles rank <role_key> [--regen] [--top 20]
 ```
 
+### `toolery rescore`
+
+Re-score stored trials with the current scorer and scenario files — no
+inference. Each trial's saved trace is replayed through today's checks, so a
+scorer or scenario fix can be measured, then applied, on every past run.
+
+```bash
+toolery rescore [--run <run_id>]... [--scenario <id>]... [--write] [--top 20]
+```
+
+| Flag | Meaning |
+|---|---|
+| `--run` / `--scenario` | Restrict to some runs / scenarios (repeatable). Default: everything in the store. |
+| `--write` | Update the stored results. Without it, the command only reports which trials would flip and how each model's pass rate moves. |
+| `--top` | How many scenarios to list, by number of flips. |
+
+Trials recorded with `--budget-slack` are re-scored the way the runner
+scored them. Re-scoring is exact for scoring changes (checks, patterns, the
+scorer). It is an estimate for scenarios whose mock responses, prompt or
+budget changed after the run — the model might have acted differently —
+so re-run those. After `--write`, refresh the ranking files with
+`toolery rankings --regen`. Point it at another machine's results with
+`TOOLERY_RESULTS_DIR`.
+
 ### Run lifecycle: delete / restore
 
 ```bash

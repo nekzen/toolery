@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+- `toolery rescore`: replay stored traces through the current scorer and
+  scenario files, no inference. Report-only by default (trials that would
+  flip, pass rate per model); `--write` updates the stored results. Trials
+  recorded with `--budget-slack` are re-scored the way the runner scored
+  them.
 - `--budget-slack` (raw/cloud): let a run continue past each scenario's
   tool-call/turn limits up to limit × slack. The strict score is computed on
   the trace truncated exactly where a normal run would have stopped, so it
@@ -20,6 +25,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   Scenarios when the filters match nothing. Textual's click handler indexes
   the clicked column and raises IndexError on an empty table; those tables
   now ignore clicks until they have columns.
+- Scorer: numbers written with thousands separators ("48,750.25",
+  "1 025" with a narrow no-break space) did not match the expected value, in
+  `response_contains`/`response_satisfies` patterns and in
+  `response_number`. `error_surfaced` missed the most natural outage
+  reports ("currently unavailable (503)", "the service is down", "timed
+  out"). Re-scoring 27,312 stored trials: 304 fail → pass, 0 pass → fail.
+- `medium-02-tdd-explain`: the test file its prompt names did not exist in
+  the mock, so models that read it first explored until the budget ran out
+  (0 % pass across 27 runs). The mock now has it, `list_files` answers per
+  directory, and the budget allows a look around (3 calls).
+- `hard-27-pl-budget-summarize` required the literal tokens Q1/Q2/Q3; a
+  correct Polish summary ("w pierwszym kwartale", or citing each quarter's
+  revenue) failed. Each quarter must now be covered by name, Polish ordinal
+  or revenue figure.
 - `--timeout-scale` was capped at 120 s per request for the `raw`/`cloud`
   adapters: the HTTP client had a fixed 120 s timeout, so any single turn
   longer than two minutes (a reasoning model on slow hardware) was cut by

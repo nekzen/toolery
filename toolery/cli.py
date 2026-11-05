@@ -607,7 +607,7 @@ def rankings(
         )
         msg = f"[green]✓ Regenerated rankings: {out}[/green]"
         if uc_key:
-            msg += f"\n[dim]  · Use-case '{uc_key}' applied → use_case_{uc_key}.md[/dim]"
+            msg += f"\n[dim]  | Use-case '{uc_key}' applied → use_case_{uc_key}.md[/dim]"
         console.print(msg)
     else:
         for d in dims:
@@ -657,6 +657,72 @@ def correctness_report():
                       "`toolery backfill-correctness` for older runs.[/yellow]")
         return
     console.print(table)
+
+
+@app.command()
+def rescore(
+    run: list[str] = typer.Option(None, "--run", help="run_id to re-score (repeatable; default: all runs)"),  # noqa: B008
+    scenario: list[str] = typer.Option(None, "--scenario", help="scenario id to re-score (repeatable)"),  # noqa: B008
+    scenarios_dir: Path = typer.Option(Path("scenarios"), "--scenarios-dir"),  # noqa: B008
+    write: bool = typer.Option(False, "--write", help="update the stored results (default: report only)"),
+    top: int = typer.Option(20, "--top", help="scenarios to list, by number of flips"),
+):
+    """Re-score stored traces with the current scorer and scenarios — no inference.
+
+    Report-only by default: shows which trials would flip pass <-> fail and how
+    each model's pass rate moves. Exact for scoring changes; an estimate for
+    scenarios whose mock responses, prompt or budget changed since the run.
+    """
+    from collections import defaultdict
+
+    from toolery.core.rescore import apply_rescore, rescore_store
+
+    scenarios_by_id = {s.id: s for s in load_all_scenarios(scenarios_dir)}
+    store = _store()
+    rescored, skipped = rescore_store(store, _results_dir(), scenarios_by_id,
+                                      run_ids=run or None, scenario_ids=scenario or None)
+    if not rescored:
+        console.print("[yellow]Nothing to re-score.[/yellow]"
+                      + (f" Skipped: {skipped}" if skipped else ""))
+        return
+
+    up = [r for r in rescored if r.flipped and r.new.status == "pass"]
+    down = [r for r in rescored if r.flipped and (r.old_status == "pass")]
+    console.print(f"[bold]{len(rescored)} trials re-scored[/bold] | "
+                  f"[green]{len(up)} now pass[/green] | [red]{len(down)} no longer pass[/red] | "
+                  f"{sum(r.flipped for r in rescored) - len(up) - len(down)} other status changes"
+                  + (f" | skipped {skipped}" if skipped else ""))
+
+    per_sc: dict[str, list] = defaultdict(list)
+    for r in rescored:
+        per_sc[r.scenario_id].append(r)
+    flips = sorted(((sum(x.flipped for x in rs), sid, rs) for sid, rs in per_sc.items()),
+                   reverse=True)
+    t = Table("scenario", "trials", "pass before", "pass after", "flips", title="Scenarios with the most flips")
+    for n_flip, sid, rs in flips[:top]:
+        if not n_flip:
+            break
+        before = sum((x.old_status or "") == "pass" for x in rs) / len(rs) * 100
+        after = sum(x.new.status == "pass" for x in rs) / len(rs) * 100
+        t.add_row(sid, str(len(rs)), f"{before:.1f}%", f"{after:.1f}%", str(n_flip))
+    console.print(t)
+
+    per_model: dict[str, list] = defaultdict(list)
+    for r in rescored:
+        per_model[r.model].append(r)
+    t = Table("model", "trials", "pass before", "pass after", "change", title="Pass rate per model")
+    for model, rs in sorted(per_model.items()):
+        before = sum((x.old_status or "") == "pass" for x in rs) / len(rs) * 100
+        after = sum(x.new.status == "pass" for x in rs) / len(rs) * 100
+        t.add_row(model, str(len(rs)), f"{before:.1f}%", f"{after:.1f}%", f"{after - before:+.1f}")
+    console.print(t)
+
+    if write:
+        n = apply_rescore(store, rescored)
+        console.print(f"[green]✓ Updated {n} stored results.[/green] "
+                      "Run `toolery rankings --regen` to refresh the ranking files.")
+    else:
+        console.print("[dim]Report only — nothing written. Re-run with --write to update the stored results.[/dim]")
 
 
 roles_app = typer.Typer(no_args_is_help=True, help="Role-based minimum-threshold checks and rankings.")
