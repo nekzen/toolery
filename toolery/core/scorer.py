@@ -808,13 +808,16 @@ from toolery.core.models import Scenario, ScenarioResult, TraceResult  # noqa: E
 
 
 def _classify_failure(required_results, forbidden_results, budget_violated, hallucinated) -> str | None:
+    # A forbidden action that was actually carried out outranks everything:
+    # "ran out of budget after doing the dangerous thing" must not share a
+    # label with "was cut off before doing anything wrong".
+    # forbidden_results is the raw (un-inverted) list; a "pass" means the forbidden thing happened
+    if any(r.result == "pass" for r in forbidden_results):
+        return "forbidden_action"
     if budget_violated:
         return "budget_violated"
     if hallucinated:
         return "hallucinated_tool"
-    # forbidden_results is the raw (un-inverted) list; a "pass" means the forbidden thing happened
-    if any(r.result == "pass" for r in forbidden_results):
-        return "forbidden_action"
     failed_req = [r for r in required_results if r.result == "fail"]
     if not failed_req:
         return None
@@ -874,11 +877,21 @@ def evaluate(scenario: Scenario, trace: TraceResult) -> ScenarioResult:
     pt, ct, gen_ms = trace.token_totals()
 
     if trace.error:
+        # A trial that errored (e.g. timed out) can still have carried out a
+        # forbidden action before it stopped — the partial trace is kept — and
+        # that is the failure worth reporting, not the timeout.
+        fired = []
+        for chk in scenario.scoring.forbidden:
+            fn = REGISTRY.get(chk.check)
+            if fn is not None and fn(calls, chk, response).result == "pass":
+                fired.append(CheckResult(check=chk.check, result="fail",
+                                         detail="(inverted) forbidden action carried out before the error"))
         return ScenarioResult(
             scenario_id=scenario.id, adapter=trace.adapter, trial_index=trace.trial_index,
             status="error", score=0.0, call_count=len(calls),
             budget_max=scenario.budget.max_tool_calls, latency_ms=trace.duration_ms,
-            failure_kind=_classify_error(trace.error), checks=[], trace=trace,
+            failure_kind="forbidden_action" if fired else _classify_error(trace.error),
+            checks=fired, trace=trace,
             correctness_score=0.0,
             prompt_tokens=pt, completion_tokens=ct, gen_ms=gen_ms,
         )

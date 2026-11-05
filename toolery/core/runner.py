@@ -8,7 +8,8 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 
 from toolery.adapters.base import Adapter
-from toolery.core.models import Budget, Scenario, ScenarioResult, TraceResult
+from toolery.core.budget_policy import LENIENT_CAP, budget_policy
+from toolery.core.models import Budget, CheckResult, Scenario, ScenarioResult, TraceResult
 from toolery.core.scorer import evaluate
 
 ResultCallback = Callable[[ScenarioResult], Awaitable[None] | None]
@@ -118,6 +119,57 @@ def _evaluate_with_slack(scenario: Scenario, trace: TraceResult, slack: float) -
     })
 
 
+def _lenient_signal(scenario: Scenario, trace: TraceResult, cap: Budget) -> dict:
+    """How far a lenient trial went past its budget, within the cap."""
+    calls = strict_view(trace, cap).tool_calls
+    last_turn = max((c.index for c in calls), default=-1)
+    return {
+        "policy": "lenient",
+        "calls": len(calls),
+        "budget_calls": scenario.budget.max_tool_calls,
+        "cap_calls": cap.max_tool_calls,
+        "over_budget": (len(calls) > scenario.budget.max_tool_calls
+                        or last_turn >= scenario.budget.max_turns),
+    }
+
+
+def score_trace(scenario: Scenario, trace: TraceResult, run_factor: float = 1.0) -> ScenarioResult:
+    """Score a trial — the single scoring path for the runner and `rescore`.
+
+    run_factor: the multiple of the scenario budget the adapter actually ran
+    with (1.0 = the scenario budget; > 1 under --budget-slack or a lenient
+    policy). Strict scenarios score on strict_view at the scenario budget,
+    exactly as a normal run. Lenient scenarios (core/budget_policy.py) score
+    against LENIENT_CAP x the budget: going over the budget only records an
+    efficiency signal, going over the cap still fails as budget_violated.
+    correctness_score always comes from the full trace.
+    """
+    if budget_policy(scenario) == "lenient":
+        cap_scenario = _with_budget_slack(scenario, LENIENT_CAP)
+        if run_factor > 1.0:
+            result = _evaluate_with_slack(cap_scenario, trace, run_factor)
+        else:
+            result = evaluate(cap_scenario, trace)
+        signal = _lenient_signal(scenario, trace, cap_scenario.budget)
+        checks = list(result.checks)
+        if signal["over_budget"] and result.failure_kind != "budget_violated":
+            checks.append(CheckResult(
+                check="budget_respected", result="fail",
+                detail=(f"lenient budget: {signal['calls']} calls for a budget of "
+                        f"{signal['budget_calls']} (allowed up to {signal['cap_calls']}) "
+                        "— recorded, does not fail the trial"),
+            ))
+        trace_out = result.trace.model_copy(update={"adapter_metadata": {
+            **result.trace.adapter_metadata, "budget_policy": signal}})
+        return result.model_copy(update={
+            "checks": checks, "trace": trace_out,
+            "budget_max": scenario.budget.max_tool_calls,
+        })
+    if run_factor > 1.0:
+        return _evaluate_with_slack(scenario, trace, run_factor)
+    return evaluate(scenario, trace)
+
+
 @dataclass
 class Runner:
     adapters: dict[str, Adapter]
@@ -154,9 +206,16 @@ class Runner:
         started_at = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         await _maybe_call(self.on_start, scenario.id, adapter_name, trial_index, started_at)
         eff_timeout = int(scenario.budget.timeout_seconds * self.timeout_scale)
-        use_slack = (self.budget_slack > 1.0
-                     and getattr(adapter, "supports_budget_slack", False))
-        run_scenario = _with_budget_slack(scenario, self.budget_slack) if use_slack else scenario
+        # How far past the scenario budget the adapter may run: lenient
+        # scenarios need room up to the cap, --budget-slack gives room to see
+        # what the model would have done. Only adapters that never show the
+        # budget to the model can be extended without changing its behavior.
+        run_factor = 1.0
+        if getattr(adapter, "supports_budget_slack", False):
+            run_factor = self.budget_slack
+            if budget_policy(scenario) == "lenient":
+                run_factor = max(run_factor, LENIENT_CAP)
+        run_scenario = _with_budget_slack(scenario, run_factor) if run_factor > 1.0 else scenario
         try:
             attempt = 0
             while True:
@@ -181,9 +240,7 @@ class Runner:
                     continue
                 break
             trace = trace.model_copy(update={"adapter": adapter_name, "trial_index": trial_index})
-            if use_slack:
-                return _evaluate_with_slack(scenario, trace, self.budget_slack)
-            return evaluate(scenario, trace)
+            return score_trace(scenario, trace, run_factor)
         finally:
             await _maybe_call(self.on_end, scenario.id, adapter_name, trial_index)
 

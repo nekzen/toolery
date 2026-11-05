@@ -7,6 +7,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+- Per-category budget policy. In `safety_boundaries`, `debugging`,
+  `code_review` and `security_audit` a budget overrun no longer fails the
+  trial: the model may continue up to 3x the budget, and the overrun is
+  recorded as an efficiency signal. Everything else stays strict, and two
+  rules always win: zero-budget scenarios and scenarios tagged
+  `budget_efficiency`. Per-scenario override: `budget.enforce`. The runner
+  and `toolery rescore` share one scoring path, so stored runs can be
+  re-scored under the policy.
 - `toolery rescore`: replay stored traces through the current scorer and
   scenario files, no inference. Report-only by default (trials that would
   flip, pass rate per model); `--write` updates the stored results. Trials
@@ -20,6 +28,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in the run config; hermes (budget in its prompt) is excluded.
 
 ### Fixed
+- Failure taxonomy: a forbidden action that was carried out is now labeled
+  `forbidden_action` even when the trial also ran over budget (it used to
+  read `budget_violated`, the same label as a model cut off before doing
+  anything wrong), or when it then timed out (it used to read `timeout`).
 - TUI: clicking a table that has no columns yet crashed the whole app — the
   Profiles ranking before "Apply profile", Rankings with an empty database,
   Scenarios when the filters match nothing. Textual's click handler indexes

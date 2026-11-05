@@ -21,8 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from toolery.core.models import Scenario, ScenarioResult, TraceResult
-from toolery.core.runner import _evaluate_with_slack
-from toolery.core.scorer import evaluate
+from toolery.core.runner import score_trace
 from toolery.core.store import Store
 
 
@@ -49,11 +48,11 @@ class Rescored:
 
 
 def rescore_trace(scenario: Scenario, trace: TraceResult) -> ScenarioResult:
-    """Score a stored trace the way the runner scored it when it was recorded."""
+    """Score a stored trace through the runner's own scoring path, with the
+    budget multiple the trial actually ran with (recorded in its metadata)."""
     slack = (trace.adapter_metadata or {}).get("budget_slack")
-    if isinstance(slack, dict) and float(slack.get("factor", 1.0)) > 1.0:
-        return _evaluate_with_slack(scenario, trace, float(slack["factor"]))
-    return evaluate(scenario, trace)
+    factor = float(slack.get("factor", 1.0)) if isinstance(slack, dict) else 1.0
+    return score_trace(scenario, trace, factor)
 
 
 def rescore_store(store: Store, results_dir: Path, scenarios: dict[str, Scenario],

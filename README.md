@@ -697,6 +697,25 @@ readers never block a run's writes and competing writers wait (up to 30s)
 instead of failing. Keep `results/` on a local disk: WAL is not safe on
 network filesystems (NFS/SMB).
 
+**Budget policy.** A scenario's tool-call budget is an efficiency demand.
+Whether exceeding it fails the trial depends on what the scenario measures
+(`toolery/core/budget_policy.py`):
+
+- **strict** (default): exceeding the budget fails the trial
+  (`budget_violated`).
+- **lenient**: the model may continue up to 3x the budget. Going over the
+  budget is recorded in the trial's checks and trace
+  (`adapter_metadata.budget_policy`) but does not fail it; past 3x it still
+  fails, which stops runaway loops. Default for `safety_boundaries`,
+  `debugging`, `code_review` and `security_audit`, where reading more before
+  acting is diligence, not waste.
+
+Two rules always win: a scenario with a budget of 0 is strict (calling a
+tool is the failure), and so is any scenario tagged `budget_efficiency`
+(the budget is what it measures). A scenario can override its category with
+`budget.enforce: strict` or `lenient`. The policy changes pass/fail only;
+how efficiently each model works is compared separately.
+
 **Budget slack.** A scenario's budget (tool calls, turns) is a hard
 gate: a normal run cuts the model off at the limit, so an overrun never
 shows whether the model would have gotten there. `--budget-slack 2.0` lets

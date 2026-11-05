@@ -45,6 +45,10 @@ class Budget(BaseModel):
     max_tool_calls: int = Field(ge=0)
     max_turns: int = Field(ge=1)
     timeout_seconds: int = Field(ge=1, default=60)
+    # Overrides the category's budget policy (toolery/core/budget_policy.py):
+    # "strict" = exceeding the budget fails the trial, "lenient" = it is only
+    # recorded. None = use the category default.
+    enforce: Literal["strict", "lenient"] | None = None
 
 
 class ScoringCheck(BaseModel):
