@@ -21,12 +21,87 @@ import asyncio
 import json
 import os
 import shutil
+import signal
+import subprocess
 import tempfile
 import time
 from datetime import UTC, datetime
 
 from toolery.core.models import Message, Scenario, ToolCall, TraceResult
 from toolery.core.text_utils import strip_reasoning_tags
+
+# Seconds Hermes gets to exit cleanly (e.g. remove its git worktree) after
+# SIGTERM before its whole process tree is SIGKILLed.
+_KILL_GRACE_S = 3.0
+
+
+def _own_process_group() -> dict:
+    """create_subprocess_exec kwargs that start the child in its own process
+    group, so the whole tree it spawns — Hermes' MCP server, git — can be
+    signalled at once."""
+    if os.name == "posix":
+        return {"start_new_session": True}
+    return {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP}
+
+
+def _child_group(proc: asyncio.subprocess.Process) -> int | None:
+    """The process group a child started with _own_process_group() leads, or
+    None if it cannot be confirmed. Recorded right after spawn, while the
+    child certainly exists, so stragglers can still be swept once it exited.
+
+    Signalling a process group is a blunt instrument: os.killpg(0) or
+    killpg of our own group would kill toolery itself. So the group is only
+    returned if it is a real PID > 1 and is NOT the caller's group."""
+    if os.name != "posix":
+        return None
+    pid = proc.pid
+    if type(pid) is not int or pid <= 1:
+        return None
+    try:
+        pgid = os.getpgid(pid)
+    except (ProcessLookupError, PermissionError):
+        return None
+    if pgid != pid or pgid == os.getpgrp():
+        return None
+    return pgid
+
+
+async def _terminate_tree(proc: asyncio.subprocess.Process, pgid: int | None) -> None:
+    """Stop a child started with _own_process_group() and everything it
+    spawned. Killing only the direct child leaves its own children (the MCP
+    server) running: SIGKILL gives Hermes no chance to shut them down.
+    Safe to call when the child already exited — stragglers still in its
+    group are cleaned up. ``pgid`` comes from _child_group(); without one,
+    only the direct child is killed."""
+    if os.name == "posix" and pgid is not None:
+        if proc.returncode is None:
+            try:
+                os.killpg(pgid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+            try:
+                await asyncio.wait_for(proc.wait(), timeout=_KILL_GRACE_S)
+            except TimeoutError:
+                pass
+        try:
+            os.killpg(pgid, signal.SIGKILL)
+        except (ProcessLookupError, PermissionError):
+            pass
+    elif os.name != "posix" and type(proc.pid) is int and proc.pid > 0:
+        if proc.returncode is None:
+            killer = await asyncio.create_subprocess_exec(
+                "taskkill", "/T", "/F", "/PID", str(proc.pid),
+                stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL)
+            await killer.wait()
+    if proc.returncode is None:
+        try:
+            proc.kill()
+        except ProcessLookupError:
+            pass
+    try:
+        await asyncio.wait_for(proc.wait(), timeout=_KILL_GRACE_S)
+    except TimeoutError:
+        pass
 
 
 def build_bridge_config(
@@ -305,7 +380,9 @@ class HermesAdapter:
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
                 env=env,
+                **_own_process_group(),
             )
+            pgid = _child_group(proc)
             try:
                 stdout_bytes, stderr_bytes = await asyncio.wait_for(
                     proc.communicate(),
@@ -321,13 +398,14 @@ class HermesAdapter:
                     error = stderr_bytes.decode(errors="replace")[:500]
             except TimeoutError:
                 error = "hermes: timeout"
-                # Kill the timed-out process so it releases any resources
-                # (git worktree / MCP server) before the next scenario.
-                proc.kill()
-                try:
-                    await proc.wait()
-                except Exception:
-                    pass
+            finally:
+                # Runs on every exit path — normal, our own timeout, and the
+                # runner cancelling this trial at the scenario budget (a
+                # CancelledError, which the TimeoutError handler above never
+                # saw: Hermes and its MCP server used to keep running, holding
+                # the model server, and slowed every following trial).
+                # Shielded so a second cancellation cannot abort the cleanup.
+                await asyncio.shield(_terminate_tree(proc, pgid))
 
         try:
             if use_lock:
@@ -436,8 +514,13 @@ class HermesAdapter:
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
                 env=env,
+                **_own_process_group(),
             )
-            await proc.communicate()
+            pgid = _child_group(proc)
+            try:
+                await proc.communicate()
+            finally:
+                await asyncio.shield(_terminate_tree(proc, pgid))
 
             tool_calls: list[ToolCall] = []
             final_response: str | None = None

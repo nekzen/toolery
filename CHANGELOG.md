@@ -32,6 +32,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in the run config; hermes (budget in its prompt) is excluded.
 
 ### Fixed
+- hermes adapter left processes running: when the runner stopped a trial at
+  its time budget, Hermes and the MCP server it spawns kept running and
+  holding the model server, slowing every following trial. Even Hermes' own
+  timeout killed only Hermes, not its MCP server. Hermes now runs in its own
+  process group and the whole tree is stopped on every exit path (SIGTERM,
+  then SIGKILL after 3 s; `taskkill /T` on Windows). Group signals are only
+  sent to a confirmed child-led group, never toolery's own.
 - Failure taxonomy: a forbidden action that was carried out is now labeled
   `forbidden_action` even when the trial also ran over budget (it used to
   read `budget_violated`, the same label as a model cut off before doing
