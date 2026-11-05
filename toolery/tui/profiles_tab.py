@@ -11,6 +11,7 @@ from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import Button, DataTable, Static
 
 from toolery.rankings.presets import USE_CASES, get_use_case
+from toolery.tui.safe_table import SafeDataTable
 
 # Dim → short label (≤8 chars to fit in a 10-wide column with breathing room).
 _DIM_LABEL = {
@@ -252,7 +253,7 @@ class ProfilesTab(Container):
         with Vertical(id="ranking-section"):
             yield Static("[dim]Apply a profile to compute this ranking.[/dim]",
                          id="uc-rank-title")
-            yield DataTable(
+            yield SafeDataTable(
                 id="uc-rank-table",
                 zebra_stripes=True,
                 cursor_type="row",
@@ -262,7 +263,7 @@ class ProfilesTab(Container):
         # persona ranking above.
         with Vertical(id="roles-section"):
             yield Static("", id="roles-title")
-            yield DataTable(
+            yield SafeDataTable(
                 id="roles-table",
                 zebra_stripes=True,
                 cursor_type="row",

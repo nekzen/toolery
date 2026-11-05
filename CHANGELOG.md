@@ -15,6 +15,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in the run config; hermes (budget in its prompt) is excluded.
 
 ### Fixed
+- TUI: clicking a table that has no columns yet crashed the whole app — the
+  Profiles ranking before "Apply profile", Rankings with an empty database,
+  Scenarios when the filters match nothing. Textual's click handler indexes
+  the clicked column and raises IndexError on an empty table; those tables
+  now ignore clicks until they have columns.
 - `--timeout-scale` was capped at 120 s per request for the `raw`/`cloud`
   adapters: the HTTP client had a fixed 120 s timeout, so any single turn
   longer than two minutes (a reasoning model on slow hardware) was cut by

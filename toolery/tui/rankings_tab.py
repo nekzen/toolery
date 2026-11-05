@@ -16,9 +16,10 @@ from toolery.rankings.compute import (
     collapse_matrix_rows,
     compute_matrix,
 )
+from toolery.tui.safe_table import SafeDataTable
 
 
-class _ZebraFixedDataTable(DataTable):
+class _ZebraFixedDataTable(SafeDataTable):
     """DataTable whose frozen (fixed) columns keep the normal per-row zebra
     striping instead of Textual's flat ``datatable--fixed`` highlight.
 

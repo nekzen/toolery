@@ -12,6 +12,7 @@ from textual.widgets import DataTable, Select, Static
 from toolery.core.models import Category, Scenario, Tier
 from toolery.core.scenario import display_name, load_all_scenarios
 from toolery.core.store import Store
+from toolery.tui.safe_table import SafeDataTable
 
 # Difficulty ordering for the picker — empirical tier is the single source of
 # truth (scenario id prefixes are stale after re-tiering, so they are ignored).
@@ -108,7 +109,7 @@ class ScenariosTab(Container):
             yield Select(options=[], id="sc-pick")
             with VerticalScroll(id="sc-task"):
                 yield Static("", id="sc-task-body")
-            yield DataTable(id="sc-table")
+            yield SafeDataTable(id="sc-table")
             yield Static("", id="sc-stats")
 
     def on_mount(self) -> None:
