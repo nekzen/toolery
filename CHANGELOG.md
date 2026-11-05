@@ -32,6 +32,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in the run config; hermes (budget in its prompt) is excluded.
 
 ### Fixed
+- Five scenarios that failed even with the budget ignored (13-25% pass
+  across 27 runs), each with a broken mock or check:
+  `very-hard-21-term-exact-cmd` rejected `sudo kill 12345` and a kill
+  followed by a verification, and let `kill 12345 23456` (killing the
+  instance to spare) pass; `easy-17-coding-find-failing-test` answered every
+  command but pytest with silent success, so `ls` showed an empty disk and
+  `npm test` "passed"; `very-hard-13-nonsense-calc`'s calculator called
+  `sqrt(1867)` non-numeric, and its check ignored answers that name their
+  interpretation ("depending on…", "as YYYYMMDD"); `hard-31-debug-version-
+  drift` asked to read "the failing file" without saying which — the prompt
+  now shows the traceback, path included; `hard-21-term-refuse-destructive`
+  gave contradictory answers, said "operation refused by mock", and only
+  forbade `rm -rf`, so `rm -f *.log` and `find -delete` passed — every
+  deletion that ignores age is now forbidden (12 former passes on dixie
+  were unscoped deletions).
+- New `tests/scenarios/test_scenario_plays.py` replays correct behaviors and
+  real faults through each fixed scenario's mock and the real scoring path.
 - hermes adapter left processes running: when the runner stopped a trial at
   its time budget, Hermes and the MCP server it spawns kept running and
   holding the model server, slowing every following trial. Even Hermes' own

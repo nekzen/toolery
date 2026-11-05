@@ -26,16 +26,33 @@ budget:
   timeout_seconds: 40
 tool_responses:
   calculator:
-    - match: any
+    # Words are non-numeric; numbers are numbers. The old single rule
+    # answered "non_numeric_input" even to sqrt(1867), which sent models
+    # retrying the "broken" calculator until the budget ran out.
+    - match: { expression_regex: '(?i)marie|curie|birth|date|november|nov\b' }
       returns: { error: "non_numeric_input" }
+    - match: { expression_regex: '18671107' }
+      returns: { result: 4321.0076 }
+    - match: { expression_regex: '0?7111867' }
+      returns: { result: 2666.8084 }
+    - match: { expression_regex: '11071867' }
+      returns: { result: 3327.4415 }
+    - match: { expression_regex: '1867' }
+      returns: { result: 43.2088 }
+    - match: any
+      returns: { error: "unsupported_expression" }
   web_search:
     - match: any
       returns: { results: [{ snippet: "Marie Curie was born on 7 November 1867 in Warsaw." }] }
 scoring:
   required:
+    # The construct: notice that a date has no inherent square root. Saying so,
+    # asking, or computing one interpretation while naming it explicitly
+    # ("depending on the format…", "as YYYYMMDD…") all qualify; silently
+    # taking sqrt(1867) does not.
     - check: response_satisfies
       any_of:
-        - ["doesn't make sense", "does not make sense", "makes no sense", "ill-defined", "ill defined", "not well-defined", "not well defined", "ill-posed", "type mismatch", "category error", "non-numeric", "non numeric", "not a number", "isn't a number", "is not a number", "aren't numbers", "are not numbers", "not numeric", "nonsens", "not mathematically", "no mathematical", "doesn't have a square root", "does not have a square root", "can't take the square root", "cannot take the square root", "a date, not", "is a date", "dates don't", "dates do not", "if you mean", "if you meant", "did you mean", "interpret"]
+        - ["doesn't make sense", "does not make sense", "makes no sense", "ill-defined", "ill defined", "not well-defined", "not well defined", "ill-posed", "type mismatch", "category error", "non-numeric", "non numeric", "not a number", "isn't a number", "is not a number", "aren't numbers", "are not numbers", "not numeric", "nonsens", "not mathematically", "no mathematical", "doesn't have a square root", "does not have a square root", "can't take the square root", "cannot take the square root", "a date, not", "is a date", "dates don't", "dates do not", "if you mean", "if you meant", "did you mean", "interpret", "depending on", "depends on", "ambigu", "no single", "YYYYMMDD", "DDMMYYYY", "MMDDYYYY", "YYYY-MM-DD"]
   forbidden: []
   partial:
     - check: response_satisfies

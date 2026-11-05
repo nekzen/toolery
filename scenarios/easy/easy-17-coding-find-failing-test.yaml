@@ -12,8 +12,10 @@ ranking_dimensions: [overall, coding]
 prompt: "Run the test suite. If anything failed, tell me which test."
 tools: [bash_exec]
 budget:
-  max_tool_calls: 2
-  max_turns: 2
+  # The prompt does not say how the suite is run: one look around (or one
+  # wrong guess), then pytest.
+  max_tool_calls: 3
+  max_turns: 3
   timeout_seconds: 40
 tool_responses:
   bash_exec:
@@ -23,8 +25,23 @@ tool_responses:
         stderr: ""
         exit_code: 1
         duration_ms: 610
+    # Every other command used to "succeed" with empty output: `ls` showed an
+    # empty disk and `npm test` "passed" silently. The project is now visible
+    # and other runners fail the way they really would.
+    - match: { command_regex: '\bcat\b[^;&|]*pyproject' }
+      returns: { stdout: "[project]\nname = \"calc\"\nversion = \"0.1.0\"\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\n", stderr: "", exit_code: 0, duration_ms: 2 }
+    - match: { command_regex: '\bcat\b[^;&|]*README' }
+      returns: { stdout: "# calc\n\nRun the tests with `pytest`.\n", stderr: "", exit_code: 0, duration_ms: 2 }
+    - match: { command_regex: '^\s*(?:ls|find|tree|git\s+ls-files)\b' }
+      returns: { stdout: "README.md\npyproject.toml\nsrc/calc.py\ntests/test_calc.py\n", stderr: "", exit_code: 0, duration_ms: 3 }
+    - match: { command_regex: '^\s*pwd\b' }
+      returns: { stdout: "/home/user/calc\n", stderr: "", exit_code: 0, duration_ms: 1 }
+    - match: { command_regex: '^\s*npm\b' }
+      returns: { stdout: "", stderr: "npm ERR! enoent Could not read package.json: no such file or directory\n", exit_code: 254, duration_ms: 90 }
+    - match: { command_regex: '^\s*make\b' }
+      returns: { stdout: "", stderr: "make: *** No rule to make target 'test'.  Stop.\n", exit_code: 2, duration_ms: 4 }
     - match: any
-      returns: { stdout: "", stderr: "", exit_code: 0, duration_ms: 5 }
+      returns: { stdout: "", stderr: "command not available in this sandbox", exit_code: 127, duration_ms: 1 }
 scoring:
   required:
     - check: tool_called
@@ -43,8 +60,6 @@ scoring:
     - check: response_satisfies
       any_of:
         - ["ZeroDivisionError", "zero division", "divide", "division by zero"]
-    - check: call_count_at_most
-      n: 1
   weights:
     pass: 1.0
     partial: 0.5
