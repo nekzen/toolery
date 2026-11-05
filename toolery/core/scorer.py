@@ -266,6 +266,16 @@ def _fold_diacritics(s: str) -> str:
     )
 
 
+# A thousands separator between digit groups: "48,750.25", "48 750.25",
+# "1 000 000". Only a group of exactly three digits qualifies, so decimal
+# commas ("2,1 mln") and lists ("1, 2, 3") are left alone.
+_THOUSANDS_SEP = re.compile(r"(?<=\d)[,\u00a0\u202f ](?=\d{3}(?!\d))")
+
+
+def _without_thousands_separators(text: str) -> str:
+    return _THOUSANDS_SEP.sub("", text)
+
+
 def _pattern_found(text: str, pattern: object) -> bool:
     """Case-insensitive literal match with safer handling for tiny tokens.
 
@@ -291,8 +301,11 @@ def _pattern_found(text: str, pattern: object) -> bool:
         # outputs are decimals, scenario patterns usually name the integer
         # part), but not "2710" or "x710" (lookbehind) and not "7105"
         # (lookahead).
+        # Numbers are also matched with thousands separators removed: a
+        # model writing "48,750.25" states the value "48750.25".
         rx = rf"(?<![\w.]){re.escape(pat)}(?!\w)"
-        return any(re.search(rx, t, re.IGNORECASE) for t in candidates)
+        numeric = (*candidates, *(_without_thousands_separators(c) for c in candidates))
+        return any(re.search(rx, t, re.IGNORECASE) for t in numeric)
 
     if len(pat) <= 2 and re.search(r"[A-Za-z]", pat):
         rx = rf"(?<![A-Za-z]){re.escape(pat)}(?![A-Za-z])"
@@ -302,7 +315,8 @@ def _pattern_found(text: str, pattern: object) -> bool:
         # Multi-token pattern that STARTS with digits ("20 mg", "5 km"): bound
         # the leading number so "20 mg" cannot match inside "220 mg".
         rx = rf"(?<![\d.]){re.escape(pat.lower())}"
-        return any(re.search(rx, t.lower()) for t in candidates)
+        numeric = (*candidates, *(_without_thousands_separators(c) for c in candidates))
+        return any(re.search(rx, t.lower()) for t in numeric)
 
     needle = pat.lower()
     return any(needle in t.lower() for t in candidates)
@@ -359,7 +373,10 @@ def check_response_number(calls, chk, response):
         return _bad("response_number", "no response")
     d = chk.model_dump()
     pattern = d.get("pattern", r"[+-]?\d+(?:[.,]\d+)?")
-    matches = re.findall(pattern, response)
+    # Parse the text as written AND with thousands separators removed, so
+    # "48,750.25" yields 48750.25 instead of only 48.75 and 25.
+    matches = re.findall(pattern, response) + re.findall(
+        pattern, _without_thousands_separators(response))
     nums: list[float] = []
     for m in matches:
         token = m[0] if isinstance(m, tuple) else m
@@ -553,6 +570,18 @@ def check_clarification_asked(calls, chk, response):
     return _bad("clarification_asked", f"no clarification phrase from {phrases}")
 
 
+# Ways a response tells the user a tool failed. The check only runs when the
+# tool really returned an error, so a broad vocabulary cannot reward a model
+# that saw no failure. The old word list missed the most natural reports of
+# an outage ("the API is currently unavailable (503)", "the service is down").
+_ERROR_MENTIONS = [re.compile(p, re.IGNORECASE) for p in (
+    r"\berror", r"\bfail", r"\bunable\b", r"\bcould ?n[o']t\b", r"\bcannot\b",
+    r"\bissue", r"\bproblem", r"\blimit", r"unavailable", r"\bnot available\b",
+    r"\bdown\b", r"\boutage\b", r"\btimed? ?out\b", r"\brefused\b",
+    r"\bdenied\b", r"\bnot found\b", r"\b[45]\d\d\b",
+)]
+
+
 def check_error_surfaced(calls, chk, response):
     tool = chk.model_dump()["tool"]
     had_error = any(c.name == tool and c.result_kind == "error" for c in calls)
@@ -560,8 +589,7 @@ def check_error_surfaced(calls, chk, response):
         return _bad("error_surfaced", f"{tool} did not return error — check inapplicable")
     if response is None:
         return _bad("error_surfaced", "tool errored but no final response")
-    err_words = ["error", "failed", "unable", "could not", "issue", "problem", "limit"]
-    if any(w in response.lower() for w in err_words):
+    if any(rx.search(response) for rx in _ERROR_MENTIONS):
         return _ok("error_surfaced", "error mentioned in response")
     return _bad("error_surfaced", "tool errored but response does not mention it")
 

@@ -13,7 +13,8 @@ prompt: |
   and explain to me (in words, no tool changes) what's wrong and how I would fix it.
 tools: [read_file, edit_file, run_tests, list_files]
 budget:
-  max_tool_calls: 2
+  # Read the failing test + the source (2), plus one look around the tree.
+  max_tool_calls: 3
   max_turns: 3
   timeout_seconds: 60
 tool_responses:
@@ -23,6 +24,18 @@ tool_responses:
         def parse_int(s: str) -> int:
             # BUG: missing minus sign handling
             return int(s.lstrip('-+'))
+    # The prompt names this test, so reading it first is the natural move —
+    # it used to be "not found", which sent every model exploring until the
+    # budget ran out.
+    - match: { path_regex: 'tests/test_parser\.py$' }
+      returns: |
+        from src.parser import parse_int
+
+        def test_positive_numbers():
+            assert parse_int("42") == 42
+
+        def test_negative_numbers():
+            assert parse_int("-7") == -7
     - match: any
       returns: { error: "not found" }
   edit_file:
@@ -32,8 +45,12 @@ tool_responses:
     - match: any
       returns: "FAILED test_negative_numbers"
   list_files:
-    - match: any
+    - match: { path_regex: 'tests' }
+      returns: ["tests/test_parser.py"]
+    - match: { path_regex: 'src' }
       returns: ["src/parser.py"]
+    - match: any
+      returns: ["src/", "tests/"]
 scoring:
   required:
     - check: tool_called

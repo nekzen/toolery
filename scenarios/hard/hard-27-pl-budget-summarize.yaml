@@ -37,7 +37,11 @@ scoring:
     - check: call_count_at_most
       n: 3
     - check: response_matches_regex
-      all_of: ["wzrost", "\\bQ1\\b", "\\bQ2\\b", "\\bQ3\\b"]
+      # Every quarter must be covered: by name as in the files (Q2), in plain
+      # Polish ("II kwartał", "w drugim kwartale", elliptical "w drugim"),
+      # or by its revenue figure ("2,4 mln") — a trend summary that cites
+      # each figure covers the quarter without naming it.
+      all_of: ['wzrost', '\bQ1\b|\bI\s+kwarta|pierwsz\w*\s+kwarta|\bw\s+pierwszym\b|\b2[.,]1\s*(?:mln|M)\b', '\bQ2\b|\bII\s+kwarta|drug\w*\s+kwarta|\bw\s+drugim\b|\b2[.,]4\s*(?:mln|M)\b', '\bQ3\b|\bIII\s+kwarta|trzeci\w*\s+kwarta|\bw\s+trzecim\b|\b2[.,]7\s*(?:mln|M)\b']
     - check: tool_called_in_parallel
       tools: [read_file]
   forbidden: []
