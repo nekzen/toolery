@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+- `toolery efficiency`: capability (solved, budget ignored), strict pass,
+  over-budget rate, and median tokens and seconds per solved trial, per
+  model — no thresholds, for weighing models against each other. Filters:
+  `--role`, `--category`, `--run`; `--json`.
 - Per-category budget policy. In `safety_boundaries`, `debugging`,
   `code_review` and `security_audit` a budget overrun no longer fails the
   trial: the model may continue up to 3x the budget, and the overrun is

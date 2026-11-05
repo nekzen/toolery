@@ -725,6 +725,58 @@ def rescore(
         console.print("[dim]Report only — nothing written. Re-run with --write to update the stored results.[/dim]")
 
 
+@app.command()
+def efficiency(
+    run: list[str] = typer.Option(None, "--run", help="run_id to include (repeatable; default: all runs)"),  # noqa: B008
+    category: list[str] = typer.Option(None, "--category", help="scenario category (repeatable)"),  # noqa: B008
+    role: str = typer.Option("", "--role", help="restrict to the categories a role requires"),
+    json_output: bool = typer.Option(False, "--json", help="emit machine-readable JSON"),
+):
+    """Capability vs efficiency per model — no thresholds, for weighing models.
+
+    capability = task solved with the budget ignored; strict = passed within
+    the budget; over budget = trials that used more tool calls than budgeted;
+    then median tokens and seconds per solved trial. Seconds only compare on
+    the same hardware and serving setup; tokens compare everywhere.
+    """
+    from dataclasses import asdict
+
+    from toolery.core.roles import get_role
+    from toolery.rankings.efficiency import compute_efficiency
+
+    categories = list(category or [])
+    if role:
+        r = get_role(role)
+        if r is None:
+            console.print(f"[red]Unknown role {role!r}.[/red] See `toolery roles list`.")
+            raise typer.Exit(2)
+        categories += [req.category for req in r.required if req.category != "overall"]
+    rows = compute_efficiency(_store(), run_ids=run or None, categories=categories or None)
+    if json_output:
+        console.print_json(json.dumps([asdict(row) for row in rows]))
+        return
+    if not rows:
+        console.print("[yellow]No results for this selection.[/yellow]")
+        return
+
+    def pct(v):
+        return "n/a" if v is None else f"{v * 100:.1f}%"
+
+    def num(v, spec):
+        return "n/a" if v is None else f"{v:{spec}}"
+
+    scope = (f"role {role}: " if role else "") + (", ".join(categories) if categories else "all categories")
+    t = Table("model", "adapter", "runs", "trials", "capability", "strict", "over budget",
+              "tokens/solved", "s/solved", title=f"Capability vs efficiency — {scope}")
+    for row in rows:
+        t.add_row(row.model, row.adapter, str(row.runs), str(row.trials),
+                  pct(row.capability), pct(row.strict), pct(row.over_budget),
+                  num(row.tokens_per_solved, ".0f"), num(row.seconds_per_solved, ".1f"))
+    console.print(t)
+    console.print("[dim]capability = solved, budget ignored | strict = passed within budget | "
+                  "s/solved compares only on the same hardware[/dim]")
+
+
 roles_app = typer.Typer(no_args_is_help=True, help="Role-based minimum-threshold checks and rankings.")
 app.add_typer(roles_app, name="roles")
 

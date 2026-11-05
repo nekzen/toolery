@@ -171,6 +171,7 @@ through timeouts.
 **4. Read the results.**
 
 ```bash
+uv run toolery efficiency --role coder       # capability vs cost, side by side
 uv run toolery correctness-report            # strict score vs correctness, per model
 uv run toolery roles check <run_id> coder    # ADEQUATE / NOT ADEQUATE, per category
 uv run toolery tui                           # Profiles tab: role viability board
@@ -327,6 +328,28 @@ Rank all (model, adapter) pairs by a role's weighted score.
 ```bash
 toolery roles rank <role_key> [--regen] [--top 20]
 ```
+
+### `toolery efficiency`
+
+Capability next to cost, per model — no thresholds. How much budget is
+"enough" depends on the job; this view draws no line, it shows what each
+model can do and what it costs, so you can weigh them.
+
+```bash
+toolery efficiency [--role coder] [--category debugging]... [--run <run_id>]... [--json]
+```
+
+| Column | Meaning |
+|---|---|
+| capability | Share of trials whose task was solved, budget ignored (`correctness_score`). |
+| strict | Share of trials passed within the budget. |
+| over budget | Share of trials (budget > 0) that used more tool calls than budgeted. |
+| tokens/solved | Median completion tokens per solved trial — compares across machines. |
+| s/solved | Median seconds per solved trial — compares only on the same hardware and serving setup. |
+
+`--role` keeps the categories that role requires. Run `toolery rescore
+--write` first if the scorer changed since your runs, so `strict` reflects
+the current rules.
 
 ### `toolery rescore`
 
