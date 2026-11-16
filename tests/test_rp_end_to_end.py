@@ -91,3 +91,21 @@ def test_a_conversation_too_long_for_the_server_is_skipped_not_failed(tmp_path, 
     assert result.exit_code == 0, result.output
     assert "Skipping 10 scenario(s)" in result.output
     assert chat.call_count == 10
+
+
+@respx.mock
+def test_a_server_that_wants_a_key_stops_the_run_before_any_trial(tmp_path, monkeypatch):
+    monkeypatch.setenv("TOOLERY_RESULTS_DIR", str(tmp_path / "results"))
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    respx.get(f"{BASE}/props").mock(return_value=httpx.Response(401, json={"error": "Invalid API Key"}))
+    chat = respx.post(f"{BASE}/v1/chat/completions").mock(side_effect=_reply)
+    result = CliRunner().invoke(app, ["run", "--model", "locked", "--category", "rp_long_context",
+                                      "--trials", "1", "--base-url", BASE])
+    assert result.exit_code == 2 and "OPENAI_API_KEY" in result.output
+    assert chat.call_count == 0
+
+
+def test_a_refused_key_is_not_a_model_crash():
+    from toolery.core.scorer import _classify_error
+    assert _classify_error("HTTP 401: Invalid API Key") == "auth_error"
+    assert _classify_error("segfault in sampler") == "model_crash"

@@ -888,6 +888,8 @@ def _classify_error(error: str) -> str:
     to ``model_crash`` hides infra problems (e.g. a hermes run hitting a stale
     endpoint shows up as 70x model_crash when it's really a connection error)."""
     e = error.lower()
+    if re.search(r"40[13]|unauthori[sz]ed|invalid api key", e):
+        return "auth_error"
     if "timeout" in e or "timed out" in e:
         return "timeout"
     if (

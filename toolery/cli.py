@@ -345,7 +345,17 @@ def run(
     skipped_context: list[str] = []
     if not perf_only and not resuming and any(a in adapters for a in ("raw", "cloud")):
         from toolery.core.server_info import approx_tokens, count_tokens, fetch_server_info
-        server_info = fetch_server_info(base_url)
+        server_info = fetch_server_info(base_url, local_key)
+        if server_info.get("auth_error"):
+            # Every request would be refused: stop now, not after N failed trials.
+            if not local_key:
+                console.print(f"[red]The server at {base_url} requires an API key "
+                              f"(HTTP {server_info['auth_error']}).[/red] Set OPENAI_API_KEY to the "
+                              "key the server was started with, then run again.")
+                raise typer.Exit(2)
+            console.print(f"[yellow]The server refused OPENAI_API_KEY on /props "
+                          f"(HTTP {server_info['auth_error']}); continuing without server facts.[/yellow]")
+            server_info = {}
         n_ctx = server_info.get("n_ctx")
         if n_ctx and any(s.conversation for s in xs):
             measured: dict[str, int] = {}
@@ -357,7 +367,7 @@ def run(
                 key = s.conversation.sha256 or s.id
                 if key not in measured:
                     text = " ".join([s.system_prompt or "", *(m.content for m in s.history)])
-                    measured[key] = count_tokens(base_url, text) or approx_tokens(text)
+                    measured[key] = count_tokens(base_url, text, local_key) or approx_tokens(text)
                 reply = s.sampling.max_tokens if s.sampling and s.sampling.max_tokens else 512
                 # + chat-template overhead per message, the probe, and the reply.
                 needed = measured[key] + 8 * (len(s.history) + 2) + approx_tokens(s.prompt) + reply

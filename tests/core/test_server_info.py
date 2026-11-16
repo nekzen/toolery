@@ -49,5 +49,17 @@ def test_token_count_from_either_backend():
     assert count_tokens(BASE, "a b c") == 5
 
 
+@respx.mock
+def test_the_api_key_is_sent_and_a_refusal_is_reported():
+    props = respx.get(f"{ROOT}/props").mock(return_value=httpx.Response(401, json={"error": "Invalid API Key"}))
+    assert fetch_server_info(BASE) == {"auth_error": 401}
+    props.mock(return_value=httpx.Response(200, json={"default_generation_settings": {"n_ctx": 4096}}))
+    assert fetch_server_info(BASE, "sk-test")["n_ctx"] == 4096
+    assert props.calls.last.request.headers["Authorization"] == "Bearer sk-test"
+    tok = respx.post(f"{ROOT}/tokenize").mock(return_value=httpx.Response(200, json={"tokens": [1]}))
+    assert count_tokens(BASE, "a", "sk-test") == 1
+    assert tok.calls.last.request.headers["Authorization"] == "Bearer sk-test"
+
+
 def test_documented_approximation():
     assert approx_tokens("x" * 4000) == 1001
