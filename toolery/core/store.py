@@ -75,6 +75,14 @@ _MIGRATIONS = [
 ]
 
 
+_META_KEYS = ("sampling", "conversation", "budget_policy", "budget_slack", "judge")
+
+
+def _meta_json(result: ScenarioResult) -> str | None:
+    meta = {k: v for k, v in (result.trace.adapter_metadata or {}).items() if k in _META_KEYS}
+    return json.dumps(meta) if meta else None
+
+
 class Store:
     def __init__(self, path: Path) -> None:
         self.path = Path(path)
@@ -126,6 +134,11 @@ class Store:
             for col in ("prompt_tokens", "completion_tokens", "gen_ms"):
                 if col not in sr_cols:
                     c.execute(f"ALTER TABLE scenario_results ADD COLUMN {col} INTEGER")
+            # Per-trial conditions (sampling, frozen conversation, budget
+            # policy) as JSON — queryable with json_extract. NULL on old rows;
+            # the same data lives in each trace's adapter_metadata.
+            if "meta_json" not in sr_cols:
+                c.execute("ALTER TABLE scenario_results ADD COLUMN meta_json TEXT")
             # Migration: old DBs created before 'paused' was a valid status
             # need their runs.status CHECK constraint relaxed. SQLite can't
             # ALTER a CHECK in place; recreate the table preserving data.
@@ -251,15 +264,16 @@ class Store:
                 "INSERT INTO scenario_results(run_id, scenario_id, scenario_hash, tier, category, "
                 "tags_json, ranking_dims_json, adapter, trial_index, status, score, call_count, "
                 "budget_max, latency_ms, failure_kind, correctness_score, trace_path, checks_json, "
-                "prompt_tokens, completion_tokens, gen_ms) "
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "prompt_tokens, completion_tokens, gen_ms, meta_json) "
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (run_id, result.scenario_id, scenario_hash, tier, category,
                  json.dumps(tags), json.dumps(ranking_dims),
                  result.adapter, result.trial_index, result.status, result.score,
                  result.call_count, result.budget_max, result.latency_ms, result.failure_kind,
                  result.correctness_score, trace_path,
                  json.dumps([c.model_dump() for c in result.checks]),
-                 result.prompt_tokens, result.completion_tokens, result.gen_ms),
+                 result.prompt_tokens, result.completion_tokens, result.gen_ms,
+                 _meta_json(result)),
             )
 
     def fetch_results_for_run(self, run_id) -> list[dict]:

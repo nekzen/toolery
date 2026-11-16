@@ -338,6 +338,42 @@ def run(
                               f"backoff={retry_backoff_base}s..{retry_backoff_max}s")
         raise typer.Exit(0)
 
+    # Server facts and a context pre-flight — best effort, never blocks a run.
+    # A frozen conversation that does not fit the server's context window is
+    # skipped (and listed), not run and scored as a failure.
+    server_info: dict = {}
+    skipped_context: list[str] = []
+    if not perf_only and not resuming and any(a in adapters for a in ("raw", "cloud")):
+        from toolery.core.server_info import approx_tokens, count_tokens, fetch_server_info
+        server_info = fetch_server_info(base_url)
+        n_ctx = server_info.get("n_ctx")
+        if n_ctx and any(s.conversation for s in xs):
+            measured: dict[str, int] = {}
+            kept = []
+            for s in xs:
+                if s.conversation is None:
+                    kept.append(s)
+                    continue
+                key = s.conversation.sha256 or s.id
+                if key not in measured:
+                    text = " ".join([s.system_prompt or "", *(m.content for m in s.history)])
+                    measured[key] = count_tokens(base_url, text) or approx_tokens(text)
+                reply = s.sampling.max_tokens if s.sampling and s.sampling.max_tokens else 512
+                # + chat-template overhead per message, the probe, and the reply.
+                needed = measured[key] + 8 * (len(s.history) + 2) + approx_tokens(s.prompt) + reply
+                if needed > n_ctx:
+                    skipped_context.append(s.id)
+                else:
+                    kept.append(s)
+            if skipped_context:
+                console.print(f"[yellow]Skipping {len(skipped_context)} scenario(s) whose conversation "
+                              f"does not fit the server context ({n_ctx} tokens): "
+                              f"{', '.join(skipped_context)}[/yellow]")
+                xs = kept
+            if not xs:
+                console.print("[red]No scenario fits the server context.[/red]")
+                raise typer.Exit(2)
+
     api_model = served_model or model
     # NIM model IDs use `<org>/<name>` — strip the slash so we don't create
     # nested directories under results/runs/.
@@ -367,6 +403,7 @@ def run(
            "tier": tier, "category": category, "trials": trials, "base_url": base_url,
            "concurrency": concurrency, "timeout_scale": timeout_scale,
            "budget_slack": budget_slack,
+           "server": server_info, "skipped_context": skipped_context,
            "total_units": total_units,
            "scenarios_count": 0 if perf_only else len(xs),
            "with_perf": bool(with_perf or perf_only),

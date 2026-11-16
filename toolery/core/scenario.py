@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 from pathlib import Path
 
@@ -33,6 +34,22 @@ def display_name(scenario_id: str) -> str:
 def load_scenario(path: Path) -> Scenario:
     text = path.read_text(encoding="utf-8")
     data = yaml.safe_load(text)
+    conv = data.get("conversation")
+    if conv:
+        # A frozen conversation: versioned file, identified by its hash so a
+        # result can always be tied to the exact text the model was given.
+        fixture_path = (path.parent / conv["fixture"]).resolve()
+        raw = fixture_path.read_bytes()
+        fixture = json.loads(raw.decode("utf-8"))
+        data["conversation"] = {
+            **conv,
+            "name": fixture["name"], "length": fixture["length"],
+            "approx_tokens": fixture["approx_tokens"],
+            "n_messages": len(fixture["messages"]),
+            "sha256": hashlib.sha256(raw).hexdigest(),
+        }
+        data["history"] = fixture["messages"]
+        data.setdefault("system_prompt", fixture.get("system"))
     return Scenario.model_validate(data)
 
 

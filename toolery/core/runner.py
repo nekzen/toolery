@@ -216,6 +216,10 @@ class Runner:
             if budget_policy(scenario) == "lenient":
                 run_factor = max(run_factor, LENIENT_CAP)
         run_scenario = _with_budget_slack(scenario, run_factor) if run_factor > 1.0 else scenario
+        if scenario.sampling and scenario.sampling.seed is not None:
+            # One seed per trial: trials differ, each stays reproducible.
+            run_scenario = run_scenario.model_copy(update={"sampling": scenario.sampling.model_copy(
+                update={"seed": scenario.sampling.seed + trial_index})})
         try:
             attempt = 0
             while True:

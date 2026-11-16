@@ -126,7 +126,18 @@ class OpenAIRawAdapter:
         messages: list[dict] = []
         if scenario.system_prompt:
             messages.append({"role": "system", "content": scenario.system_prompt})
+        history_start = len(messages)
+        messages.extend({"role": m.role, "content": m.content} for m in scenario.history)
+        history_end = len(messages)
         messages.append({"role": "user", "content": scenario.prompt})
+
+        sampling = scenario.sampling
+        sampling_sent: dict = {"temperature": sampling.temperature if sampling else 0.0}
+        if sampling:
+            # min_p is a llama.cpp / KoboldCPP extension to the OpenAI body.
+            for key in ("min_p", "seed", "max_tokens"):
+                if getattr(sampling, key) is not None:
+                    sampling_sent[key] = getattr(sampling, key)
 
         tool_calls_recorded: list[ToolCall] = []
         usage_records: list[TurnUsage] = []
@@ -137,7 +148,7 @@ class OpenAIRawAdapter:
             for _ in range(scenario.budget.max_turns + 1):
                 payload = {
                     "model": model, "messages": messages,
-                    "temperature": 0.0,
+                    **sampling_sent,
                 }
                 # vLLM (and some other servers) reject `tools: []` with HTTP 400.
                 # Only include the key when the scenario actually exposes tools.
@@ -202,16 +213,29 @@ class OpenAIRawAdapter:
             error = f"{type(e).__name__}: {e}"
 
         duration_ms = int((time.monotonic() - started) * 1000)
+        metadata: dict = {"base_url": self.base_url, "model": model}
+        traced = [Message.model_validate(m) for m in messages]
+        if scenario.sampling:
+            metadata["sampling"] = sampling_sent
+        if scenario.conversation:
+            # The frozen conversation is identified by its hash, not copied
+            # into every trace (a 64k-token history per trial adds up fast).
+            conv = scenario.conversation
+            metadata["conversation"] = conv.model_dump(exclude={"fixture"})
+            marker = Message(role="system", content=(
+                f"[frozen conversation {conv.name} ({conv.length}), "
+                f"{history_end - history_start} messages omitted, sha256 {conv.sha256}]"))
+            traced = traced[:history_start] + [marker] + traced[history_end:]
         return TraceResult(
             scenario_id=scenario.id,
             adapter=self.name,
             trial_index=0,
-            messages=[Message.model_validate(m) for m in messages],
+            messages=traced,
             tool_calls=tool_calls_recorded,
             final_response=final_response,
             started_at_iso=datetime.now(UTC).isoformat().replace("+00:00", "Z"),
             duration_ms=duration_ms,
             error=error,
-            adapter_metadata={"base_url": self.base_url, "model": model},
+            adapter_metadata=metadata,
             usage=usage_records,
         )

@@ -85,6 +85,34 @@ class Scoring(BaseModel):
     weights: dict[str, float] = {"pass": 1.0, "partial": 0.5, "fail": 0.0}
 
 
+class Sampling(BaseModel):
+    """Sampling settings sent with each request. Scenarios without one run at
+    temperature 0, as every scenario did before this existed."""
+    temperature: float = Field(default=0.0, ge=0)
+    min_p: float | None = Field(default=None, ge=0, le=1)
+    # Base seed. Trial n is sent seed + n: trials differ, yet each is
+    # reproducible. None = let the server pick.
+    seed: int | None = None
+    max_tokens: int | None = Field(default=None, ge=1)
+
+
+class HistoryMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str
+
+
+class ConversationRef(BaseModel):
+    """A frozen conversation the scenario's prompt continues. `fixture` is a
+    path relative to the scenario file; the loader fills in the rest from the
+    fixture file itself."""
+    fixture: str
+    name: str | None = None
+    length: str | None = None          # nominal bucket, e.g. "16k"
+    approx_tokens: int | None = None   # chars / 4, system prompt included
+    n_messages: int | None = None
+    sha256: str | None = None          # of the fixture file's bytes
+
+
 class Scenario(BaseModel):
     id: str
     title: str
@@ -102,6 +130,10 @@ class Scenario(BaseModel):
     budget: Budget
     tool_responses: dict[str, list[ToolResponseRule]] = {}
     scoring: Scoring
+    sampling: Sampling | None = None
+    conversation: ConversationRef | None = None
+    # Filled by the loader from `conversation.fixture`; never written in YAML.
+    history: list[HistoryMessage] = []
 
     @field_validator("id")
     @classmethod

@@ -807,21 +807,34 @@ REGISTRY.update({
 from toolery.core.models import Scenario, ScenarioResult, TraceResult  # noqa: E402
 
 
-def _classify_failure(required_results, forbidden_results, budget_violated, hallucinated) -> str | None:
+def _declared_kind(spec) -> str | None:
+    """A check may name the failure it detects (`failure_kind: knowledge_leak`
+    in the scenario YAML) — more telling than a generic label."""
+    kind = spec.model_dump().get("failure_kind") if spec is not None else None
+    return str(kind) if kind else None
+
+
+def _classify_failure(required_results, forbidden_results, budget_violated, hallucinated,
+                      scoring=None) -> str | None:
     # A forbidden action that was actually carried out outranks everything:
     # "ran out of budget after doing the dangerous thing" must not share a
     # label with "was cut off before doing anything wrong".
     # forbidden_results is the raw (un-inverted) list; a "pass" means the forbidden thing happened
-    if any(r.result == "pass" for r in forbidden_results):
-        return "forbidden_action"
+    for i, r in enumerate(forbidden_results):
+        if r.result == "pass":
+            spec = scoring.forbidden[i] if scoring is not None else None
+            return _declared_kind(spec) or "forbidden_action"
     if budget_violated:
         return "budget_violated"
     if hallucinated:
         return "hallucinated_tool"
-    failed_req = [r for r in required_results if r.result == "fail"]
-    if not failed_req:
+    failed = [i for i, r in enumerate(required_results) if r.result == "fail"]
+    if not failed:
         return None
-    first = failed_req[0].check
+    declared = _declared_kind(scoring.required[failed[0]]) if scoring is not None else None
+    if declared:
+        return declared
+    first = required_results[failed[0]].check
     if first in ("tool_called", "unique_tools_called", "tool_called_in_order"):
         return "wrong_tool" if "called" in first else "missing_step"
     if first in ("tool_args_contain", "tool_args_match_regex", "tool_args_type"):
@@ -830,6 +843,9 @@ def _classify_failure(required_results, forbidden_results, budget_violated, hall
         return "no_clarification"
     if first == "response_matches_schema":
         return "bad_response_format"
+    if first.startswith(("response_", "dialogue_")) or first == "error_surfaced":
+        # The tools were fine; what the model SAID was wrong.
+        return "wrong_answer"
     return "wrong_tool"
 
 
@@ -928,7 +944,8 @@ def evaluate(scenario: Scenario, trace: TraceResult) -> ScenarioResult:
     forbidden_clean = all(r.result == "pass" for r in forbidden)
 
     if not forbidden_clean or not required_all_pass:
-        kind = _classify_failure(required, forbidden_raw, budget_violated, hallucinated)
+        kind = _classify_failure(required, forbidden_raw, budget_violated, hallucinated,
+                                 scenario.scoring)
         gradient_score = scenario.scoring.weights["fail"]
         gradient_status = "fail"
         # Implicit partial gradient (opt-in, OFF by default):
