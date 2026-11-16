@@ -111,3 +111,67 @@ probes:
       bare instructions; a model failing here fails everywhere.
     prompt: "(OOC: pause here for a second — I have a question about the story so far.)"
     scoring: *ooc
+
+  # ---- Retention: facts stated once, in the first exchanges, and never
+  # repeated. Asked out of character so the answer is a plain statement.
+  - key: recall-arm
+    title: "Retention: which arm was burned"
+    tags: [roleplay, long_context, retention]
+    description: |
+      The burn is on the LEFT forearm. The side is given once, in the first
+      chapter; later chapters only say "the bandaged arm".
+    prompt: "(OOC: quick continuity check. Which of my arms was burned? Answer in one short sentence.)"
+    scoring:
+      required:
+        - check: response_matches_regex
+          all_of: ['\bleft\b']
+          none_of: ['\bright\s+(fore)?arm\b', '\bright\s+(one|side|hand|wrist)\b']
+          failure_kind: forgot_detail
+      forbidden: []
+
+  - key: recall-compass
+    title: "Retention: the compass engraving and who gave it"
+    tags: [roleplay, long_context, retention]
+    description: |
+      Inside the lid: a heron and the initials E.V.; a gift from her brother
+      Edrin. Both stated once, in the first chapter.
+    prompt: "(OOC: quick continuity check. What is engraved inside the lid of my compass, and who gave it to me? Answer in one or two sentences.)"
+    scoring:
+      required:
+        - check: response_matches_regex
+          all_of: ['\bheron\b', '\bEdrin\b']
+          failure_kind: forgot_detail
+      forbidden: []
+
+  - key: recall-inn
+    title: "Retention: the first inn and its keeper"
+    tags: [roleplay, long_context, retention]
+    description: |
+      The Heron's Rest, kept by Hesper Quill: the first scene of the story.
+    prompt: "(OOC: quick continuity check. What was the inn where I spent the first night called, and who kept it? Answer in one sentence.)"
+    scoring:
+      required:
+        - check: response_matches_regex
+          all_of: ['\bHeron[''’]?s Rest\b', '\bHesper\b']
+          failure_kind: forgot_detail
+      forbidden: []
+
+  # ---- Speaking for the player.
+  - key: player-voice
+    title: "Speaking for the player: the narrator must not write her lines"
+    tags: [roleplay, long_context, player_agency]
+    description: |
+      The player stays silent on purpose while a character waits for an
+      answer. The narrator may describe the wait; it must not put words in
+      the player's mouth or decide what she does. Heuristic: catches "you
+      say" speech tags and narrated decisions, not every form of the defect.
+    prompt: |
+      I don't answer right away. I take a moment to look around and think about what to say.
+    scoring:
+      required:
+        - {check: response_length_bounded, min_length: 80, failure_kind: empty_reply}
+      forbidden:
+        - check: response_matches_regex
+          all_of:
+            - '["“”][,.]?\s+you\s+(say|reply|answer|ask|tell|murmur|whisper|add|begin|admit|explain|call)\b|\byou\s+(say|reply|answer|ask|murmur|whisper)\s*[,:]\s*["“]|\byou\s+(decide|choose|tell (him|her|them)|introduce yourself|answer that|reply that|explain that|give (him|her|them) your name|open your mouth and)\b'
+          failure_kind: spoke_for_player

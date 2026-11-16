@@ -54,12 +54,12 @@ def test_run_then_report(tmp_path, monkeypatch):
     result = runner.invoke(app, ["run", "--model", "neural-test", "--category", "rp_long_context",
                                  "--trials", "4", "--concurrency", "1", "--base-url", BASE])
     assert result.exit_code == 0, result.output
-    assert chat.call_count == 12 * 4
+    assert chat.call_count == 20 * 4
 
     report = runner.invoke(app, ["rp-report", "--json"])
     assert report.exit_code == 0, report.output
     cells = {(c["probe"], c["length"]): c for c in json.loads(report.output)}
-    assert len(cells) == 12
+    assert len(cells) == 20
     leak = cells[("leak-stranger", "16k")]
     assert (leak["trials"], leak["passed"], leak["failures"]) == (4, 2, {"knowledge_leak": 2})
     assert leak["prompt_tokens"] == 15000 and leak["sampling"] == {
@@ -89,5 +89,5 @@ def test_a_conversation_too_long_for_the_server_is_skipped_not_failed(tmp_path, 
     result = CliRunner().invoke(app, ["run", "--model", "small-ctx", "--category", "rp_long_context",
                                       "--trials", "1", "--concurrency", "1", "--base-url", BASE])
     assert result.exit_code == 0, result.output
-    assert "Skipping 6 scenario(s)" in result.output
-    assert chat.call_count == 6
+    assert "Skipping 10 scenario(s)" in result.output
+    assert chat.call_count == 10

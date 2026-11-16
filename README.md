@@ -13,7 +13,7 @@ across a matrix of capability dimensions.
 
 ## Overview
 
-Toolery ships **212 scenarios** across **4 difficulty tiers**
+Toolery ships **220 scenarios** across **4 difficulty tiers**
 (`easy` / `medium` / `hard` / `very_hard`) and **21 categories** (coding,
 debugging, security review, data analysis, fact verification, and more).
 Each scenario is a self-contained YAML file describing:
@@ -645,6 +645,8 @@ exchanges lies deeper as the context grows.
 | `leak-stranger`, `leak-ledger` | a character who was never told the player's name says it (or writes it down). The name was told to one character only, in the first chapter. | `knowledge_leak` |
 | `control-known` | the one character who *was* told the name no longer says it. Counterpart of the leak probes, and a retention probe. | `forgot_name` |
 | `ooc-pause`, `ooc-stop`, `ooc-paren` | an out-of-character message ("Pause scenario.", "Stop the roleplay.", "(OOC: …)") is answered by the story: a character reacts or the narration goes on (`ooc_absorbed`), the scene "freezes" in narration (`ooc_played_pause`), or nothing acknowledges it. | `ooc_absorbed`, `ooc_played_pause`, `ooc_no_acknowledgment` |
+| `recall-arm`, `recall-compass`, `recall-inn` | a fact stated once in the first exchanges (which arm was burned, the compass engraving and its giver, the first inn and its keeper) is missing or wrong. Asked out of character, so the answer is a plain statement. | `forgot_detail` |
+| `player-voice` | the narrator writes the player's lines (`"…," you say`) or decides what she does, while she is deliberately silent. Catches speech tags and narrated decisions, not every form of the defect. | `spoke_for_player` |
 
 ```bash
 toolery run --model NAME --category rp_long_context --trials 10 --concurrency 1 \
@@ -902,7 +904,7 @@ toolery/
 │   ├── rankings/       # ranking computation, category-derived dimensions, role rankings
 │   ├── compare.py      # cross-run diff with McNemar significance
 │   └── tui/             # Textual dashboard (Home/Rankings/Compare/Scenarios/History/Profiles)
-├── scenarios/           # 212 scenarios across easy/medium/hard/very_hard, one dir per category
+├── scenarios/           # 220 scenarios across easy/medium/hard/very_hard, one dir per category
 ├── tests/                # unit + TUI tests
 └── results/              # SQLite + markdown + JSON traces (gitignored)
 ```

@@ -110,6 +110,46 @@ def test_ooc_checks(reply, status, kind):
     assert _verdict("rp-ooc-pause-16k", reply) == (status, kind)
 
 
+# -------------------------------------------------- retention, player voice
+
+RECALL = [
+    ("rp-recall-arm-8k", "Your left forearm, burned by lamp oil at the inn.", "pass", None),
+    ("rp-recall-arm-8k", "(OOC: That's right, it was the left one.)", "pass", None),
+    ("rp-recall-arm-8k", "It was your right forearm, scalded by the lamp oil.", "fail", "forgot_detail"),
+    ("rp-recall-arm-8k", "Your forearm was burned by hot lamp oil.", "fail", "forgot_detail"),
+    ("rp-recall-compass-8k", "A small heron and the initials E.V.; your brother Edrin gave it to you.",
+     "pass", None),
+    ("rp-recall-compass-8k", "A heron and the letters E.V. It was a gift from your father.",
+     "fail", "forgot_detail"),
+    ("rp-recall-inn-8k", "The Heron’s Rest, kept by Hesper Quill.", "pass", None),
+    ("rp-recall-inn-8k", "The Saltmarsh Inn, kept by Hesper.", "fail", "forgot_detail"),
+]
+
+VOICE = [
+    ('The pie woman waits, peel in hand, while the crowd pushes past her stall. "Take your time, '
+     'love, the pies won\'t," she says, and turns to serve a drover.', "pass", None),
+    # Conditional narration is not a decision.
+    ("If you say nothing, she will serve the next customer; the queue behind you is growing and "
+     "the oven is hot.", "pass", None),
+    ('The square roars around you. "Mutton, please," you say, counting a penny into her palm.',
+     "fail", "spoke_for_player"),
+    ('You say, "I\'ll take the mutton," and she wraps it in a dock leaf before you can change '
+     'your mind.', "fail", "spoke_for_player"),
+    ("You decide to trust her, and before long she has heard the whole story of the Guild and "
+     "the estuary chart.", "fail", "spoke_for_player"),
+]
+
+
+@pytest.mark.parametrize("scenario_id,reply,status,kind", RECALL)
+def test_retention_checks(scenario_id, reply, status, kind):
+    assert _verdict(scenario_id, reply) == (status, kind)
+
+
+@pytest.mark.parametrize("reply,status,kind", VOICE)
+def test_player_voice_checks(reply, status, kind):
+    assert _verdict("rp-player-voice-8k", reply) == (status, kind)
+
+
 # -------------------------------------------------------------- generated
 
 def test_generated_files_match_their_source():
