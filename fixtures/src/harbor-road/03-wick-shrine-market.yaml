@@ -1,0 +1,121 @@
+# Days two and three: the rope ferry (Odo Fenn and his mule Bishop), the
+# heath shrine (Sister Avel), Thornby market (Corwin Hale, the man in grey).
+turns:
+  - user: |
+      At dawn I thank Ilsa and take the carters' track she described, staying well away from the main road.
+    narrator: |
+      The track is two ruts through gorse and standing water, and it takes most of the morning. You hear the Wick before you see it: a low steady roar, like wind in a chimney. Then the gorse opens and the river is in front of you, brown and fast and far wider than it has any right to be, carrying whole bushes along on its back.
+
+      The ferry is a flat-bottomed boat the size of a barn door, tied to a rope as thick as your wrist that runs from a post on this bank to a post on the other. Nobody is tending it. On the slope above the landing a cart loaded with sacks has sunk one wheel to the axle in mud. A grey mule stands in the shafts with his ears back, and a very large man in a leather apron is addressing him by name.
+
+      "Bishop, you were born in a ditch and I'll see you buried in one." He catches sight of you and does not lower his voice at all. "Stranger! If you've two hands and a back, lend them here. Odo Fenn will owe you a favour, and Bishop will owe you an apology he hasn't the grace to make."
+  - user: |
+      I set down my pack and put my shoulder to the wheel beside him. "On three. And I need to get across as well. Does the ferry take passengers?"
+    narrator: |
+      Odo counts, the mule decides at the last instant to cooperate, and the wheel comes out of the mud with a sound like a boot leaving a bog. The cart lurches onto the firm ground by the landing. Odo straightens up, a full head taller than you, and wipes his palms on his apron with great satisfaction.
+
+      "It takes whoever I say. It's my cousin's ferry, and my cousin's in Thornby selling a horse he doesn't own, so today I'm ferryman and toll-keeper both." He jerks his chin at the river. "She's high. I'd not take her alone with the cart, the boat swings too much with nobody on the pole. So there's your fare paid, if you'll stand at the upstream side and keep us off whatever comes down."
+
+      He begins checking the mule's harness, and while he does it his eye travels along the brass case on your pack with open, good-natured nosiness.
+
+      "Now what's in that? Too long for a flute. Fishing rod? My wife's brother carries his fiddle bow in a thing like that, but he hasn't your boots." He waits, grinning, in no doubt at all that he will be told.
+  - user: |
+      "Charts. I draw maps for a living." I take the mule's bridle on the other side and help lead him down to the boat. "I'm told a man is watching the lower ford. Thin, with a red scarf."
+    narrator: |
+      "A mapmaker! Then you can tell me where I am, for Bishop surely can't." Odo laughs at his own joke, then snorts. "I saw your man from the ridge at first light. Sat on the bridge wall like a crow on a gibbet. He'll not see us. The ford's a mile down and there's alder all the way between."
+
+      Bishop stops dead at the plank. Odo takes off his hat, claps it over the mule's eyes, and walks him aboard blind. The cart follows with a hollow rumble, and the boat sinks until the river is a hand's breadth below the side. Odo casts off and begins to haul on the rope, hand over hand.
+
+      The current takes hold at once. The boat swings out on its tether and leans; water piles up brown against the upstream side, and the rope creaks from one end to the other. You are perhaps halfway when Odo looks up the river and stops laughing.
+
+      An entire tree is coming down on the flood, roots first, turning slowly, straight for the boat.
+
+      "Mapmaker! The pole, by your foot! Get it on that trunk and shove, or it'll take the rope and us with it!"
+  - user: |
+      I snatch up the pole, brace it against the trunk as it comes, and push with everything I have until it slides past the stern.
+    narrator: |
+      The pole strikes bark and bends. The whole weight of the tree comes up through the wood into your shoulders, and for the space of two breaths the boat, the trunk and the river all seem to be deciding the matter between them. Then the roots swing wide. The trunk grinds down the length of the boat with a noise like a cart on gravel, clears the stern by the width of a hand, and goes on toward the sea.
+
+      The rope holds. Odo hauls the last thirty yards without a word and runs the boat up onto shingle. Only then does he let out a breath and begin to laugh again, louder than before.
+
+      "Well shoved! I've had men aboard who'd have prayed instead." He uncovers Bishop's eyes; the mule looks about him with contempt. "I turn off for my farm at the heath shrine, an hour on. Ride on the tail of the cart that far and rest your arms."
+
+      He has noticed the linen at your cuff, dark and dripping where the river came over the side. "That's wet through. River water, mind, not salt. The Sister at the shrine keeps bees and dressings both. She'll see to it and ask nothing for it."
+  - user: |
+      I ride on the back of the cart as far as the shrine, climb down, wave to Odo, and knock at the door. "Sister? A traveller with a burn that wants looking at."
+    narrator: |
+      The shrine is a squat building of grey fieldstone with a turf roof, standing alone where four heath tracks meet. A row of straw bee skeps is lined along its south wall, and even this late in the year a few bees are crawling on the warm stone. Odo's cart rattles away down the western track, his arm still raised.
+
+      The door is opened by a tall woman of about sixty in an undyed habit, the sleeves rolled above the elbow and a bee veil pushed up onto her forehead. Her hands are sticky to the wrist. She looks at your face first, then at your cuff, and seems to reach a conclusion about both.
+
+      "Travellers with burns I can manage before supper. Travellers with sins take longer, and I charge them in firewood." She steps back from the door. "I'm Sister Avel. Come in and sit by the window where the light is. Mind the frames on the floor, I'm in the middle of taking the last of the comb."
+
+      Inside it smells of wax and smoke. There is one bench, one table, and a shelf crowded with stoppered jars. She rinses her hands in a basin and turns to you, waiting to be shown.
+  - user: |
+      I unwrap the wet linen and hold out my arm. "It was dressed with comfrey the first night. It got soaked this morning, crossing the Wick."
+    narrator: |
+      Sister Avel takes your wrist and turns the arm to the window. Her fingers are cool and entirely steady. The blister has broken under the wet linen and the skin beneath is pink and raw, but she presses along its edges and nods.
+
+      "No heat in it and no smell. Comfrey was the right beginning; whoever chose it had sense." She reaches down a jar without looking for it. "Now it's open, we change the treatment. Honey, to keep the rot out. Nothing spoils in honey. And a little yarrow to bring the skin together." She spreads the mixture thinly, lays a pad of clean lint over it and binds the arm with quick overlapping turns. It stings, and then it eases.
+
+      "I don't ask names at this door," she says, tying off. "Half of those who knock would be obliged to lie to me, and I'd sooner not be the occasion of it. But I do ask where a person is bound, because the heath has four roads and three of them are mistakes." She sits back on her heels and looks at you with frank grey eyes. "Where are you going, child?"
+  - user: |
+      "Greywater. But there's a man following me, and I'd be glad if he came to believe otherwise."
+    narrator: |
+      Sister Avel receives this as calmly as she received the burn. She gets up, wipes her fingers, and begins fitting a honeycomb frame back into its box while she thinks.
+
+      "A pedlar came through at noon and said there was a fellow at the Wick bridge stopping every woman on the road. A thin man. He'll have worked out by now that he was sitting at the wrong crossing, and from the ferry landing the first roof he'll see is mine." She sets the lid on the box. "So I expect him by evening, and he will ask me what I've seen."
+
+      She turns round. There is something in her face that in a less dignified woman would be mischief.
+
+      "I won't lie to him. I took a vow, and besides I'm bad at it. But I can only tell a man what I know. If a traveller had asked me the road to Marrow Down, which is inland and two days from anywhere, then I could say with a clear conscience that a traveller asked me the road to Marrow Down." She folds her hands into her sleeves and raises one eyebrow, and waits.
+  - user: |
+      I smile. "Sister, which is the road to Marrow Down?" Then I shoulder my pack. "And which way is Thornby?"
+    narrator: |
+      "Marrow Down," says Sister Avel gravely, pointing west with her whole arm, "is by the white stone and then straight on for two days. A dull town. They make rope." She holds the pose a moment longer, as if for a witness. Then, turning only her wrist, she points behind the hives.
+
+      "Thornby is the track through the birches, down off the heath. You'll sleep in the old drovers' shelter by the stream and be at the market by mid-morning. A crowd is a good place to be lost in and a poor place to be looked for, so keep that case out of sight if you can."
+
+      She presses something small into your hand: a clay pot no bigger than a walnut, sealed with wax. "Honey and yarrow. Fresh every evening, and let the air at it for an hour first." She has already pulled the veil down over her face and picked up her smoker. "Go well."
+
+      From the edge of the birches you can see back across the whole heath. On the road from the river, still half a mile from the shrine, a single figure is walking. It is too far to make out a face. There is a spot of red at its neck.
+  - user: |
+      I reach Thornby by mid-morning and go into the market crowd, looking first for something to eat.
+    narrator: |
+      Thornby is one long sloping square with a stone well at the top and a town gate at the bottom, and on market day every yard between them is filled. There are geese in wicker crates, bolts of undyed wool, a man selling knives off a blanket, a dentist with a drum. The noise closes over you like water. Nobody looks twice at one more traveller with a pack.
+
+      The smell of hot fat leads you to a stall under a patched blue awning, where a round, red-armed woman is lifting pies out of a clay oven with a wooden peel.
+
+      "Mutton or eel, love, a penny each, penny ha'penny for the pair, and I'd not have the eel myself, it's Thursday's." She does not stop moving or talking. "You've walked far, I can tell by the boots. If it's boots you want, Jem's by the gate. If it's anything with a wheel or a spring in it, old Corwin Hale by the well, he mends clocks, there's nothing he can't open." She drops her voice no more than a little. "There's a gentleman in a grey coat been buying drinks at the Lamb since yesterday and asking after brass instruments, would you believe. Mutton, then?"
+  - user: |
+      I buy a mutton pie and eat it on the way up to the well. At the instrument-maker's stall I put the compass on his counter. "Can you replace the glass on this?"
+    narrator: |
+      The stall by the well is a narrow booth hung with clock faces, each telling a different time. The man behind the counter is small and bald, with a jeweller's lens strapped to his forehead on a leather band. He says nothing at all until he has pulled the lens down, picked up the compass, and looked at it for a long while from every side.
+
+      "Fennick of Greywater made this. Forty years ago, maybe fifty. You can tell by the hinge." His voice is dry and precise. "The needle's sound and the pivot's clean. The glass I can cut in an hour, for sixpence. You were right to bring it; that crack has been letting the damp in, and one more winter would have spotted the card past reading."
+
+      He opens the lid and tilts it to the light. His eye rests on what is engraved inside, and then, briefly, on you. He does not read it aloud.
+
+      "A gift," is all he says. "People don't engrave what they buy for themselves." He sets the compass down on a square of green baize. "Corwin Hale. Will you wait, or come back for it? I'd say wait. It's not a thing I'd leave on a counter today."
+  - user: |
+      "I'll wait." I count out the sixpence and stand where I can watch both his hands and the square.
+    narrator: |
+      Corwin works without hurry. He lifts the brass ring, tips the cracked glass out into his palm and sets it aside, then scores a new disc from a sheet with a diamond point, turning it against his thumb. The scratching is a small clean sound under the roar of the market.
+
+      He is polishing the edge when a man stops at the booth. He wears a grey coat of good cloth and carries his hat in his hand, and his manner is that of someone used to being welcome. He looks at the compass on the baize. He looks at the brass case on your back, for rather longer.
+
+      "A handsome case," he says pleasantly, to you and not to Corwin. "Forgive me. I act for a gentleman who collects survey work of this coast, and who pays for it better than any guild. He would give twenty pounds for whatever is in that tube, without unrolling it. Fifty, if the estuary is among it."
+
+      Corwin goes on polishing. He has not looked up, but the cloth is moving more slowly than before.
+
+      The man in the grey coat waits with his head a little on one side, smiling, as if the three of you had all the time in the world.
+  - user: |
+      "It's not for sale. Tell your gentleman the Guild will publish the chart when it's finished, and he can buy a copy like everyone else." I hold out my hand to Corwin for the compass.
+    narrator: |
+      The smile does not change. If anything it grows a little kinder, which is worse.
+
+      "I'll tell him. Mr Dunmore is a patient man. I would not rely on his being a patient man next week." He puts his hat on, touches the brim to you, and adds, "Good day, surveyor." Then he walks down the square, unhurried, and stops at the steps of the market cross to speak to a stout fellow in a blue coat who holds a handbell.
+
+      Corwin sets the ring back on its seat with a click and lays the compass in your palm. The new glass is so clear it seems not to be there. Beneath it the needle swings, hesitates, and settles on north.
+
+      "The sixpence was for the glass." He pushes the lens back up onto his forehead and at last looks at you directly. "This costs nothing. There are two ways out of Thornby to the north. One is the gate, where everybody goes and anybody may stand and watch. The other is Tanners' Lane, behind the cross. It stinks so badly that no one who has a choice ever looks down it." He begins winding a clock, as though he had said nothing.

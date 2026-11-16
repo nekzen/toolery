@@ -1,0 +1,90 @@
+# Day three, afternoon and night: the crier's announcement (no name: nobody
+# has one to give), the tannery lane, the cliff path in fog, and the
+# shepherd girl Wenna Garrow with her ewe Bramble.
+turns:
+  - user: |
+      I tuck the compass inside my coat and stay near the well just long enough to hear what the crier is going to say.
+    narrator: |
+      The stout man in the blue coat climbs the steps of the market cross and swings his bell until the square is something close to quiet.
+
+      "Hear this! By the wish of Mr Dunmore of Greywater, shipowner! A reward of ten pounds in silver, for word of a surveyor, a woman, travelling north on the harbor road with a brass chart case! Wanted in the matter of instruments unlawfully removed! Ten pounds, to be paid at the Lamb!" He rings again and repeats it, word for word. There is no name in it either time. He has plainly not been given one.
+
+      A murmur goes through the crowd. Ten pounds is a year's wages for most of the people in this square. Heads begin to turn, idly at first, the way people look about them when they have been told there is a wasp.
+
+      Down the slope, the pie woman under the blue awning is staring straight at you across forty yards of market. Then, very deliberately, she looks down at her pies and begins rearranging them. At the bottom of the square two young men have moved to stand one on each side of the town gate, and are studying every face that passes through.
+  - user: |
+      I pull up my hood, carry the map case low against my leg like a walking staff, and make for Tanners' Lane without hurrying.
+    narrator: |
+      Nobody stops you. The crowd is looking for a woman with a case on her back, and what passes the cross is a hooded traveller leaning on a stick.
+
+      Tanners' Lane announces itself ten yards before you reach it. The smell is a physical thing, sour and animal, thick enough to taste. The lane is a slot between two blind walls, running with brown water, and it opens into a yard of sunken vats where hides hang over poles like wet sails. A yellow dog on a chain gets up, thinks better of it, and lies down again.
+
+      A man is standing waist-deep in one of the vats, treading. He is stained the colour of oak bark to the shoulders. He looks at your hood, and then at the brass end of the thing in your hand, for exactly as long as it takes to understand it.
+
+      "Didn't see you," he says, and goes on treading. "Can't see a thing for the steam." He lifts one dripping arm toward a gap in the back wall, where a path climbs steeply through nettles toward open sky.
+
+      Behind you, muffled by the walls, the handbell starts up again.
+  - user: |
+      I climb to the cliff path and keep going north as fast as I safely can, looking back at every bend.
+    narrator: |
+      The nettles give way to turf cropped short by sheep, and the wind arrives all at once, clean and cold after the tannery. The cliff path is a pale thread along the very edge of the land. On your left the ground simply ends. Two hundred feet below, the sea works at the rocks with a slow booming that you feel in your feet, and gulls turn in the air beneath you.
+
+      At the first bend there is nobody behind. At the second, nobody. At the third you can see all the way back to the town wall, and two small figures are coming out of the gap where the lane ends. It is too far to tell what they are wearing. They are not hurrying. They do not need to; there is only one path.
+
+      Then the light changes. Out over the water a bank of fog is coming in, flat-topped and solid as a harbour wall, and it reaches the cliff while you watch. The sea vanishes, then the gulls, then the path behind you. Within a few minutes you can see ten paces of wet turf and nothing more.
+
+      Just ahead the path divides. One branch keeps to the edge. The other climbs away to the right. Somewhere up that slope, a sheep's bell clanks.
+  - user: |
+      I take out the compass, see which branch runs north, and follow it slowly, testing the ground ahead with the end of the map case.
+    narrator: |
+      Under the new glass the needle steadies at once. The branch along the edge runs a little east of north. The one that climbs bends away almost due east, inland, toward the bell.
+
+      The edge path it is. For fifty paces the turf is firm, and the end of the case knocks reassuringly on solid ground. The booming of the sea comes from everywhere at once now, and the fog has a taste of salt.
+
+      Then the case meets nothing. The turf in front of you is cracked like the crust of a loaf, and beyond the crack it tilts away into white. A stone the size of a fist, dislodged by the brass, rolls over the lip. You do not hear it land for a long time.
+
+      "Stop there!" The voice comes from above you in the fog, young and sharp and badly frightened. "Not one more step, that's the slip! It went in the spring and took six of ours with it!" There is a scramble of feet on wet grass, and the sheep's bell is suddenly much nearer. "Stand still. Just stand still, and I'll come down to you."
+  - user: |
+      I stand perfectly still. "I'm not moving. Who's there?"
+    narrator: |
+      A shape comes down out of the white, sideways, the way hill people descend a slope: a girl of fourteen or so in an oilskin made for someone much larger, with a shepherd's crook in her fist. She stops well short of the cracked turf, reaches out with the crook, and hooks it firmly through the strap of your pack.
+
+      "Now come back toward me. Three steps. Don't look down, there's nothing to see." She does not let go until you are standing on the climbing path beside her, and then she lets out her breath in a rush.
+
+      "Wenna Garrow. That's my father's grazing you were about to walk off." Up close she has a wind-burned face and very pale eyebrows, and she is trying hard to look as though her hands are not shaking. A wet black-faced sheep with a bell at its neck has followed her down and stands watching you both without interest.
+
+      Wenna looks you over in turn. Her eyes stop on the long brass case. "Are you a pedlar? You've a pedlar's tube, for ribbons. Only pedlars know better than to take the edge path in a sea fret." She waits, crook planted, for you to account for yourself.
+  - user: |
+      "A mapmaker. And thank you. I would have gone over." I look around at the fog. "Is there shelter anywhere near? I can't walk the cliff in this."
+    narrator: |
+      "A mapmaker." Wenna turns the word over, and evidently decides that it explains the foolishness without excusing it. "There's our fold, up the hill. Stone walls and a lean-to with a hearth. You're welcome to it. Nobody's turned out in a fret, that's the rule up here."
+
+      She does not move off, though. She is looking past you into the fog, chewing her lip.
+
+      "Only I can't go in yet. I'm one short. Bramble, she's my best ewe, and she's carrying out of season, and she went off on her own this afternoon the way they do when it's their time. If she lambs out in this, on her own, I'll lose the pair." She scrubs her nose with the back of her wrist. "I know every stone of this hill. In fog that's no use, I walk in rings the same as anybody."
+
+      Her eyes go to your coat, where the compass is. She must have seen the brass when you held it.
+
+      "You've a needle. You could keep a straight line. If you'd walk the slope with me, side to side, till we find her, you can have half my supper as well as the roof."
+  - user: |
+      "Agreed. You call her, and I'll keep us on a line." I hold the compass flat in my palm and lead us across the slope in straight passes, east to west and back.
+    narrator: |
+      It is slow, cold work. The needle holds the line, and you count the paces of each pass while Wenna walks at your elbow with her head up, calling. It is a call with no words in it, three falling notes, and the fog swallows it a few yards out.
+
+      The first pass finds a boulder and a dead gorse bush. The second finds the black-faced bellwether again, which has followed and seems to think this a game. Wenna's calls grow shorter. She has stopped talking between them.
+
+      On the third pass something answers. It is a low, strained bleat, quite unlike the bellwether's, and it comes from below and to the left. Wenna is running before the sound has finished.
+
+      The ewe is lying on her side in a hollow under a bank of gorse, her flank heaving. Wenna drops to her knees in the wet, pushes back her sleeves, and looks. When she speaks her voice has gone flat and practical.
+
+      "It's coming backwards. I can turn it, I've done it twice. I need both hands for that, and I need someone at her head to hold her down, hard. She'll fight." She looks up at you through her wet hair.
+  - user: |
+      I kneel at the ewe's head, lean my weight on her shoulder and talk to her quietly, keeping my bandaged arm clear of her legs.
+    narrator: |
+      Bramble's shoulder is hot and solid under your weight, and the wool is so wet it squeaks. She strains against you twice, hard, her hooves scoring the turf, and then lies trembling with one yellow eye rolled up at your face. Wenna works with her own eyes shut and her tongue between her teeth, saying "there, there, there" over and over to nobody in particular.
+
+      It takes a long time and then it takes no time at all. The lamb slides out onto the grass, slick and dark, and does not move. Wenna clears its mouth with one finger, picks it up by the hind legs and swings it, and rubs its ribs with a fistful of dry bracken from under the bank. It sneezes. Bramble heaves herself to her feet, shoving you aside, and begins to lick it.
+
+      Wenna sits back in the mud and grins, for the first time, from ear to ear.
+
+      Later, in the lean-to, with a fire of gorse roots and the oatcake broken in two, she tells you what lies ahead. "Two miles on there's the light, at the Point. The keeper's old Tane. Sour as sloes, but he'll not shut the door on you." She pokes the fire. "There were two men on the lower path at dusk, with a lantern, shouting to each other. They turned back. Were they after you?"

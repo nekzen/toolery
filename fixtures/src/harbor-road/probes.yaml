@@ -1,0 +1,113 @@
+# Probes asked at the end of the frozen conversation. One scenario is
+# generated per probe and per context length by scripts/build_rp_fixtures.py.
+# __NPCS__ is replaced by the card's npc_names joined with "|".
+#
+# Every check is deterministic. They are heuristics with known blind spots
+# (see README, "Long-context writing and roleplay"); each names the defect it
+# detects with `failure_kind`, which is what `toolery rp-report` counts.
+defaults:
+  tier: hard
+  # A writing temperature: these defects are intermittent, the point is their
+  # RATE over several trials. Trial n is sent seed + n.
+  sampling: {temperature: 0.8, min_p: 0.05, seed: 1000, max_tokens: 350}
+
+probes:
+  - key: leak-stranger
+    title: "Knowledge leak: a stranger must not know the player's name"
+    tags: [roleplay, long_context, knowledge_leak]
+    description: |
+      The player's name was told to one character only, at the start of the
+      conversation. A stranger who has never met her now speaks to her. He
+      may ask her name; if he SAYS it, he knows what he was never told.
+    prompt: |
+      Weeks later, on a road far inland where nobody has ever met me or heard of me, I sit down on a milestone to rest. A man I have never seen before comes along the road, stops in front of me, and speaks first.
+    scoring: &leak
+      required:
+        - {check: response_length_bounded, min_length: 80, failure_kind: empty_reply}
+        # No spoken line at all: nothing to judge, counted apart from a leak.
+        - {check: dialogue_contains, patterns: ['\w'], failure_kind: no_dialogue}
+      forbidden:
+        - check: dialogue_contains
+          patterns: ['\b(Mara|Venn)\b']
+          failure_kind: knowledge_leak
+        # The name leaking through narration: written down, or "known".
+        - check: response_matches_regex
+          all_of:
+            - '\b(writes?|scrawls?|enters?|inks?|pens?)\b[^.\n"“”]{0,40}\b(Mara|Venn)\b|\b(knows?|recogni[sz]es?)\b[^.\n"“”]{0,30}\bname\b[^.\n"“”]{0,20}\b(Mara|Venn)\b'
+          failure_kind: knowledge_leak
+
+  - key: leak-ledger
+    title: "Knowledge leak: a clerk must ask the name, not write it"
+    tags: [roleplay, long_context, knowledge_leak]
+    description: |
+      A clerk who has never met the player opens a ledger and waits. The
+      situation invites the name; he can only obtain it by asking.
+    prompt: |
+      Weeks later, at a toll gate far inland where nobody has ever met me, I put a coin on the clerk's desk. He opens his ledger, dips his pen, and looks up at me.
+    scoring: *leak
+
+  - key: control-known
+    title: "Control: the one character who was told the name still knows it"
+    tags: [roleplay, long_context, retention]
+    description: |
+      Counterpart of the leak probes, and a retention probe: the name sits at
+      the very start of the context. Hesper was told it and should say it.
+      Without this control, a model that never uses names would look perfect.
+    prompt: |
+      Weeks later, with the work behind me, I walk back into the kitchen of the Heron's Rest by the yard door. "Hesper? It's me. Do you remember what I'm called?"
+    scoring:
+      required:
+        - {check: response_length_bounded, min_length: 40, failure_kind: empty_reply}
+        - {check: dialogue_contains, patterns: ['\bMara\b'], failure_kind: forgot_name}
+      forbidden: []
+
+  - key: ooc-pause
+    title: "Out of character: \"Pause scenario.\""
+    tags: [roleplay, long_context, ooc]
+    description: |
+      The player steps out of the story. The model must stop narrating and
+      answer plainly. Observed defects: the instruction is absorbed (the
+      story goes on, a character reacts to it) or "played" (the scene
+      freezes, in narration).
+    prompt: "Pause scenario."
+    scoring: &ooc
+      required:
+        - {check: response_length_bounded, min_length: 2, failure_kind: empty_reply}
+        - check: response_matches_regex
+          all_of:
+            - '\b(paus(ed|ing)|on hold|out of character|OOC|role-?play|scenario|resum(e|ing)|stopp(ed|ing)|end(ed|ing)|stepp(ed|ing) out|whenever you([''’]re| are) ready|let me know|how (can|may) I help|what([''’]s| is) your question|what would you like|understood|of course|no problem|certainly|sure|happy to|go ahead|ask away)\b'
+          failure_kind: ooc_no_acknowledgment
+      forbidden:
+        # The pause is acted out inside the story.
+        - check: response_matches_regex
+          all_of:
+            - '\b(the (world|tide|sea|waves?|wind|air|moment|fire)|time|everything)\s+(itself\s+)?(freezes|pauses|stops|halts|stills|hangs|stands still|goes still|falls silent|holds its breath)\b|\bthe scene (freezes|hangs|holds|stills|goes still)\b|\bfrozen in (place|time|mid)|(?<!\*)\*[^*\n]{3,}\*(?!\*)'
+          failure_kind: ooc_played_pause
+        # The story goes on: somebody speaks, with a speech tag.
+        - check: response_matches_regex
+          all_of:
+            - '["“”][^"“”\n]*["“”][,.]?\s+(\w+\s+){0,3}(says|asks|replies|mutters|calls|adds|answers|repeats|whispers|grunts|murmurs|shouts|continues)\b|["“”]\s+you (say|ask|reply)\b|\b(says|asks|replies|mutters|calls|adds|answers|repeats|whispers|grunts|murmurs|shouts)[,:]?\s+["“]'
+          failure_kind: ooc_absorbed
+        # The story goes on: a character acts, or "you" are narrated.
+        - check: response_matches_regex
+          all_of:
+            - '\b(__NPCS__|the (verger|keeper|old man|girl|woman|man|boy|sister|stranger)|he|she)\s+(leans|looks|blinks|frowns|tilts|raises|lowers|stares|waits|nods|shrugs|chuckles|laughs|squints|scratches|studies|glances|pauses|stops|straightens|watches|turns|smiles|grins|snorts|sighs)\b|^\s*You (stand|sit|hear|watch|walk|step|climb|remain|lean)\b'
+          failure_kind: ooc_absorbed
+
+  - key: ooc-stop
+    title: "Out of character: \"Stop the roleplay.\""
+    tags: [roleplay, long_context, ooc]
+    description: |
+      Same defect as the pause probe, with the other instruction observed to
+      be absorbed: an explicit request to stop.
+    prompt: "Stop the roleplay."
+    scoring: *ooc
+
+  - key: ooc-paren
+    title: "Out of character: a parenthesised OOC message"
+    tags: [roleplay, long_context, ooc]
+    description: |
+      The conventional form: parentheses and the OOC marker. Easier than the
+      bare instructions; a model failing here fails everywhere.
+    prompt: "(OOC: pause here for a second — I have a question about the story so far.)"
+    scoring: *ooc

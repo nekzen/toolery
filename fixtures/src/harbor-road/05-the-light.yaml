@@ -1,0 +1,102 @@
+# Day four and the last dawn: the lighthouse (Brannoch Tane), the bearings,
+# the keeper's stair, and the sea chapel (the verger Pask). Tane never
+# learns the name: she signs her work with initials only.
+turns:
+  - user: |
+      At first light I thank Wenna, leave her the last of my cheese, and walk the two miles to the lighthouse. I knock at the door at the foot of the tower.
+    narrator: |
+      The fog has thinned to a bright haze by the time the tower comes out of it: a white column streaked with rust, standing on a tongue of black rock with the sea on three sides. A low oil store and a wall of stacked driftwood huddle at its foot. High above, behind the glass, a light is still turning, pale in the daylight, and every minute a horn sounds one long flat note out to sea.
+
+      Your knock goes unanswered for some time. Then bolts are drawn, two of them, and the door opens a foot.
+
+      The keeper is very tall and badly stooped, a man of seventy with a white beard cut square and lamp-black worked deep into the creases of his hands. He looks at you as he might at a gull that had landed on his step.
+
+      "The light's lit and the horn's sounding. If you've come to complain of either, the Guild office is in Greywater, behind the fish market." His eyes move to the brass case on your back and rest there. Something in his face shifts, though it is not yet a welcome. "Ah. Or else you've come from the Guild. Which is it?"
+  - user: |
+      "Hired by the Guild, yes, to chart the estuary. I was told the keeper here knows the bar better than anyone alive."
+    narrator: |
+      The door opens the rest of the way.
+
+      "Brannoch Tane. Thirty-one years on this light. You'd better come up." He does not wait to see whether you follow. The stair winds up inside the wall, worn hollow in the middle of each step, and he climbs it without touching the rail.
+
+      The watch room is round, whitewashed, and scrupulously neat: a stove, a cot, a table under the seaward window, a brass telescope on a bracket. Tane takes a ledger down from a shelf. It is bound in sailcloth and as thick as a family bible.
+
+      "Every vessel lost on the bar since the day I came. Nineteen. For each one, the bearing from this gallery to where she struck, the state of the tide, and the wind." He lays it on the table in front of you. "The Wren was the last. Eleven men. I have sent these figures to Greywater four times, and four times I was told that nobody could make a chart of them."
+
+      He keeps his hand flat on the cover.
+
+      "Before I lift this. When your chart is finished, who has it? The Guild, to print for any master with a shilling? Or some gentleman, to keep in a drawer and sell the knowledge by the tide?"
+  - user: |
+      "The Guild, to publish. A man named Dunmore has offered me fifty pounds to do otherwise, and I've been walking away from his people for four days."
+    narrator: |
+      Tane looks at you for a long moment from under his eyebrows. Then he takes his hand off the ledger.
+
+      "Dunmore owns three pilot cutters, and he would like to own the bar as well. A man who alone knows the channel can charge what he pleases to bring a ship through it." He says it without heat, as a thing he has had many years to get used to. "Fifty pounds. He offered me a pension. Then the ledger is yours to copy, surveyor, every line."
+
+      He clears the table with two sweeps of his arm, lights a second lamp although it is day, and sets out a steel rule and a pair of brass dividers that look older than he is.
+
+      "The bearings are no use to you as figures. You'll want them plotted. I can read them out, it's my hand and nobody else can follow it." He nods at the window, where the haze is still hiding everything beyond the rocks. "And this will be gone by dark. Tomorrow, low water is at six. From the gallery, at first light, you will see the whole bar laid bare from end to end. It shows itself perhaps ten mornings in a year."
+
+      He folds his arms. "So. Copy first, or sleep first? You look as though you need both."
+  - user: |
+      "Copy first." I spread a clean sheet on his table, mark the tower at its centre, and plot each wreck as he reads the bearings out, working late into the night.
+    narrator: |
+      He reads in a flat, careful voice, like a man reading a lesson in church: the name of the vessel, the year, the bearing, the tide. The Marigold. The Two Sisters. The Providence of Thornby, with a cargo of salt. Each one becomes a small pencilled cross under your hand, and Tane waits for the scratch of the pencil to stop before he goes on to the next.
+
+      By the twelfth cross there is a shape on the paper. By the nineteenth, which is the Wren, it cannot be mistaken: a long curve lying across the mouth of the estuary, hooked at its northern end, with one stretch near the hook where no cross falls at all.
+
+      Tane has come round the table to stand behind you. He is quiet for some time.
+
+      "There she is," he says at last. "Thirty-one years, and that's the first I ever saw her whole."
+
+      Near midnight he climbs to trim the lamp. You hear his boots on the iron gallery, and then they stop. His voice comes down the stairwell, pitched low.
+
+      "Lanterns on the cliff path. Two, coming from the Thornby side, and slowly. They'll be at my door within the hour." A pause. "The door is oak, and no one enters a light without the keeper's leave. But it's you they want. I'd hear what you wish done."
+  - user: |
+      "Don't open to them. If they ask, a Guild surveyor is working here under the keeper's protection, and that's all. I'll take my bearings at dawn and be gone before they've decided what to do."
+    narrator: |
+      "That was my own thought," says Tane, and comes down.
+
+      The knocking begins a little before one. It is not loud; it is the knocking of men who would prefer to be thought reasonable. Tane takes a lamp and descends without haste. You hear the small iron grille in the door scrape open.
+
+      "Keeper." A thin voice, hoarse from the fog. "We're looking for a woman. A surveyor. There's ten pounds—"
+
+      "You're looking at a lighthouse." Tane's voice carries up the stair as flat as it was when he read the wrecks. "It is Guild property, and there is a surveyor here on Guild business. If you want her name you may apply to the Guild for it, since I have not asked it and do not mean to. Lay a hand on this door and I enter it in the log. The log goes to the harbour court every quarter day." The grille scrapes shut.
+
+      There is muttering outside, and then the sound of boots moving off. From the window you can see a lantern settle in the lee of the oil store and stay there.
+
+      Tane comes back up, sets a kettle on the stove, and puts two tin cups on the table beside the chart. "Four hours to low water," he says.
+  - user: |
+      At first light I go out onto the gallery with my instruments and take bearings on both ends of the bar and on every break in the surf between them.
+    narrator: |
+      The fog is gone as if it had never been. The air is cold and so clear that the far shore of the estuary looks close enough to hit with a stone.
+
+      And the bar is there. With the tide at its lowest it lies across the river mouth exactly as the crosses said it would: a long hook of pale sand and broken white water, more than a mile from end to end. Two-thirds of the way along there is a place, no wider than a ship is long, where the water runs dark and smooth between the breakers.
+
+      Tane stands at your shoulder and names the marks as you sight on them. The square tower of the church in Greywater. The iron beacon on Gull Rock. The tall chimney of the old saltworks on the southern shore. Each bearing you take falls within a pencil's width of his nineteen crosses.
+
+      "The gap," he says, when you reach it. "There. With the church tower in line with the beacon, a vessel is in deep water all the way." He does not say anything about the Wren. He does not need to.
+
+      Far below, by the oil store, two men have got stiffly to their feet. They are looking up at the gallery, shading their eyes against the sunrise.
+  - user: |
+      I ink in the channel, put my initials and the date in the corner of the sheet, and slide it into the map case. "Is there another way down from here, Brannoch?"
+    narrator: |
+      Tane watches you sign: two letters and a date. He reads them upside down and asks nothing about them. Something that might be approval crosses his face at being called by his first name, and is put away again.
+
+      "There is the keeper's stair." He takes you down past the watch room to the cellar, where barrels of lamp oil stand in rows, and hauls up a trapdoor by an iron ring. Cold air comes out of it, and the sound of water. "Cut in the rock by the men who built the tower. It comes out at the landing cove, where the supply boat ties up. They can't see the cove from the door."
+
+      He holds the lamp over the opening. "At low water there's a shingle beach under the cliff, all the way north to the sea chapel on the edge of Greywater. An hour's walk. When the tide turns, there's no beach, so you have until eight and not a minute past. The verger at the chapel is called Pask. He rings the Guild's bell and he'll take you to the hall."
+
+      From inside his coat he draws a folded paper, sealed with a blob of candle wax. "For the Guild master. It says the bearings are mine, and that the chart is honest." He holds it out to you over the dark square of the trapdoor.
+  - user: |
+      I take the letter, shake his hand, and go down the keeper's stair to the beach, then walk north under the cliff as quickly as the shingle allows.
+    narrator: |
+      His hand is dry and hard as a plank. He says only, "Mind the ninth step, it's loose," and lowers the trapdoor after you.
+
+      The stair is wet, steep, and black as a well, with a tarred rope for a rail. It lets you out into a cove no bigger than a barn, where an iron ring is set in the rock and green water sucks at a stone ledge. Beyond it the shingle begins, a grey ribbon between the cliff and the sea, and it is hard going: the pebbles roll under your boots and every step slides half a pace back. When you look round, the tower is already small behind you. Two smaller figures are still standing at its door, waiting for it to open.
+
+      The chapel comes into view round the last headland: a squat building with a stone cross, perched on a shelf of rock, with a flight of steps climbing from it into a crowd of slate roofs and masts. One green copper dome rises above the rest. Behind you the first waves of the returning tide are reaching the foot of the cliff.
+
+      An old man in a rusty black coat is sweeping sand off the chapel steps. He leans on his broom to watch you come.
+
+      "You cut that fine, traveller. Nobody walks in by the beach but smugglers and keepers. Which are you?"

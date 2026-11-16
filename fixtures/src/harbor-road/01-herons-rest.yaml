@@ -1,0 +1,51 @@
+# Hesper learns the name here, in private. She is the only one who ever does.
+name_allowed: true
+turns:
+  - user: |
+      I push open the door of the inn, shake the rain from my coat, and look for whoever is in charge. "A room for the night, if you have one. And something hot."
+    narrator: |
+      The Heron's Rest is a low-beamed room that smells of peat smoke and boiled barley. Three tables are taken by marsh men who glance up at the draught and go back to their dice. Behind the bar, a broad woman in her fifties with grey hair pinned under a kerchief is wiping a tankard with the corner of her apron. She studies your soaked coat, the leather satchel, the brass tube of the map case across your back.
+
+      "There's one room left, over the kitchen, so it's warm at least," she says. "Four pence with supper. Stew tonight, eel and leek." She sets the tankard down and holds out a hand, palm up, in the manner of someone who has been cheated before. "Pay now and I'll have the girl carry up water. You've come up the south road in this? There's been nobody through since noon."
+
+      One of the dice players, a thin man with a red scarf, has stopped playing to listen.
+  - user: |
+      I count four pence onto the bar and lower my voice. "I'd rather not say much with an audience. Is there somewhere quieter I can eat?"
+    narrator: |
+      The woman follows your glance to the man in the red scarf and gives a short nod, as if this confirms something she already suspected about him. "Kitchen," she says, and lifts the hinged end of the bar to let you through.
+
+      The kitchen is hot and crowded with hanging pots. A girl of about twelve is scrubbing turnips at a basin; the woman sends her off to air the room upstairs. She ladles stew into a bowl, cuts bread, and puts both on the scarred table by the hearth.
+
+      "I'm Hesper Quill. This house has been mine for nineteen years and nothing said at this table has ever walked out of the door." She pulls out the stool opposite and sits, folding her arms. "That one out there is Dunmore's man. He sits in my taproom and counts strangers for whoever pays him. So. Who are you, and should I be worried about you sleeping under my roof?"
+  - user: |
+      "My name is Mara Venn. I'm a cartographer, hired by the Pilots' Guild in Greywater to chart the estuary. A rival would pay well to know where I am, so I don't give my name on the road. You're the first person I've told since I left the south, and I'd like it to stay that way."
+    narrator: |
+      Hesper considers this for the time it takes the fire to settle. Then she unfolds her arms.
+
+      "Mara Venn," she repeats quietly, as though fitting the name to your face. "Well, Mara, it stays in this kitchen. Out there you're a traveller who paid in advance, and that's all anyone in my taproom needs." She pushes the bread closer to you. "The Guild's been asking for a proper chart since the Wren went down on the bar two winters back. Eleven men. If you're the one they finally sent, you'll find friends in Greywater. You'll also find the people who liked the estuary better when nobody could read it."
+
+      She gets up to stir a pot, and speaks with her back to you. "It's four days north on foot along the harbor road, five if the Wick is in flood. I can tell you where to sleep and who to avoid. Ask what you like."
+  - user: |
+      I reach across the hearth for the bread knife and my sleeve catches the handle of the oil lamp on the shelf. I try to steady it.
+    narrator: |
+      The lamp tips before your hand closes on it. Hot oil runs down the shelf and over your left forearm, and it burns at once. The lamp itself rolls, and Hesper catches it against her hip without looking, the way a woman catches a falling child.
+
+      "Cold water, now. Don't rub it." She has your wrist in a firm grip and is steering your arm into the turnip basin before the sentence is finished. The water is shockingly cold. A red band is already rising across the inside of your left forearm, a hand's width below the elbow, about as long as your palm.
+
+      "It'll blister, but it's clean," Hesper says after a long look. She takes a pot of green salve from a shelf, comfrey by the smell, and a roll of linen. "Keep it there while I count to two hundred. Then I'll dress it. You'll want to change that bandage every evening and keep the arm out of salt water, which on this coast is easier said than done." She starts counting under her breath.
+  - user: |
+      While she bandages my arm, I take the brass compass out of my satchel with my good hand and set it on the table to check it wasn't damaged when I knocked the shelf. "My brother Edrin gave me this before he sailed. The glass was already cracked."
+    narrator: |
+      Hesper ties off the linen with a flat knot and turns the compass toward the firelight with one finger, careful not to lift it. It is a pocket instrument of old brass, worn smooth at the hinge. A single crack runs across the glass from the north point to the rim, fine as a hair. Under it the needle swings, hesitates, and settles.
+
+      "Still true," she says. "My husband had one like it. Not as good." She reads the engraving inside the lid, lips moving: a small heron, and the initials E.V. "Edrin Venn. He's at sea, then?" She does not wait for an answer you might not want to give. "Keep it inside your coat on the road. Brass like that is worth a month's wages in Thornby, and a cracked glass doesn't lower the price as much as you'd think."
+
+      From the taproom comes the scrape of a bench. Hesper tilts her head, listening. "That'll be Dunmore's man leaving to make his report. A woman with a map case, travelling alone, no name given. That's all he has." She looks rather pleased about it.
+  - user: |
+      In the morning I come down early with my pack. "Thank you for last night, Hesper. What do I need to know about the road north?"
+    narrator: |
+      The kitchen is grey with dawn and smells of fresh bread. Hesper is already kneading, floured to the elbows. She points her chin at a cloth bundle on the table: a loaf, a wedge of hard cheese, a twist of salt.
+
+      "For the road. Don't argue, Mara, you paid for supper and ate half of it." She keeps working the dough while she talks. "First day is the causeway across Sallow Fen. Stay on the stones; the green on either side will hold a heron and nothing heavier. There's an eel-catcher out there named Tobin, deaf in one ear, honest. Second night, there's a salt-boiler's hut past the dunes. Third day you cross the Wick at the ford, and if the bridge is down again you wait, you do not wade. After that it's Thornby market, then the cliff path to Greywater."
+
+      She wipes her hands and, for the first time, comes around the table. She checks the knot on your bandage, nods, and opens the back door onto the yard so that you need not pass through the taproom. Mist lies over the fen. "Go quietly. And if you come back this way, the room over the kitchen is yours."

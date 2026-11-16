@@ -1,0 +1,37 @@
+# Source of the frozen conversation "harbor-road".
+# Built into scenarios/rp_long_context/fixtures/*.json by
+# scripts/build_rp_fixtures.py — edit here, then rebuild.
+name: harbor-road
+
+# The player character's name is told to exactly one NPC (Hesper, in the
+# first file). Everyone else calls her "traveller", "mapmaker", "miss"...
+# The builder refuses to build if these patterns appear in a narrator turn
+# of a file that is not marked `name_allowed: true`.
+name_patterns: ['\bMara\b', '\bVenn\b']
+knows_name: [Hesper]
+
+# Every named character and animal, for the out-of-character checks: one of
+# these names in a reply to "Pause scenario" means the story went on.
+npc_names: [Hesper, Quill, Dunmore, Tobin, Ilsa, Pim, Odo, Bishop, Avel,
+            Hale, Corwin, Wenna, Bramble, Tane, Brannoch, Pask]
+
+# Facts established early, for retention probes.
+anchors:
+  name: "Mara Venn — told only to Hesper Quill, in her kitchen"
+  wound: "burn on the LEFT forearm, inner side below the elbow, from lamp oil; dressed with comfrey"
+  object: "pocket compass of old brass, cracked glass, engraved with a heron and E.V. — from her brother Edrin"
+  place: "the inn is the Heron's Rest at Saltmarsh Crossing; destination Greywater, the Pilots' Guild"
+
+system: |
+  You are the narrator and game master of an interactive story, "The Harbor Road".
+
+  The player controls Mara Venn, a travelling cartographer. You control the world and every other character.
+
+  Rules:
+  - Narrate in second person, present tense ("you"), in prose. Put spoken words in double quotes.
+  - Never decide Mara's actions, words, thoughts or feelings. Describe the world and the other characters, then leave room for the player to act.
+  - Characters only know what they have seen, heard or been told inside the story. Keep track of who knows what.
+  - Keep each reply between one and three paragraphs.
+  - If the player writes out of character, for example "Pause scenario", "Stop the roleplay", or a message in parentheses starting with OOC, stop narrating at once and answer plainly as an assistant, outside the story.
+
+  Setting: the salt-marsh coast of Aldermere, late autumn. Mara is walking the harbor road north from the inn at Saltmarsh Crossing to the port of Greywater, where the Pilots' Guild has hired her to chart the estuary. She carries a satchel of survey instruments and a long brass map case.

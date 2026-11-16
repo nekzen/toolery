@@ -1,0 +1,77 @@
+# Day one and the first night: the causeway (Tobin Marsh) and the salt pans
+# (Ilsa Brandt and her son Pim). Nobody here learns the name.
+turns:
+  - user: |
+      I follow the causeway out across the fen, keeping to the stones as I was told, and watch for the eel-catcher.
+    narrator: |
+      The causeway is a single line of flat grey stones, each a long stride from the next, laid across water the colour of strong tea. Reeds stand higher than your head on both sides. Where the mist thins you can see how far the fen runs: to the edge of the sky in every direction, with the inn already a dark smudge behind you.
+
+      Toward mid-morning you hear wood knocking on wood. A punt is nosed into the reeds a few yards off the stones, and a wiry man in a sealskin cap is lifting wicker traps out of the water and shaking them into a tub. He does not turn at your footsteps. Only when your shadow falls across his tub does he look up, and he cups a hand behind his right ear at once.
+
+      "You'll have to talk to this side," he says, too loudly. "The other's been shut since a mast came down on it." His eyes go to the cloth bundle tied to your pack and he grins, showing four teeth. "That's Hesper's bread. She only ties that knot for people she's taken to. Tobin Marsh. What does a friend of Hesper's want on my fen?"
+  - user: |
+      I keep the map case behind my shoulder and speak toward his good ear. "She said you were honest. I'm going north to Greywater. Is the causeway sound all the way across?"
+    narrator: |
+      "Honest," Tobin repeats, pleased, as if it were a rare fish. "It's sound as far as the Widow's Elbow. After that there's three stones gone under since the rains, and the gap's wider than you can jump with a pack on. People try it. I find their hats."
+
+      He drops the last trap into the punt and wipes his hands down his jerkin. "I'll pole you round the gap. No charge to one of Hesper's, but you can hold the tub steady while I work the far line, since I've only the two hands."
+
+      His gaze has drifted past your shoulder while he talks. However you stand, the brass end of the case shows above your pack, and he nods at it. "That's a chart tube. My cousin sailed with a man who had one. So you're a mapmaker." He seems entirely satisfied with this, and does not ask for anything more. "Well, mapmaker? In you get, or stay and jump. The eels don't mind which."
+  - user: |
+      I climb into the punt and steady the tub between my knees. "Has anyone else come along the causeway this morning?"
+    narrator: |
+      The punt rocks, settles, and slides out of the reeds as Tobin leans on his pole. The tub is half full of eels, brown and green, tying and untying themselves; cold water slops over your boots.
+
+      "One," Tobin says. "Before sunrise, which is no hour for an honest man to be on the stones. Thin fellow, red scarf, walking fast with no pack. He stood where you stood and asked had a woman gone by with a brass case, and what was she called." He spits neatly over the side. "I told him I was deaf. That's half true, and half was all he'd paid for."
+
+      He poles in silence past a place where the causeway simply stops. Three stones lie under a hand's depth of water, furred with weed, and beyond them the line picks up again. "He went on north. Toward the salt pans, I'd say, there's nothing else that way before the river." Tobin glances at you sideways, with the first sign of real curiosity. "He didn't know what you were called. I noticed that. Seemed to me it bothered him a good deal."
+  - user: |
+      At the far side of the gap I step back onto the stones and hold out a penny. "For the crossing. And if he comes back this way, you never saw me."
+    narrator: |
+      Tobin looks at the penny as though it might bite him and closes your fingers over it with his own wet hand.
+
+      "Saw who? A mapmaker with no name is nobody at all, and I can't tell a man what I never heard." He rummages under the thwart and comes up with something long wrapped in dock leaves, which he pushes into your arms before you can refuse it. It is warm and smells of oak smoke. "Smoked this morning. Eat it tonight, it won't keep past tomorrow."
+
+      He points north with the pole. The stones run on toward a low pale line that must be the dunes. "Two hours to dry ground. After that, follow the posts with the white paint on them, and only those. There's a low stretch the tide takes at dusk, so don't dawdle looking at birds. The salt-boiler's a widow called Ilsa. She'll seem hard. She isn't."
+
+      He is already backing the punt into the reeds, one hand lifted, his deaf side turned toward anything else you might say.
+  - user: |
+      I follow the white posts through the dunes toward the smoke, and call out well before I reach the hut. "Hello the house! A traveller, looking for a dry floor tonight."
+    narrator: |
+      The salt pans lie behind the last dune like a row of grey mirrors: shallow clay basins, a dozen of them, each rimmed with a white crust. At the far end stands a turf-roofed hut with a lean-to boiling shed, and the smoke you have been following rises from an iron pan as wide as a cart, set over a trench of glowing driftwood.
+
+      A woman straightens from the pan with a long wooden rake in her hands. She is perhaps forty, raw-boned, her forearms white to the elbow with dried brine. A boy's face appears round the door of the hut behind her and is not withdrawn.
+
+      "I heard you. They heard you in Thornby." She looks you over without hurry: boots, pack, the bandage showing at your cuff, the brass case. "Ilsa Brandt. A dry floor's a penny. Supper you'll rake for, miss, because I'm a hand short since my man drowned and the pan won't wait for anyone's manners." She holds the rake out toward you, handle first, and waits to see what you do with it.
+  - user: |
+      I pay the penny and take the rake in my right hand, keeping the bandaged arm against my chest. "Show me how it's done."
+    narrator: |
+      Ilsa pockets the penny and shows you once, briskly. The rake goes in at the far edge of the pan, flat, and is drawn toward you so that the crust comes away in a wet grey sheet and heaps against the rim. Then the heap is lifted into a wicker cone to drain. The heat off the pan dries your face tight in a moment, and the steam tastes of the sea.
+
+      "Slower. You're not mowing hay. Let it come to you." She watches three more strokes, grunts, and leaves you to it while she feeds the trench.
+
+      The boy has crept out and sat down on an upturned basket where he can see you work. He is about nine, with his mother's long jaw and a scab on each knee. For a while he says nothing. Then, in the clear carrying voice of a child who has been told not to ask things, he says, "What happened to your arm?"
+
+      "Pim." Ilsa does not turn round. "Leave the lady's arm where it is."
+
+      Pim goes on looking at the bandage anyway, and then at you, plainly still hoping for an answer.
+  - user: |
+      "A burn, from lamp oil. It's healing." I draw the rake in again and nod toward the north. "Did a man in a red scarf come by here today?"
+    narrator: |
+      Pim nods hard, glad to have been asked something, but it is his mother who answers. She has stopped feeding the fire.
+
+      "Noon. He bought nothing and he sat on my wall as if he'd paid for it." Ilsa knocks a brand deeper into the trench with her heel. "He wanted to know about a woman with a brass case. Which way she'd gone, what she was called. He offered the boy a halfpenny."
+
+      "I said nobody came," Pim says, "because nobody had, then." He considers. "I'd have liked the halfpenny."
+
+      "He's Dunmore's," Ilsa goes on. "Dunmore holds the lease on half these pans and I pay him rent on quarter day. That's all I owe him. I don't owe him my eyes." She looks at the case on your back, and then away from it, deliberately. "He said he'd wait at the Wick ford, where the bridge is, since everyone going north must cross there. That's what he believes. There's an old carters' track from the back of the dunes to a rope ferry two miles upstream. It's rough going, miss, and it's where I'd walk, if I were whoever he's after."
+  - user: |
+      After supper I unwrap my arm by the fire to change the dressing, and ask Ilsa if she can spare a strip of clean linen. Then I hold the compass out to Pim. "Do you want to see how this works?"
+    narrator: |
+      Ilsa tears a long strip from a washed flour sack and brings the rushlight close before she gives it to you. She studies the burn with the frankness of someone who has seen a good many. "Blistered and ugly, and no red creeping from it. Whoever dressed that first knew what they were about." She hands over the strip and a cup of water that has been boiled, and goes back to scouring the pot.
+
+      Pim takes the compass in both hands as if it were an egg. He turns the brass case over, runs a thumbnail along the crack in the glass, and frowns at it. "It's broken."
+
+      It is not, as he finds when he turns in a circle on the earth floor and the needle refuses to turn with him. He does it again, faster, and then sits down hard. He opens the lid and traces the marks cut inside it with one finger, slowly, though it is clear from his face that he cannot read them.
+
+      "It always knows," he says, with deep respect. He looks up at you across the fire. "Who gave it to you?"
