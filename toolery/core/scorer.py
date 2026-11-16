@@ -678,15 +678,29 @@ def check_response_matches_regex(calls, chk, response):
 
 
 _DIALOGUE_SPAN = re.compile(r'"([^"]*)(?:"|$)')
+_PLAYER_VERB = (r"(?:say|reply|answer|ask|tell|murmur|whisper|add|begin|admit|explain|call|offer|"
+                r"manage|continue|repeat|mutter|shout)")
+# `"...," you say`  /  `You say, "..."`  /  `"...," you say. "..."`
+_PLAYER_TAG_AFTER = re.compile(rf"^[,.]?\s*you\s+{_PLAYER_VERB}\b", re.IGNORECASE)
+_PLAYER_TAG_BEFORE = re.compile(rf"\byou\s+{_PLAYER_VERB}(?:\s+\w+){{0,3}}\s*[,:.]?\s*$", re.IGNORECASE)
 
 
-def dialogue_spans(text: str) -> list[str]:
+def dialogue_spans(text: str, exclude_player: bool = False) -> list[str]:
     """What is SPOKEN in a piece of prose: the text between double quotes,
     paragraph by paragraph. Curly quotes are folded to straight ones; a quote
-    left open (a reply cut by max_tokens) runs to the end of its paragraph."""
+    left open (a reply cut by max_tokens) runs to the end of its paragraph.
+
+    exclude_player drops the lines a second-person narrator gives to the
+    player ("...," you say): they are the narrator speaking in her place,
+    which is another defect than a character knowing too much."""
     spans: list[str] = []
     for paragraph in text.translate(_MATCH_CHAR_TRANS).split("\n"):
-        spans.extend(m.group(1) for m in _DIALOGUE_SPAN.finditer(paragraph))
+        for m in _DIALOGUE_SPAN.finditer(paragraph):
+            if exclude_player and (
+                    _PLAYER_TAG_AFTER.search(paragraph[m.end():m.end() + 40])
+                    or _PLAYER_TAG_BEFORE.search(paragraph[max(0, m.start() - 60):m.start()])):
+                continue
+            spans.append(m.group(1))
     return [s for s in spans if s.strip()]
 
 
@@ -694,12 +708,13 @@ def check_dialogue_contains(calls, chk, response):
     """Every regex in `patterns` matches inside spoken dialogue — narration is
     ignored. A narrator may write a name the speaker has no way of knowing;
     a character saying it aloud is the knowledge leak. Case-insensitive unless
-    `case_sensitive: true`. The detail quotes the line as proof."""
+    `case_sensitive: true`; `exclude_player: true` ignores the lines given to
+    the player ("...," you say). The detail quotes the line as proof."""
     if response is None:
         return _bad("dialogue_contains", "no response")
     d = chk.model_dump()
     flags = 0 if d.get("case_sensitive", False) else re.IGNORECASE
-    spans = dialogue_spans(response)
+    spans = dialogue_spans(response, exclude_player=bool(d.get("exclude_player", False)))
     proof: list[str] = []
     for pattern in d["patterns"]:
         hit = next((s for s in spans if re.search(str(pattern), s, flags)), None)

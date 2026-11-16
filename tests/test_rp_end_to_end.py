@@ -64,7 +64,7 @@ def test_run_then_report(tmp_path, monkeypatch):
     assert (leak["trials"], leak["passed"], leak["failures"]) == (4, 2, {"knowledge_leak": 2})
     assert leak["prompt_tokens"] == 15000 and leak["sampling"] == {
         "temperature": 0.8, "min_p": 0.05, "max_tokens": 350}
-    assert "Mara Venn, as I live" in leak["examples"][0]["proof"]
+    assert leak["examples"][0]["proof"] == 'spoken: "Mara Venn, as I live,"'
     assert leak["examples"][0]["seed"] in (1001, 1003)
     assert cells[("control-known", "8k")]["pass_rate"] == 1.0
     assert cells[("ooc-pause", "8k")]["pass_rate"] == 1.0

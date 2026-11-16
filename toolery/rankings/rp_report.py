@@ -49,15 +49,16 @@ def length_key(length: str) -> tuple[int, str]:
 
 
 def _proof(checks_json: str | None) -> str:
-    """The spoken line a dialogue check quoted, when there is one."""
+    """The spoken line quoted by the check that failed the trial: a forbidden
+    check that fired is stored inverted, as a failure."""
     try:
         checks = json.loads(checks_json or "[]")
     except ValueError:
         return ""
     for c in checks if isinstance(checks, list) else []:
         detail = str(c.get("detail", "")) if isinstance(c, dict) else ""
-        if detail.startswith("spoken:") and len(detail) > 12:
-            return detail
+        if c.get("result") == "fail" and detail.startswith("(inverted) spoken:"):
+            return detail.removeprefix("(inverted) ")
     return ""
 
 

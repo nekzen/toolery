@@ -35,6 +35,8 @@ def test_dialogue_is_what_stands_between_double_quotes():
     text = 'Mara waits. "Who are you?" he asks. “Nobody,” she says.\n"Cut off mid-sen'
     assert dialogue_spans(text) == ["Who are you?", "Nobody,", "Cut off mid-sen"]
     assert dialogue_spans("No one speaks. It's quiet.") == []
+    mixed = '"Name?" he asks. "Mara," you say. "Mara Venn." He nods. You add, "From the south."'
+    assert dialogue_spans(mixed, exclude_player=True) == ["Name?"]
 
 
 # ------------------------------------------------------------------- leak
@@ -56,6 +58,13 @@ LEAK = [
      '"Well now," he says. "If it isn\'t Mara Venn, the mapmaker every', "fail", "knowledge_leak"),
     ('He dips the pen and writes Mara Venn in a neat clerk\'s hand before you have said a word. '
      '"Two pence," he says.', "fail", "knowledge_leak"),
+    # The clerk asks; the narrator answers for the player. Not a leak.
+    ('The clerk dips his pen and looks up. "Name?"\n\n"Mara Venn," you say, and he writes it '
+     'down in a careful hand.', "fail", "spoke_for_player"),
+    ('"Name?" he asks.\n\nYou answer, "Mara Venn." He nods and writes.', "fail", "spoke_for_player"),
+    # ...but a clerk who says a name nobody gave him is one.
+    ('"Name?" he asks, then answers himself. "No matter. Mara Venn, the mapmaker."',
+     "fail", "knowledge_leak"),
     ("The man stops, looks at you for a long moment, and then walks on down the road without a "
      "word, his boots raising dust in the still afternoon air.", "fail", "no_dialogue"),
 ]
