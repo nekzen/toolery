@@ -7,6 +7,22 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+- Category `rp_long_context` (12 scenarios): roleplay probes at the end of a
+  frozen conversation, at 8k and 16k of context. Knowledge leak (a character
+  says a name only another character was told), its control, and three
+  out-of-character instructions that must not be absorbed by the story.
+  Sampled at a writing temperature with one seed per trial; unranked.
+  `toolery rp-report` gives pass rates per probe and context length.
+- Scenario fields `conversation` (a frozen, hashed conversation the prompt
+  continues) and `sampling` (temperature, min_p, seed, max_tokens). Sampling
+  settings and the conversation's identity are stored with each result in
+  `scenario_results.meta_json`.
+- Check `dialogue_contains`: regexes matched only inside spoken dialogue.
+- Any check may declare `failure_kind`, the label recorded when it is the
+  one that fails the trial. A wrong final answer is now `wrong_answer`
+  instead of `wrong_tool`.
+- Before a raw/cloud run, the server is asked for its context size; scenarios
+  whose conversation does not fit are skipped and listed.
 - `toolery efficiency`: capability (solved, budget ignored), strict pass,
   over-budget rate, and median tokens and seconds per solved trial, per
   model — no thresholds, for weighing models against each other. Filters:

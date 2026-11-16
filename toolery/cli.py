@@ -814,6 +814,74 @@ def efficiency(
                   "s/solved compares only on the same hardware[/dim]")
 
 
+@app.command(name="rp-report")
+def rp_report(
+    run: list[str] = typer.Option(None, "--run", help="run_id to include (repeatable; default: all runs)"),  # noqa: B008
+    model: list[str] = typer.Option(None, "--model", help="model to include (repeatable)"),  # noqa: B008
+    failures: bool = typer.Option(False, "--failures", help="list every failed trial with its seed and trace"),
+    json_output: bool = typer.Option(False, "--json", help="emit machine-readable JSON"),
+):
+    """Long-context writing / roleplay: pass rates per probe and context length.
+
+    Each cell is trials passed / trials answered, followed by what went wrong
+    in the others (knowledge_leak, ooc_absorbed, ...). These scenarios are
+    sampled, so read rates, and run enough trials for the rate to mean
+    something.
+    """
+    from dataclasses import asdict
+
+    from toolery.rankings.rp_report import compute_rp_report, length_key
+
+    cells = compute_rp_report(_store(), run_ids=run or None, models=model or None)
+    if json_output:
+        console.print_json(json.dumps([{**asdict(c), "pass_rate": c.pass_rate} for c in cells]))
+        return
+    if not cells:
+        console.print("[yellow]No rp_long_context results. Run: "
+                      "toolery run --model NAME --category rp_long_context[/yellow]")
+        return
+
+    groups: dict[tuple[str, str], list] = {}
+    for c in cells:
+        groups.setdefault((c.model, c.adapter), []).append(c)
+    for (model_name, adapter), group in groups.items():
+        lengths = sorted({c.length for c in group}, key=length_key)
+        headers = []
+        for length in lengths:
+            toks = [c.prompt_tokens for c in group if c.length == length and c.prompt_tokens]
+            headers.append(f"{length} (~{sum(toks) / len(toks):.0f} tok)" if toks else length)
+        t = Table("probe", *headers, title=f"{model_name} ({adapter}) — long-context writing / roleplay")
+        by_probe: dict[str, dict[str, object]] = {}
+        for c in group:
+            by_probe.setdefault(c.probe, {})[c.length] = c
+        for probe, per_length in by_probe.items():
+            row = []
+            for length in lengths:
+                c = per_length.get(length)
+                if c is None:
+                    row.append("—")
+                    continue
+                rate = c.pass_rate
+                colour = "dim" if rate is None else "green" if rate == 1 else "red" if rate < 0.5 else "yellow"
+                text = f"[{colour}]{c.passed}/{c.judged}[/{colour}]"
+                if c.failures:
+                    text += "  " + ", ".join(f"{k} {n}" for k, n in c.failures.items())
+                row.append(text)
+            t.add_row(probe, *row)
+        console.print(t)
+        samplings = {json.dumps(c.sampling, sort_keys=True) for c in group if c.sampling}
+        console.print(f"[dim]sampling: {' / '.join(sorted(samplings)) or 'n/a'} — one seed per trial | "
+                      f"runs: {', '.join(sorted({r for c in group for r in c.runs}))}[/dim]")
+        if failures:
+            for c in group:
+                for e in c.examples:
+                    console.print(f"  {e['scenario_id']} trial {e['trial']} seed {e['seed']}: "
+                                  f"[red]{e['failure_kind']}[/red] {e['proof']}\n"
+                                  f"    [dim]{e['trace_path']}[/dim]", highlight=False)
+    console.print("[dim]cell = passed / answered, then the failures by kind | deterministic checks, "
+                  "no judge | token counts are the server's prompt_tokens[/dim]")
+
+
 roles_app = typer.Typer(no_args_is_help=True, help="Role-based minimum-threshold checks and rankings.")
 app.add_typer(roles_app, name="roles")
 

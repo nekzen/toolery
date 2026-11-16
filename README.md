@@ -13,8 +13,8 @@ across a matrix of capability dimensions.
 
 ## Overview
 
-Toolery ships **200 scenarios** across **4 difficulty tiers**
-(`easy` / `medium` / `hard` / `very_hard`) and **20 categories** (coding,
+Toolery ships **212 scenarios** across **4 difficulty tiers**
+(`easy` / `medium` / `hard` / `very_hard`) and **21 categories** (coding,
 debugging, security review, data analysis, fact verification, and more).
 Each scenario is a self-contained YAML file describing:
 
@@ -351,6 +351,18 @@ toolery efficiency [--role coder] [--category debugging]... [--run <run_id>]... 
 --write` first if the scorer changed since your runs, so `strict` reflects
 the current rules.
 
+### `toolery rp-report`
+
+Pass rates of the `rp_long_context` scenarios per probe and context length,
+with the failures by kind. See
+[Long-context writing and roleplay](#long-context-writing-and-roleplay).
+
+```bash
+toolery rp-report                       # every model that has results
+toolery rp-report --model NAME --failures   # + each failed trial: seed, quoted line, trace
+toolery rp-report --json
+```
+
 ### `toolery rescore`
 
 Re-score stored trials with the current scorer and scenario files — no
@@ -477,7 +489,7 @@ by the *required* checks, still not by the `partial` list.
 
 ### Categories
 
-All 20 categories (directory name under `scenarios/` == `category` value):
+All 21 categories (directory name under `scenarios/` == `category` value):
 
 | Category | Focus |
 |---|---|
@@ -501,6 +513,7 @@ All 20 categories (directory name under `scenarios/` == `category` value):
 | `workflow_orchestration` | Coordinating multi-tool business workflows. |
 | `security_audit` | Security-focused review of code/configs/infrastructure. |
 | `data_analysis` | Extracting/summarizing insight from structured data. |
+| `rp_long_context` | Roleplay probes at the end of a frozen 8k/16k conversation: knowledge leaks, out-of-character instructions. Sampled, unranked — see [Long-context writing and roleplay](#long-context-writing-and-roleplay). |
 
 ### Available mock tools
 
@@ -564,6 +577,7 @@ entry is `{check: <name>, ...check-specific fields}`.
 | `response_satisfies` | Keyword/phrase matching over `all_of` / `any_of` / `none_of` groups. |
 | `response_matches_regex` | Same `all_of`/`any_of`/`none_of` shape as `response_satisfies`, but entries are regexes. |
 | `response_diff` | **(new)** Flags near-duplicate responses against a `reference` string (Jaccard token-overlap or cosine bag-of-words similarity) — catches regurgitation/padding attacks where a model echoes back a prompt/template instead of answering. Fields: `reference`, `method: token_overlap\|cosine` (default `token_overlap`), `max_similarity` (default 0.95). |
+| `dialogue_contains` | Regexes in `patterns` matched only inside spoken dialogue (text between double quotes; curly quotes folded; an unclosed quote runs to the end of its paragraph). Narration is ignored. The result quotes the matching line. |
 | `response_length_bounded` | **(new)** Gates response character length to prevent padding attacks and catch truncated/empty responses. Fields: `min_length`, `max_length`, or `target` + `tolerance`. |
 
 ### Multilingual variants
@@ -616,6 +630,54 @@ scoring:
    --dry-run` to sanity-check budget/tool wiring before a real run.
 
 ---
+
+## Long-context writing and roleplay
+
+The `rp_long_context` category measures defects that only appear deep into a
+story, and only some of the time. Each scenario replays a **frozen
+conversation** (a 42-exchange second-person roleplay, `harbor-road`), asks one
+more message, and checks the reply. The same conversation is cut to several
+context lengths that share the same beginning, so a fact given in the first
+exchanges lies deeper as the context grows.
+
+| Probe | The reply fails when… | `failure_kind` |
+|---|---|---|
+| `leak-stranger`, `leak-ledger` | a character who was never told the player's name says it (or writes it down). The name was told to one character only, in the first chapter. | `knowledge_leak` |
+| `control-known` | the one character who *was* told the name no longer says it. Counterpart of the leak probes, and a retention probe. | `forgot_name` |
+| `ooc-pause`, `ooc-stop`, `ooc-paren` | an out-of-character message ("Pause scenario.", "Stop the roleplay.", "(OOC: …)") is answered by the story: a character reacts or the narration goes on (`ooc_absorbed`), the scene "freezes" in narration (`ooc_played_pause`), or nothing acknowledges it. | `ooc_absorbed`, `ooc_played_pause`, `ooc_no_acknowledgment` |
+
+```bash
+toolery run --model NAME --category rp_long_context --trials 10 --concurrency 1 \
+    --base-url http://HOST:PORT
+toolery rp-report --failures
+```
+
+How to read it:
+
+- **These are rates.** The scenarios are sampled at temperature 0.8,
+  min_p 0.05, with one seed per trial (`seed + trial`), so a trial can be
+  replayed. Five trials tell you a defect exists; they do not tell you how
+  often. The settings sent, the conversation's hash and the length are stored
+  with every result (`scenario_results.meta_json`, and in each trace).
+- **Lengths are nominal.** A bucket is filled to about 88% of its name in
+  approximate tokens (characters / 4), which leaves room for the probe, the
+  reply and tokenizer differences. The report shows the real count, the
+  server's `prompt_tokens`. Before a run, the conversation is counted with the
+  server's `/tokenize` when it has one; a conversation that does not fit the
+  server's context is skipped and listed, not failed.
+- **The checks are deterministic, and they are heuristics.** A leak is the
+  name inside a quoted line, so a model that writes dialogue without double
+  quotes yields `no_dialogue`, not a verdict. The out-of-character checks look
+  for speech tags, characters acting, and frozen-scene phrasing; an unusual
+  phrasing can escape them. `tests/scenarios/test_rp_long_context.py` holds
+  the good and bad replies they were written against. There is no LLM judge
+  yet.
+- **Unranked.** These results stay out of every ranking, `overall` included.
+
+The conversation is written in `fixtures/src/harbor-road/` (chapters, system
+prompt, probes). `uv run python scripts/build_rp_fixtures.py` regenerates
+`scenarios/rp_long_context/`; a test fails when the two are out of step. Only
+8k and 16k are built today: the story is not yet long enough for 32k and 64k.
 
 ## Ranking dimensions
 
@@ -840,7 +902,7 @@ toolery/
 │   ├── rankings/       # ranking computation, category-derived dimensions, role rankings
 │   ├── compare.py      # cross-run diff with McNemar significance
 │   └── tui/             # Textual dashboard (Home/Rankings/Compare/Scenarios/History/Profiles)
-├── scenarios/           # 200 scenarios across easy/medium/hard/very_hard, one dir per category
+├── scenarios/           # 212 scenarios across easy/medium/hard/very_hard, one dir per category
 ├── tests/                # unit + TUI tests
 └── results/              # SQLite + markdown + JSON traces (gitignored)
 ```
