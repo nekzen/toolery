@@ -39,8 +39,11 @@ def load_scenario(path: Path) -> Scenario:
         # A frozen conversation: versioned file, identified by its hash so a
         # result can always be tied to the exact text the model was given.
         fixture_path = (path.parent / conv["fixture"]).resolve()
-        raw = fixture_path.read_bytes()
-        fixture = json.loads(raw.decode("utf-8"))
+        fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
+        # Hash the content, not the bytes: a checkout that rewrites line
+        # endings (git autocrlf) must not change a conversation's identity.
+        raw = json.dumps(fixture, sort_keys=True, ensure_ascii=False,
+                         separators=(",", ":")).encode("utf-8")
         data["conversation"] = {
             **conv,
             "name": fixture["name"], "length": fixture["length"],

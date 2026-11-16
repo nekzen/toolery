@@ -39,6 +39,9 @@ class Category(StrEnum):
     WORKFLOW_ORCHESTRATION = "workflow_orchestration"
     SECURITY_AUDIT = "security_audit"
     DATA_ANALYSIS = "data_analysis"
+    # --- Long-context writing and roleplay: probes at the end of a frozen
+    # conversation, sampled at a writing temperature, several trials each.
+    RP_LONG_CONTEXT = "rp_long_context"
 
 
 class Budget(BaseModel):
@@ -110,7 +113,7 @@ class ConversationRef(BaseModel):
     length: str | None = None          # nominal bucket, e.g. "16k"
     approx_tokens: int | None = None   # chars / 4, system prompt included
     n_messages: int | None = None
-    sha256: str | None = None          # of the fixture file's bytes
+    sha256: str | None = None          # of the fixture's canonical JSON
 
 
 class Scenario(BaseModel):

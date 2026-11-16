@@ -56,7 +56,11 @@ def test_loader_resolves_the_fixture(tmp_path):
     assert s.system_prompt == "You are the narrator."
     c = s.conversation
     assert (c.name, c.length, c.approx_tokens, c.n_messages) == ("demo", "8k", 42, 2)
-    assert c.sha256 == hashlib.sha256((tmp_path / "fx.json").read_bytes()).hexdigest()
+    canonical = json.dumps(FIXTURE, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    assert c.sha256 == hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    # Re-indenting or CRLF line endings do not change the identity.
+    (tmp_path / "fx.json").write_bytes(json.dumps(FIXTURE, indent=2).replace("\n", "\r\n").encode())
+    assert load_scenario(tmp_path / "s.yaml").conversation.sha256 == c.sha256
 
 
 @pytest.mark.asyncio

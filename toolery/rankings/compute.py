@@ -29,6 +29,11 @@ CATEGORY_DERIVED_DIMENSIONS: dict[str, str] = {
     "data_analysis": "data_analysis",
 }
 
+# Categories kept out of every ranking, "overall" included. Their scenarios
+# are sampled at a writing temperature and read as failure RATES per context
+# length (`toolery rp-report`), which a pass/fail leaderboard would flatten.
+UNRANKED_CATEGORIES: frozenset[str] = frozenset({"rp_long_context"})
+
 # Inverse mapping: scenario `category` value → the ranking dimension it feeds.
 # Lets persona weighting and per-run profiles treat a category-derived
 # dimension exactly like a tag-derived one.
@@ -78,6 +83,8 @@ def _result_matches_dimension(dim: str, ranking_dims: list[str], category: str) 
     row's `category` column. Everything else falls back to the legacy
     behavior: membership in the scenario's `ranking_dimensions` tag list.
     """
+    if category in UNRANKED_CATEGORIES:
+        return False
     if dim == "overall":
         return True
     target_category = CATEGORY_DERIVED_DIMENSIONS.get(dim)

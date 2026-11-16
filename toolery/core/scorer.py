@@ -677,6 +677,39 @@ def check_response_matches_regex(calls, chk, response):
     return _ok("response_matches_regex", "all regex conditions met")
 
 
+_DIALOGUE_SPAN = re.compile(r'"([^"]*)(?:"|$)')
+
+
+def dialogue_spans(text: str) -> list[str]:
+    """What is SPOKEN in a piece of prose: the text between double quotes,
+    paragraph by paragraph. Curly quotes are folded to straight ones; a quote
+    left open (a reply cut by max_tokens) runs to the end of its paragraph."""
+    spans: list[str] = []
+    for paragraph in text.translate(_MATCH_CHAR_TRANS).split("\n"):
+        spans.extend(m.group(1) for m in _DIALOGUE_SPAN.finditer(paragraph))
+    return [s for s in spans if s.strip()]
+
+
+def check_dialogue_contains(calls, chk, response):
+    """Every regex in `patterns` matches inside spoken dialogue — narration is
+    ignored. A narrator may write a name the speaker has no way of knowing;
+    a character saying it aloud is the knowledge leak. Case-insensitive unless
+    `case_sensitive: true`. The detail quotes the line as proof."""
+    if response is None:
+        return _bad("dialogue_contains", "no response")
+    d = chk.model_dump()
+    flags = 0 if d.get("case_sensitive", False) else re.IGNORECASE
+    spans = dialogue_spans(response)
+    proof: list[str] = []
+    for pattern in d["patterns"]:
+        hit = next((s for s in spans if re.search(str(pattern), s, flags)), None)
+        if hit is None:
+            return _bad("dialogue_contains",
+                        f"no spoken line matches {pattern!r} ({len(spans)} lines of dialogue)")
+        proof.append(hit)
+    return _ok("dialogue_contains", "spoken: " + " | ".join(f'"{p[:160]}"' for p in proof))
+
+
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
 
 
@@ -795,6 +828,7 @@ REGISTRY.update({
     "response_matches_regex": check_response_matches_regex,
     "response_diff": check_response_diff,
     "response_length_bounded": check_response_length_bounded,
+    "dialogue_contains": check_dialogue_contains,
     "unique_tools_called": check_unique_tools_called,
     "no_hallucinated_tool": check_no_hallucinated_tool,
     "budget_respected": check_budget_respected,
