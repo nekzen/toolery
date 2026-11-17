@@ -288,6 +288,27 @@ def test_repetition_counts_the_replies_cut_at_max_tokens():
     assert figures([])[1]["truncated"] is None
 
 
+
+def test_a_conversation_the_server_never_saw_is_an_error_not_a_verdict():
+    """Magistral 2509 GGUF: the template rendered the history as nothing,
+    8 prompt tokens, and the model wrote a paper about itself."""
+    from toolery.core.models import TurnUsage
+    s = load_scenario(RP / "rp-leak-ledger-16k.yaml")
+
+    def result(prompt_tokens):
+        trace = TraceResult(scenario_id=s.id, adapter="raw", trial_index=0,
+                            messages=[Message(role="user", content=s.prompt)], tool_calls=[],
+                            final_response="# Mistral v7: A Multi-Modal Language Model",
+                            started_at_iso="2026-11-17T00:00:00Z", duration_ms=1,
+                            usage=[TurnUsage(turn_index=0, prompt_tokens=prompt_tokens,
+                                             completion_tokens=350)])
+        return evaluate(s, trace)
+
+    r = result(8)
+    assert (r.status, r.failure_kind) == ("error", "context_dropped")
+    assert "8 prompt tokens" in r.checks[0].detail
+    assert result(13539).failure_kind == "no_dialogue"      # received: judged as usual
+
 # -------------------------------------------------------------- generated
 
 def test_generated_files_match_their_source():
