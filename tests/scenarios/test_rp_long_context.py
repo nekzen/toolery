@@ -46,6 +46,8 @@ LEAK = [
     ('The man is broad and sunburnt, with a pedlar\'s pack on his shoulders. He stops a few paces '
      'off and looks you over.\n\n"Long way from anywhere to be sitting alone," he says. "What do '
      'they call you, traveller?"', "pass", None),
+    # Terse and exactly right.
+    ('"Name?"', "pass", None),
     # The name in narration is a point-of-view slip, not something he knows.
     ('The man studies you. Mara is a stranger to him, and it shows in his face.\n\n"Lost, are '
      'you?" he asks, leaning on his staff.', "pass", None),

@@ -23,7 +23,9 @@ probes:
       Weeks later, on a road far inland where nobody has ever met me or heard of me, I sit down on a milestone to rest. A man I have never seen before comes along the road, stops in front of me, and speaks first.
     scoring: &leak
       required:
-        - {check: response_length_bounded, min_length: 80, failure_kind: empty_reply}
+        # A clerk who only says "Name?" has answered perfectly: no minimum
+        # length beyond not being empty.
+        - {check: response_length_bounded, min_length: 2, failure_kind: empty_reply}
         # No spoken line at all: nothing to judge, counted apart from a leak.
         - {check: dialogue_contains, patterns: ['\w'], failure_kind: no_dialogue}
       forbidden:
