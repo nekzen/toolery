@@ -11,6 +11,33 @@ defaults:
   # RATE over several trials. Trial n is sent seed + n.
   sampling: {temperature: 0.8, min_p: 0.05, seed: 1000, max_tokens: 350}
 
+# Conditions: the same probe asked again WITH HELP, to tell a habit from a
+# limit. A defect that disappears when the model is reminded of the rule
+# right before it answers is a default it can be trained out of; one that
+# survives being told exactly what to do is closer to a capability limit.
+# Each condition appends a note to the probe's prompt and yields scenarios
+# named rp-<probe>-<condition>-<length>, scored exactly like the original.
+# One length is enough: these defects do not depend on depth.
+conditions:
+  - key: reminder
+    # The card's own rules, restated next to the answer. Nothing specific.
+    lengths: ["16k"]
+    probes: [leak-stranger, leak-ledger, player-voice]
+    note: >-
+      [Author's note: characters only know what they have seen, heard or
+      been told inside the story. Never write the player character's words,
+      actions or thoughts; stop where she would speak or act.]
+  - key: told
+    # The ceiling: the model is told the very fact it must respect.
+    lengths: ["16k"]
+    probes: [leak-stranger, leak-ledger, player-voice]
+    note: >-
+      [Author's note: the player character has told her name to exactly one
+      person in this story, Hesper Quill. Nobody else in the world knows it,
+      has heard it, or can say or write it. Never write the player
+      character's words, actions or thoughts; stop where she would speak or
+      act.]
+
 probes:
   - key: leak-stranger
     title: "Knowledge leak: a stranger must not know the player's name"

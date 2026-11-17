@@ -13,7 +13,7 @@ across a matrix of capability dimensions.
 
 ## Overview
 
-Toolery ships **244 scenarios** across **4 difficulty tiers**
+Toolery ships **250 scenarios** across **4 difficulty tiers**
 (`easy` / `medium` / `hard` / `very_hard`) and **21 categories** (coding,
 debugging, security review, data analysis, fact verification, and more).
 Each scenario is a self-contained YAML file describing:
@@ -681,6 +681,15 @@ How to read it:
   each tic per 1000 words. The pass/fail thresholds are a convention; compare
   the figures between models and context lengths. It compares the model's
   replies with one another, not with the frozen conversation.
+- **Habit or limit?** Three probes exist a second and third time at 16k,
+  with help: `leak-stranger-reminder`, `leak-ledger-reminder`,
+  `player-voice-reminder` restate the card's rules in an author's note right
+  before the answer; the `-told` versions state the very fact to respect
+  (who was told the name). Same history, same seeds, same checks. A failure
+  rate that collapses under `-reminder` is a default, the kind a fine-tune
+  moves; one that survives `-told` is closer to a limit of the model. Run
+  the same scenarios on the base model to tell what a merge or a fine-tune
+  changed.
 - **Unranked.** These results stay out of every ranking, `overall` included.
 
 The conversation is written in `fixtures/src/harbor-road/` (chapters, system
@@ -914,7 +923,7 @@ toolery/
 │   ├── rankings/       # ranking computation, category-derived dimensions, role rankings
 │   ├── compare.py      # cross-run diff with McNemar significance
 │   └── tui/             # Textual dashboard (Home/Rankings/Compare/Scenarios/History/Profiles)
-├── scenarios/           # 244 scenarios across easy/medium/hard/very_hard, one dir per category
+├── scenarios/           # 250 scenarios across easy/medium/hard/very_hard, one dir per category
 ├── tests/                # unit + TUI tests
 └── results/              # SQLite + markdown + JSON traces (gitignored)
 ```

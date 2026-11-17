@@ -80,6 +80,10 @@ def build_story(story_dir: Path) -> dict[Path, str]:
     probes = yaml.safe_load(probes_text.replace("__NPCS__", "|".join(card["npc_names"])))
     defaults = probes["defaults"]
     files: dict[Path, str] = {}
+    conditions = probes.get("conditions") or []
+    for cond in conditions:
+        if any(rx.search(cond["note"]) for rx in map(re.compile, card["name_patterns"])):
+            raise BuildError(f"condition {cond['key']}: the note gives the name away")
     for length, (budget, timeout) in BUCKETS.items():
         history = cut(system, messages, budget)
         if history is None:
@@ -89,8 +93,12 @@ def build_story(story_dir: Path) -> dict[Path, str]:
                    "system": system, "messages": history}
         rel = f"fixtures/{card['name']}.{length}.json"
         files[OUT / rel] = json.dumps(fixture, indent=1, ensure_ascii=False, sort_keys=True) + "\n"
-        for probe in probes["probes"]:
-            sid = f"rp-{probe['key']}-{length}"
+        variants = [(probe, None) for probe in probes["probes"]]
+        variants += [(probe, cond) for cond in conditions if length in cond["lengths"]
+                     for probe in probes["probes"] if probe["key"] in cond["probes"]]
+        for probe, cond in variants:
+            name = probe["key"] + (f"-{cond['key']}" if cond else "")
+            sid = f"rp-{name}-{length}"
             follow_ups = probe.get("follow_ups") or []
             generations = 1 + len(follow_ups)
             sampling = dict(defaults["sampling"])
@@ -98,13 +106,15 @@ def build_story(story_dir: Path) -> dict[Path, str]:
                 sampling["max_tokens"] = probe["max_tokens"]
             scenario = {
                 "id": sid,
-                "title": f"{probe['title']} ({length} context)",
+                "title": f"{probe['title']} ({length} context"
+                         + (f", with {cond['key']})" if cond else ")"),
                 "tier": defaults["tier"], "category": "rp_long_context", "domain": "generic",
                 "description": probe["description"],
-                "tags": probe["tags"],
+                "tags": probe["tags"] + ([f"condition_{cond['key']}"] if cond else []),
                 # Unranked: read these as rates, with `toolery rp-report`.
                 "ranking_dimensions": [],
-                "prompt": probe["prompt"],
+                "prompt": (probe["prompt"].rstrip() + "\n\n" + cond["note"] + "\n") if cond
+                          else probe["prompt"],
                 "tools": [],
                 # One request per reply; later replies reuse the server's
                 # prompt cache, so the time allowed grows by half a turn each.

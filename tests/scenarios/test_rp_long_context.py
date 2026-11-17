@@ -269,6 +269,18 @@ def test_generated_files_match_their_source():
         "run: uv run python scripts/build_rp_fixtures.py"
 
 
+def test_conditions_are_the_same_probe_with_a_note():
+    base = load_scenario(RP / "rp-leak-ledger-16k.yaml")
+    for cond in ("reminder", "told"):
+        s = load_scenario(RP / f"rp-leak-ledger-{cond}-16k.yaml")
+        assert s.prompt.startswith(base.prompt.rstrip()) and "[Author's note:" in s.prompt
+        assert s.scoring == base.scoring and s.history == base.history
+        assert s.sampling == base.sampling             # same seeds: trial n is comparable
+        assert "Mara" not in s.prompt and "Venn" not in s.prompt
+    assert "Hesper Quill" in load_scenario(RP / "rp-leak-ledger-told-16k.yaml").prompt
+    assert not (RP / "rp-leak-ledger-told-8k.yaml").exists()
+
+
 def test_every_length_shares_the_same_beginning():
     short, long = (load_scenario(RP / f"rp-ooc-pause-{n}.yaml") for n in ("8k", "16k"))
     assert long.history[:len(short.history)] == short.history

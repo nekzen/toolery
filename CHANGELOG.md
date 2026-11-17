@@ -7,7 +7,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
-- Category `rp_long_context` (44 scenarios): roleplay probes at the end of a
+- Category `rp_long_context` (50 scenarios): roleplay probes at the end of a
   frozen conversation, at 8k, 16k, 32k and 64k of context. Knowledge leak (a character
   says a name only another character was told), its control, three
   out-of-character instructions that must not be absorbed by the story,
@@ -19,6 +19,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   continues) and `sampling` (temperature, min_p, seed, max_tokens). Sampling
   settings and the conversation's identity are stored with each result in
   `scenario_results.meta_json`.
+- Conditions `-reminder` and `-told` for three `rp_long_context` probes at
+  16k: the same probe with an author's note before the answer, to tell a
+  trainable default from a limit of the model.
 - Scenario field `follow_ups`: more user turns sent one by one, so the model
   writes several replies in a row. Check `repetition_bounded` measures how
   much those replies repeat one another (probe `rp-repetition`), and
