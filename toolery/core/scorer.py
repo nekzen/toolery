@@ -1073,10 +1073,38 @@ def _correctness_score(scenario, required, forbidden_clean: bool, hallucinated: 
     return weights["fail"]
 
 
+def _context_dropped(scenario: Scenario, trace: TraceResult) -> str | None:
+    """A frozen conversation the server did not receive. Seen with a GGUF
+    whose chat template renders string contents as nothing: ~13,500 tokens
+    of history sent, 8 prompt tokens counted, and a reply about something
+    else entirely. Half the approximate size is far below any tokenizer's
+    disagreement with chars/4."""
+    conv = scenario.conversation
+    first = trace.usage[0].prompt_tokens if trace.usage else 0
+    if not conv or not conv.approx_tokens or not first or first >= conv.approx_tokens / 2:
+        return None
+    return (f"the server counted {first} prompt tokens for a conversation of "
+            f"~{conv.approx_tokens}: the chat template dropped it")
+
+
 def evaluate(scenario: Scenario, trace: TraceResult) -> ScenarioResult:
     calls = trace.tool_calls
     response = trace.final_response
     pt, ct, gen_ms = trace.token_totals()
+
+    dropped = _context_dropped(scenario, trace)
+    if dropped:
+        # The reply answers a conversation the model never saw: nothing in it
+        # measures the model. An error, not a failure.
+        return ScenarioResult(
+            scenario_id=scenario.id, adapter=trace.adapter, trial_index=trace.trial_index,
+            status="error", score=0.0, call_count=len(calls),
+            budget_max=scenario.budget.max_tool_calls, latency_ms=trace.duration_ms,
+            failure_kind="context_dropped",
+            checks=[CheckResult(check="context_received", result="fail", detail=dropped)],
+            trace=trace, correctness_score=0.0,
+            prompt_tokens=pt, completion_tokens=ct, gen_ms=gen_ms,
+        )
 
     if trace.error:
         # A trial that errored (e.g. timed out) can still have carried out a
