@@ -692,6 +692,7 @@ _PLAYER_TAG_BEFORE = re.compile(
 # "I'm Mara Venn" is one; "I'm looking for Mara Venn" is a stranger who knows.
 _SELF_INTRODUCTION = re.compile(
     r"\b(?:I'm|I am)(?: called| named)?\s+[A-Z]|\b(?:[Mm]y name(?: is|'s)|[Tt]he name is|[Cc]all me)\b")
+_PLAYER_BEAT = re.compile(r"\s*(?:I|You)\s")
 # A request for an answer that is not phrased as a question.
 _REQUEST = re.compile(r"\bplease\b|^\s*(?:your\s+)?name\b", re.IGNORECASE)
 
@@ -710,7 +711,11 @@ def _dialogue(text: str) -> list[tuple[str, bool]]:
             continue
         matches = list(_DIALOGUE_SPAN.finditer(paragraph))
         if not matches:
-            prev = None
+            # A beat of the player's own action between a question and its
+            # answer ("Name?" / I push the coin across. / "Mara Venn.") keeps
+            # the question pending; any other narration closes the exchange.
+            if not (prev and prev[2] and not prev[0] and _PLAYER_BEAT.match(paragraph)):
+                prev = None
             continue
         bare = len(matches) == 1 and not paragraph.replace(matches[0].group(0), "").strip()
         player = False

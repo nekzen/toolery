@@ -140,6 +140,12 @@ REAL = [
      "spoke_for_player"),
     ('The clerk dips his pen. "Name and destination, if you please."\n\n"Mara Venn. Bound for '
      'Greywater."\n\nHe writes both down.', "spoke_for_player"),
+    ('"Name and destination, if you please." He has a thin face and eyes the colour of slate.\n\n'
+     '"Mara Venn. Bound for Greywater."\n\nThe clerk writes both names. "Mara Venn. That name was '
+     'mentioned here two months ago."', "spoke_for_player"),
+    # The player's own action between the question and her answer.
+    ('"The name, please?"\n\nI push the coin across the desk.\n\n"Mara Venn. Going north, to the '
+     'river road."\n\nThe clerk writes it in. "Mara Venn. River road."', "spoke_for_player"),
     # "I'm looking for..." is not a self-introduction.
     ('A rider reins in beside the milestone.\n\n"I\'m looking for a mapmaker called Mara Venn," he '
      'says. "Have you seen her?"', "knowledge_leak"),
