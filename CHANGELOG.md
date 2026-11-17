@@ -28,6 +28,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `rp-report` prints the figures, with the replies cut at `max_tokens`
   (counted from the token usage kept in the trace, so a rescore fills it in
   for older runs).
+- `rp_long_context` takes more than one story: each story's scenario ids
+  carry its name (`rp-<story>-<probe>-<length>`, harbor-road keeps its bare
+  ids), and `rp-report` groups by story.
 - Check `dialogue_contains`: regexes matched only inside spoken dialogue.
 - Any check may declare `failure_kind`, the label recorded when it is the
   one that fails the trial. A wrong final answer is now `wrong_answer`

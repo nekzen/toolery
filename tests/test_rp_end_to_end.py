@@ -62,6 +62,7 @@ def test_run_then_report(tmp_path, monkeypatch):
     assert len(cells) == 50
     leak = cells[("leak-stranger", "16k")]
     assert (leak["trials"], leak["passed"], leak["failures"]) == (4, 2, {"knowledge_leak": 2})
+    assert {c["story"] for c in cells.values()} == {"harbor-road"}
     assert leak["prompt_tokens"] == 15000 and leak["sampling"] == {
         "temperature": 0.8, "min_p": 0.05, "max_tokens": 350}
     assert leak["examples"][0]["proof"] == 'spoken: "Mara Venn, as I live,"'
@@ -84,6 +85,7 @@ def test_run_then_report(tmp_path, monkeypatch):
     assert "8k (~8000 tok)" in table.output and "16k (~15000 tok)" in table.output
     assert "self-repetition" in table.output and "100.0%" in table.output
     assert "cut replies" in table.output and "0/24" in table.output
+    assert "harbor-road" in table.output
 
 
 @respx.mock

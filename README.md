@@ -703,6 +703,12 @@ Four lengths are built: 8k, 16k, 32k and 64k. The 64k conversation is about
 inside a 65k server context. Editing the story changes every conversation's
 hash: results taken before and after an edit are not the same test.
 
+Each folder under `fixtures/src/` with a `card.yaml` is a story, with its own
+probes. A story's scenarios are named `rp-<story>-<probe>-<length>`;
+harbor-road, the first, keeps `rp-<probe>-<length>` (`ids_include_story:
+false`) so its stored results stay comparable. `rp-report` prints one table
+per model and story.
+
 ## Ranking dimensions
 
 `toolery rankings --dimension <name>` and the Rankings tab in the TUI

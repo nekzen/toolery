@@ -328,6 +328,25 @@ def test_the_builder_refuses_a_story_that_gives_the_name_away(tmp_path):
         builder.load_story(tmp_path)
 
 
+def test_a_second_story_puts_its_name_in_the_scenario_ids(tmp_path):
+    """harbor-road keeps rp-<probe>-<length>; any other story is
+    rp-<story>-<probe>-<length>, so two stories can ask the same probe."""
+    import yaml
+    (tmp_path / "card.yaml").write_text(
+        "name: night-shift\nname_patterns: ['\\bJuno\\b']\nnpc_names: [Bo]\nsystem: s\n",
+        encoding="utf-8")
+    turns = [{"user": "I wait.", "narrator": "Rain on the glass. " * 70} for _ in range(30)]
+    (tmp_path / "01-a.yaml").write_text(yaml.safe_dump({"turns": turns}), encoding="utf-8")
+    (tmp_path / "probes.yaml").write_text(yaml.safe_dump({
+        "defaults": {"tier": "hard", "sampling": {"temperature": 0.8, "seed": 1}},
+        "probes": [{"key": "leak-stranger", "title": "t", "description": "d", "tags": ["roleplay"],
+                    "prompt": "p", "scoring": {"required": [], "forbidden": []}}]}),
+        encoding="utf-8")
+    names = {path.name for path in builder.build_story(tmp_path) if path.suffix == ".yaml"}
+    assert names == {"rp-night-shift-leak-stranger-8k.yaml"}
+    assert (RP / "rp-leak-stranger-8k.yaml").exists()          # harbor-road: unchanged
+    assert "story_harbor-road" in load_scenario(RP / "rp-leak-stranger-8k.yaml").tags
+
 def test_cut_keeps_whole_exchanges_and_skips_buckets_it_cannot_fill():
     msgs = [{"role": r, "content": "x" * 400} for r in ("user", "assistant")] * 10   # ~2000 tokens
     assert len(builder.cut("", msgs, 1000)) == 8

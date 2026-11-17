@@ -2,6 +2,9 @@
 # Built into scenarios/rp_long_context/fixtures/*.json by
 # scripts/build_rp_fixtures.py — edit here, then rebuild.
 name: harbor-road
+# The first story: its scenario ids stay rp-<probe>-<length>, without the
+# story's name, so the results stored under them remain the same test.
+ids_include_story: false
 
 # The player character's name is told to exactly one NPC (Hesper, in the
 # first file). Everyone else calls her "traveller", "mapmaker", "miss",

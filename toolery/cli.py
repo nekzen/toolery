@@ -853,10 +853,10 @@ def rp_report(
                       "toolery run --model NAME --category rp_long_context[/yellow]")
         return
 
-    groups: dict[tuple[str, str], list] = {}
+    groups: dict[tuple[str, str, str], list] = {}
     for c in cells:
-        groups.setdefault((c.model, c.adapter), []).append(c)
-    for (model_name, adapter), group in groups.items():
+        groups.setdefault((c.model, c.adapter, c.story), []).append(c)
+    for (model_name, adapter, story), group in groups.items():
         lengths = sorted({c.length for c in group}, key=length_key)
         headers = []
         for length in lengths:
@@ -864,7 +864,7 @@ def rp_report(
             toks = [c.prompt_tokens for c in group
                     if c.length == length and c.prompt_tokens and not c.metrics]
             headers.append(f"{length} (~{sum(toks) / len(toks):.0f} tok)" if toks else length)
-        t = Table("probe", *headers, title=f"{model_name} ({adapter}) — long-context writing / roleplay")
+        t = Table("probe", *headers, title=f"{model_name} ({adapter}) — long-context writing / roleplay — {story}")
         by_probe: dict[str, dict[str, object]] = {}
         for c in group:
             by_probe.setdefault(c.probe, {})[c.length] = c
