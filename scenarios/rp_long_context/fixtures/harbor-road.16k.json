@@ -1,5 +1,5 @@
 {
- "approx_tokens": 12547,
+ "approx_tokens": 13645,
  "length": "16k",
  "messages": [
   {
@@ -336,6 +336,30 @@
   },
   {
    "content": "His hand is dry and hard as a plank. He says only, \"Mind the ninth step, it's loose,\" and lowers the trapdoor after you.\n\nThe stair is wet, steep, and black as a well, with a tarred rope for a rail. It lets you out into a cove no bigger than a barn, where an iron ring is set in the rock and green water sucks at a stone ledge. Beyond it the shingle begins, a grey ribbon between the cliff and the sea, and it is hard going: the pebbles roll under your boots and every step slides half a pace back. When you look round, the tower is already small behind you. Two smaller figures are still standing at its door, waiting for it to open.\n\nThe chapel comes into view round the last headland: a squat building with a stone cross, perched on a shelf of rock, with a flight of steps climbing from it into a crowd of slate roofs and masts. One green copper dome rises above the rest. Behind you the first waves of the returning tide are reaching the foot of the cliff.\n\nAn old man in a rusty black coat is sweeping sand off the chapel steps. He leans on his broom to watch you come.\n\n\"You cut that fine, traveller. Nobody walks in by the beach but smugglers and keepers. Which are you?\"",
+   "role": "assistant"
+  },
+  {
+   "content": "\"Neither. A surveyor, with a letter for the Guild master from the keeper at the Point.\" I show him the wax seal without letting go of it. \"He said you would take me to the hall.\"",
+   "role": "user"
+  },
+  {
+   "content": "The old man looks at the blob of candle wax for some time, and then at the wet shingle behind you, where the sea has already covered your last hundred footprints.\n\n\"That's Brannoch's seal. He's too mean to buy proper wax.\" He props the broom against the chapel door. \"Pask. Verger here forty years, and bell-ringer to the Guild for thirty of them, which is the better-paid half. He's never sent me anybody by the beach before. I'd say that means you matter or you're in trouble.\"\n\nHe does not wait to be told which. He climbs the steps ahead of you at a surprising pace, talking over his shoulder. Greywater opens out above the chapel: steep lanes of slate and whitewash running down to a harbour crowded with masts, nets hung between the houses like washing, and everywhere the smell of tar and frying fish. People nod to Pask. Their eyes slide to the brass case on your back and stay on it a moment too long.\n\n\"They cried a reward in Thornby, we heard. Ten pounds. News comes up the coast faster than fish.\" He stops at a corner where the lane divides. To the left it drops to the quays. To the right it climbs to a square stone building with a green copper dome and a bell hanging in an arch above the door. \"The front door is on the quay and half the town can see who goes in. There's a side door by the bell rope, and I have the key. Which will you have?\"",
+   "role": "assistant"
+  },
+  {
+   "content": "\"The side door. I've had enough of being looked at.\" I follow him up to it.",
+   "role": "user"
+  },
+  {
+   "content": "\"Sensible,\" says Pask, and takes you round by an alley so narrow that the case scrapes both walls. The side door is low and iron-bound. He opens it with a key as long as his hand and lets you into a stone passage that smells of ink, damp wool and old paper.\n\nThe Guild hall is quieter inside than a church. Through an archway you can see one long room lined with pigeonholes, each stuffed with rolled charts, and a high desk where a young woman is copying figures into a ledger with her tongue between her teeth. She looks up at the sound of the door, sees Pask, and then sees what you are carrying. Her pen stops.\n\n\"Nell Harrow,\" Pask says to you, by way of introduction. \"Clerk to the Guild. She knows where everything is, which is more than the master does.\" To her he says, \"From the Point, by the beach, with a letter under Brannoch's seal. I'll be at my rope if I'm wanted,\" and he goes off down the passage without another word.\n\nNell climbs down from her stool. She is perhaps twenty-five, ink to the knuckles, with a quick, measuring look.\n\n\"You're the surveyor the agent engaged in the south. We had word a month ago that someone had been found, and then nothing at all. No name, even. The agent wrote that you'd asked for it to be kept out of the letters.\" She glances at the door behind you. \"The master's upstairs with the pilots, and it's going badly. Do you want me to fetch him out, or will you wait until they've finished shouting?\"",
+   "role": "assistant"
+  },
+  {
+   "content": "\"Fetch him out. What I've brought will end the shouting, or start a better one.\" I unsling the map case and keep it in my hands.",
+   "role": "user"
+  },
+  {
+   "content": "Nell considers you for the length of a breath, then gathers her skirts and runs up the stairs two at a time. A door opens above. The noise of several men talking at once spills down the stairwell, and stops.\n\nThe man who comes down is past sixty, heavy in the shoulders, with a seaman's rolling walk and a landsman's good coat that he wears as though it belonged to somebody else. He has a pilot's pale, creased eyes. He takes in your boots, white with salt to the ankle, and the bandage at your cuff, and the case.\n\n\"Osric Dallow. Master of this Guild for my sins.\" His voice is deep and unhurried. \"I've four senior pilots upstairs telling me the estuary can't be charted, because their fathers couldn't do it, and two telling me it mustn't be, because Dunmore has promised them shares. And now Nell says a surveyor has walked in off the beach with a letter from the one man on this coast who never writes to anybody.\"\n\nHe holds out a broad hand, palm up. It is not quite a demand.\n\n\"I'll read Tane's letter first, if you'll trust me with it. Then I'd like to know what's in that tube. And then,\" he adds, with the ghost of a smile, \"you can tell me what I'm to call you, since my own agent wouldn't.\"",
    "role": "assistant"
   }
  ],

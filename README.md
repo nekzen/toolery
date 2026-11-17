@@ -13,7 +13,7 @@ across a matrix of capability dimensions.
 
 ## Overview
 
-Toolery ships **220 scenarios** across **4 difficulty tiers**
+Toolery ships **240 scenarios** across **4 difficulty tiers**
 (`easy` / `medium` / `hard` / `very_hard`) and **21 categories** (coding,
 debugging, security review, data analysis, fact verification, and more).
 Each scenario is a self-contained YAML file describing:
@@ -513,7 +513,7 @@ All 21 categories (directory name under `scenarios/` == `category` value):
 | `workflow_orchestration` | Coordinating multi-tool business workflows. |
 | `security_audit` | Security-focused review of code/configs/infrastructure. |
 | `data_analysis` | Extracting/summarizing insight from structured data. |
-| `rp_long_context` | Roleplay probes at the end of a frozen 8k/16k conversation: knowledge leaks, out-of-character instructions. Sampled, unranked — see [Long-context writing and roleplay](#long-context-writing-and-roleplay). |
+| `rp_long_context` | Roleplay probes at the end of a frozen conversation of 8k to 64k tokens: knowledge leaks, out-of-character instructions. Sampled, unranked — see [Long-context writing and roleplay](#long-context-writing-and-roleplay). |
 
 ### Available mock tools
 
@@ -635,7 +635,7 @@ scoring:
 
 The `rp_long_context` category measures defects that only appear deep into a
 story, and only some of the time. Each scenario replays a **frozen
-conversation** (a 42-exchange second-person roleplay, `harbor-road`), asks one
+conversation** (a 116-exchange second-person roleplay, `harbor-road`), asks one
 more message, and checks the reply. The same conversation is cut to several
 context lengths that share the same beginning, so a fact given in the first
 exchanges lies deeper as the context grows.
@@ -678,8 +678,11 @@ How to read it:
 
 The conversation is written in `fixtures/src/harbor-road/` (chapters, system
 prompt, probes). `uv run python scripts/build_rp_fixtures.py` regenerates
-`scenarios/rp_long_context/`; a test fails when the two are out of step. Only
-8k and 16k are built today: the story is not yet long enough for 32k and 64k.
+`scenarios/rp_long_context/`; a test fails when the two are out of step.
+Four lengths are built: 8k, 16k, 32k and 64k. The 64k conversation is about
+43k approximate tokens (the whole story), under the 56k cap that keeps it
+inside a 65k server context. Editing the story changes every conversation's
+hash: results taken before and after an edit are not the same test.
 
 ## Ranking dimensions
 
@@ -904,7 +907,7 @@ toolery/
 │   ├── rankings/       # ranking computation, category-derived dimensions, role rankings
 │   ├── compare.py      # cross-run diff with McNemar significance
 │   └── tui/             # Textual dashboard (Home/Rankings/Compare/Scenarios/History/Profiles)
-├── scenarios/           # 220 scenarios across easy/medium/hard/very_hard, one dir per category
+├── scenarios/           # 240 scenarios across easy/medium/hard/very_hard, one dir per category
 ├── tests/                # unit + TUI tests
 └── results/              # SQLite + markdown + JSON traces (gitignored)
 ```

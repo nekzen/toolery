@@ -46,5 +46,5 @@ scoring:
     failure_kind: ooc_absorbed
   - check: response_matches_regex
     all_of:
-    - \b(Hesper|Quill|Dunmore|Tobin|Ilsa|Pim|Odo|Bishop|Avel|Hale|Corwin|Wenna|Bramble|Tane|Brannoch|Pask|the (verger|keeper|old man|girl|woman|man|boy|sister|stranger)|he|she)\s+(leans|looks|blinks|frowns|tilts|raises|lowers|stares|waits|nods|shrugs|chuckles|laughs|squints|scratches|studies|glances|pauses|stops|straightens|watches|turns|smiles|grins|snorts|sighs)\b|^\s*You (stand|sit|hear|watch|walk|step|climb|remain|lean)\b
+    - \b(Hesper|Quill|Dunmore|Tobin|Ilsa|Pim|Odo|Bishop|Avel|Hale|Corwin|Wenna|Bramble|Tane|Brannoch|Pask|Dallow|Osric|Nell|Harrow|Sabel|Penhale|Jory|Tam|Hob|Fitch|Marrot|Lise|Rudd|Ketta|the (verger|keeper|old man|girl|woman|man|boy|sister|stranger)|he|she)\s+(leans|looks|blinks|frowns|tilts|raises|lowers|stares|waits|nods|shrugs|chuckles|laughs|squints|scratches|studies|glances|pauses|stops|straightens|watches|turns|smiles|grins|snorts|sighs)\b|^\s*You (stand|sit|hear|watch|walk|step|climb|remain|lean)\b
     failure_kind: ooc_absorbed

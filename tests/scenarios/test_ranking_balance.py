@@ -42,7 +42,7 @@ EXPECTED_COUNTS = {
 EXPECTED_TIER_COUNTS = {
     "easy": 60,
     "medium": 63,
-    "hard": 67,
+    "hard": 87,
     "very_hard": 30,
 }
 

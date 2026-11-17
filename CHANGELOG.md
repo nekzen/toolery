@@ -7,8 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
-- Category `rp_long_context` (20 scenarios): roleplay probes at the end of a
-  frozen conversation, at 8k and 16k of context. Knowledge leak (a character
+- Category `rp_long_context` (40 scenarios): roleplay probes at the end of a
+  frozen conversation, at 8k, 16k, 32k and 64k of context. Knowledge leak (a character
   says a name only another character was told), its control, three
   out-of-character instructions that must not be absorbed by the story,
   three retention questions on facts given once at the start, and one probe

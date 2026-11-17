@@ -224,6 +224,10 @@ def test_every_length_shares_the_same_beginning():
     short, long = (load_scenario(RP / f"rp-ooc-pause-{n}.yaml") for n in ("8k", "16k"))
     assert long.history[:len(short.history)] == short.history
     assert short.conversation.approx_tokens <= 7000 < long.conversation.approx_tokens <= 14000
+    longest = load_scenario(RP / "rp-ooc-pause-64k.yaml")
+    assert longest.history[:len(long.history)] == long.history
+    # 64k is capped below a 65k server context, and filled at least 3/4.
+    assert 42000 <= longest.conversation.approx_tokens <= 56000
     assert "Mara Venn" in short.history[4].content        # told to Hesper, early
     assert short.history[-1].role == "assistant"
 

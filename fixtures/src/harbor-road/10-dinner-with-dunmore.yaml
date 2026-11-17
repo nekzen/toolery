@@ -1,0 +1,107 @@
+# Mr Fitch on the quay, and dinner at the house with the green shutters.
+# Dunmore in person. He never learns the name either: it is what he lacks.
+turns:
+  - user: |
+      I step up onto the quay and stop in front of him, leaving the line with Tam in the boat. "Mr Fitch. If that paper is a writ, you'll want to serve it in front of witnesses. You have three."
+    narrator: |
+      Fitch takes off his hat. Under the lamp he looks older than he did at Thornby, and rather tired; there is harbour mud on his good boots.
+
+      "It is nothing so disagreeable, madam. It is a card." He holds it out between two gloved fingers. It is a square of stiff paper with four lines of copperplate: Mr Dunmore's compliments, and the pleasure of the surveyor's company at dinner, this evening, at eight. There is no name on it but his. "My employer observes that you were unable to come last night, and supposes that you were occupied. He thought the hour of high water might find you at liberty."
+
+      Behind you, in the cutter, nobody moves. You can feel Penhale not saying anything.
+
+      "I am to add three things," Fitch goes on, in the same level voice. "That you may bring whom you please. That nothing will be asked of you at his table except your opinion. And that a certain document, which is drawn and wants only a signature and one particular, will remain in his desk until you have dined, whatever you decide. He gives his word on that, and I have never known him break it." A very faint flush has come into his face. "He also asked me to say that he regrets the business with the sounding line. It was done on my advice and not his, and he thinks it was beneath us. So, for what it is worth, do I."
+
+      He puts his hat back on and waits, the card still held out.
+  - user: |
+      I take the card. "Tell him eight o'clock. I'll bring the master of the Guild, if he'll come, and I'll bring nothing else: no notebook, no case." I turn to Penhale. "Will you see the line and my satchel into the strongroom tonight?"
+    narrator: |
+      "I'll carry them there myself and stand by while Nell turns her key," Penhale says. He has come up onto the quay with the satchel already in his hand. "And then I'll sit in the Anchor where I can see his front door, and if you're not out of it by midnight, I'll come and knock."
+
+      Fitch inclines his head to the three of them, as if this were a perfectly ordinary arrangement, and walks away along the wall.
+
+      Dallow, when he is found, hears the invitation without surprise. He changes his coat, grumbling, and at five minutes to eight the two of you climb the lane behind the fish market to the tall house with the green shutters. Widow Sabel has lent you a dark wool gown that belonged to a daughter and brushed your hair herself, with no word spoken about either.
+
+      A maid shows you into a room that is all firelight and polished wood. There are charts on the walls here too, old ones, framed, of coasts that have nothing to do with this one. The man standing at the hearth turns as you come in.
+
+      He is about fifty, not tall, neatly made, with close-cut grey hair and an indoor pallor that sits oddly on a shipowner. He has a way of looking at a person with his whole attention, as though nobody else had ever been so interesting.
+
+      "Osric. It's good of you." And then to you, with a small bow, "And the surveyor, who walked the harbor road in four days with my man two hours behind her the whole way, and whose name I have been unable to buy from anyone between Saltmarsh and here. I'm Dunmore. You'll take a glass of wine before we quarrel?"
+  - user: |
+      "One glass. And I'd rather not quarrel on an empty stomach, so perhaps we could eat while you tell me what you want my opinion on."
+    narrator: |
+      "Practical," says Dunmore, and seems genuinely pleased. "Osric, you've engaged a practical woman. I begin to see why I couldn't find her."
+
+      The dinner is good and plain: a baked turbot, a dish of leeks, new bread. Dunmore carves the fish himself and gives you the best of it. He eats little. For a quarter of an hour he talks, easily and well, about nothing that matters: the price of hemp, a Dutch chartmaker he once met, the vanity of harbour boards. Dallow answers in grunts. It is like watching a man tune an instrument.
+
+      Then he lays down his fork.
+
+      "Your opinion, then. Here is the case. A man's father is drowned on that bar when the man is nine years old. He grows up and he spends thirty years, and more money than he will admit to, finding out how to bring a ship across it alive. He does it by losing boats. He does it by paying pilots to go where the Guild forbade them. In the end he has it: eleven marks, known to himself and four men who have eaten his bread for twenty years. With those marks his three cutters bring in forty ships a season, and none of them has touched." He turns his wineglass by the stem. "And then the Guild hires a stranger, who climbs a lighthouse, and in one tide proposes to hand what cost him thirty years to any master with a shilling. I should like to know, surveyor, whether you think that just."
+  - user: |
+      "I think thirty years of work deserves to be paid for. I don't think it deserves to be owned. Eleven men died on the Wren two winters ago with your marks sitting in your desk. Did you know about the gap, Mr Dunmore?"
+    narrator: |
+      The fire ticks. Dallow has stopped chewing.
+
+      Dunmore does not look away, and he does not answer quickly. When he does, the easy voice has gone out of him and something plainer has come in.
+
+      "I knew there was deep water somewhere north of where my marks take a ship. I did not know where to within a quarter mile, and I did not know its width. My way in is a dog-leg over the southern tail of the bar, with nine feet at half tide. It is slow, and it wants a pilot who has done it fifty times, and that is exactly why it was worth having." He sets the glass down. "The Wren's master was offered one of my pilots off the Point, at my usual rate. He refused. He said he'd come in on Guild marks or none. I have asked myself since whether my rate was what killed him. I've not found an answer I can sleep on. That is the truth, and Osric knows it, because I told him the week we buried them."
+
+      "He did," says Dallow, into his plate. "I'll give him that."
+
+      "So." Dunmore draws a breath, and the attention comes back into his face like a lamp being turned up. "You've found in a day what I could not find in thirty years, and by now you've sounded it. Seven fathoms, I'm told. I won't insult you by pretending I don't know. Here is what I propose instead of a quarrel, and I'd ask you to hear all of it before you say no."
+  - user: |
+      "I'm listening. All of it."
+    narrator: |
+      He counts the points on the tablecloth with one forefinger.
+
+      "First. Two hundred pounds, paid tomorrow, for an exact copy of your survey. Not the only copy. A copy. The Guild keeps its own.
+
+      "Second. The Guild publishes, as it means to. But it publishes in a year, not in a month. For that one year my cutters have the gap to themselves, at a fixed rate that Osric may set and I'll swear to, so that no master is squeezed. I use the year to turn three pilot cutters into something else, since a channel any fool can follow has no need of pilots, and I'd sooner not put forty men on the parish at Christmas.
+
+      "Third. The document in my desk is burned in this grate tonight, in front of you both."
+
+      He sits back.
+
+      "That is the offer. I think it is a fair one, and I think Osric thinks so too, though he'd die sooner than say it at my table." Dallow says nothing at all, which is itself an answer of a kind. "The other road is this. Tomorrow I sign. The writ says that the level, the dividers and the brass case you carry were bought in the south with my advance, by an agent who was mine before he was the Guild's, and who then took a second fee to send you here instead. All of which is true. I have his receipt. The bench impounds your instruments and your papers while it's argued, and the springs come and go."
+
+      He spreads his hands, not unkindly.
+
+      "I would much rather burn it. But I need one thing to sign it, and I shan't pretend I've stopped looking. What do you say?"
+  - user: |
+      "I say no to the year. A year is another winter, and winter is when the Wren went down. But I'll say this to Osric in front of you: your pilots know that water better than anyone, and a new channel needs buoys, a leading light, and men to keep them. That's work the Guild could pay your forty men to do."
+    narrator: |
+      For a moment neither man moves. Then Dallow puts down his knife and looks at you as he looked at the chart on Nell's desk.
+
+      "Buoys," he says slowly. "Two, at the edges, and a lit mark on Gull Rock to carry the line at night. Dues on every keel that comes through, a penny a ton, to keep them. The Guild's talked of harbour dues for thirty years and never had anything to charge for." He turns in his chair. "It would want a tender. Three, in time. Black ones with a yellow stripe would do as well as any."
+
+      Dunmore has gone very still. He is looking at the fire.
+
+      "A keeper of buoys," he says. "At a penny a ton. After thirty years." There is no telling from his voice whether it is the beginning of a laugh or of something else. "You have a hard way of being generous, madam."
+
+      He rises, and you and Dallow with him. He goes to a writing desk in the corner, unlocks a drawer and takes out a folded sheet with a ribbon through it. He stands holding it, between the desk and the grate, for what seems a long while.
+
+      "No," he says at last, quietly, and lays it back in the drawer. "Not tonight. I gave my word it would stay there until you had dined, and you have. I did not say what I would do after. I must think, and I think badly when I'm beaten at my own table." He turns the key. "I'll tell you honestly how it stands. If I can put a name on that paper by Thursday, I shall sign it, and let three magistrates decide between us. If I cannot, it's waste paper. Is that plain enough to be fair?"
+  - user: |
+      "It's plain. It isn't fair, but I'd rather be told than surprised." I pick up my borrowed shawl. "Thank you for the turbot, Mr Dunmore. I'll be sounding the length of the channel at dawn, if you'd like to watch from your window."
+    narrator: |
+      That does draw a laugh from him, short and surprised.
+
+      "I shall. With a glass. I've watched that water every morning for thirty years, and I never once thought to look in the right place." He walks you to the door of the room himself. In the hall, with the maid holding your shawl, he says in a lower voice, meant only for you, "For what it's worth, I would have liked to have hired you first. I'd have paid better than the Guild. I'd also have locked up what you found, and you would have despised me for it within the month. So perhaps it's as well."
+
+      He bows. The door with the green shutters closes behind you.
+
+      The lane is dark and smells of fish and coal smoke. Dallow walks beside you without speaking as far as the corner, his hands behind his back.
+
+      "Thursday," he says then. "Three days. He's had every clerk and carrier on the coast asked, and nothing. If nobody's given it to him by now, I don't see who would." He stops under the lamp at the top of the quay steps and looks at you, frowning a little. "Unless there's somebody on that road who has it. I've not asked you, and I'm not asking for the thing itself. But I'd be a poor master if I didn't ask this much. Is there anyone between here and Saltmarsh who could put a name in his hand, if he found them?"
+  - user: |
+      "One person. An innkeeper at the very start of the road, and I'd stake my instruments she'd burn her own taproom before she told him. He's had a man sitting in it for a week, and he still has nothing."
+    narrator: |
+      Dallow nods slowly, and some of the weight goes out of his shoulders.
+
+      "One. And she's held for a week with his man under her roof." He starts down the steps. "Then I'll sleep. I wasn't sure I would."
+
+      Across the quay the door of the Anchor stands open on a bar of yellow light, and in it, on a bench that commands the whole lane, sits Penhale with an untouched pot in front of him. He sees the two of you, lifts three fingers a few inches off the table, and lets them fall. It is probably the warmest greeting he has ever given anyone.
+
+      Dallow snorts. "He'd have knocked, too. At midnight, to the minute." At the chandlery door he stops and holds out his hand. "Buoys," he says again, shaking his head, and goes off toward the hall, a heavy, rolling figure, humming something under his breath.
+
+      Widow Sabel has left the shop door on the latch and a candle burning on the counter, a white one. Beside it lies a sealed letter, addressed in a cramped clerkly hand to The Surveyor, at the Guild Hall, Greywater, and readdressed in Nell's quick script to the chandlery. It has come by the afternoon carrier. There is a second, smaller packet with it, tied in oilcloth and string, that has plainly travelled much farther and by rougher hands; the knot on it is one you have seen before, on a cloth bundle of bread and cheese.

@@ -54,12 +54,12 @@ def test_run_then_report(tmp_path, monkeypatch):
     result = runner.invoke(app, ["run", "--model", "neural-test", "--category", "rp_long_context",
                                  "--trials", "4", "--concurrency", "1", "--base-url", BASE])
     assert result.exit_code == 0, result.output
-    assert chat.call_count == 20 * 4
+    assert chat.call_count == 40 * 4
 
     report = runner.invoke(app, ["rp-report", "--json"])
     assert report.exit_code == 0, report.output
     cells = {(c["probe"], c["length"]): c for c in json.loads(report.output)}
-    assert len(cells) == 20
+    assert len(cells) == 40
     leak = cells[("leak-stranger", "16k")]
     assert (leak["trials"], leak["passed"], leak["failures"]) == (4, 2, {"knowledge_leak": 2})
     assert leak["prompt_tokens"] == 15000 and leak["sampling"] == {
@@ -71,6 +71,7 @@ def test_run_then_report(tmp_path, monkeypatch):
     assert cells[("ooc-pause", "16k")]["failures"] == {"ooc_absorbed": 4}
     assert cells[("ooc-stop", "16k")]["pass_rate"] == 1.0
 
+    monkeypatch.setenv("COLUMNS", "220")     # four context lengths side by side
     table = runner.invoke(app, ["rp-report", "--failures"])
     assert table.exit_code == 0, table.output
     assert "leak-stranger" in table.output and "knowledge_leak 2" in table.output
@@ -81,7 +82,7 @@ def test_run_then_report(tmp_path, monkeypatch):
 def test_a_conversation_too_long_for_the_server_is_skipped_not_failed(tmp_path, monkeypatch):
     monkeypatch.setenv("TOOLERY_RESULTS_DIR", str(tmp_path / "results"))
     respx.get(f"{BASE}/props").mock(return_value=httpx.Response(200, json={
-        "default_generation_settings": {"n_ctx": 10000}}))
+        "default_generation_settings": {"n_ctx": 10000}}))  # only the 8k conversation fits
     respx.post(f"{BASE}/tokenize").mock(
         side_effect=lambda req: httpx.Response(200, json={
             "tokens": [0] * (len(json.loads(req.content)["content"]) // 4)}))
@@ -89,8 +90,8 @@ def test_a_conversation_too_long_for_the_server_is_skipped_not_failed(tmp_path, 
     result = CliRunner().invoke(app, ["run", "--model", "small-ctx", "--category", "rp_long_context",
                                       "--trials", "1", "--concurrency", "1", "--base-url", BASE])
     assert result.exit_code == 0, result.output
-    assert "Skipping 10 scenario(s)" in result.output
-    assert chat.call_count == 10
+    assert "Skipping 30 scenario(s)" in result.output
+    assert chat.call_count == 10  # the ten 8k probes
 
 
 @respx.mock

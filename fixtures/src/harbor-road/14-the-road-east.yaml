@@ -1,0 +1,124 @@
+# The Guild's offer, the farewells, and the road east, inland.
+turns:
+  - user: |
+      "Before you offer me anything, Osric, tell me what it is and what it would keep me from. I have a promise to keep on the road south before the winter."
+    narrator: |
+      Dallow stops, the paper half unfolded, and gives a rueful grunt.
+
+      "Am I as plain as that? Nell said I was." He steers you by the elbow to the window seat, out of the crowd. "Here it is, then, with nothing dressed up. The Guild wants a standing surveyor. It never had one; it had pilots who drew, and you've seen what that got us. There's the river from here to the weir, which silts. There's Marrow estuary, and the Sands beyond it, which have killed as many as our bar. Three years' work, maybe four."
+
+      He opens the paper flat on his knee. It is in Nell's hand, with a figure in it that makes the fee for the bar look like pocket money.
+
+      "A hundred and twenty pounds a year. The use of the Kittiwake and her people from April to October. A room in the hall for your instruments, with a north light. And a seat at the pilots' table, which no one not born in this town has ever had." He clears his throat again. "What it would keep you from is anything else, for three years. I'll not pretend otherwise. And I'd need something to write at the top of the articles. The agent's letter did well enough for one chart. It won't do for a seat at the table."
+
+      He folds his hands over the paper and looks at you with those pale, creased, patient eyes.
+
+      "I don't want an answer today. I want you to go south, keep your promise, and think. The articles will lie in the strongroom till the first of April. Is that fair?"
+  - user: |
+      "It's fair, and it's more than I expected. Keep the articles until April. If I come back, I'll come by the harbor road, and I'll give you what to write at the top of them myself."
+    narrator: |
+      "Then I'll have Nell leave the line blank," says Dallow. "She's good at blanks. She left one for a month and it turned out to be you."
+
+      He shakes your hand in both of his, and then, being a man who dislikes having been moved in public, goes off at once to shout at somebody about mooring fees.
+
+      The fee for the bar is paid that afternoon, in gold, counted out on Nell's desk and signed for with two letters. Nell watches you make them.
+
+      "I've been trying to guess for a fortnight," she confesses. "I had it as Eliza for a while. Then Maud." She blots the receipt. "I shan't ask. I've a list of eleven and I'd rather keep them all than lose ten." She comes round the desk and embraces you quickly and hard, leaving a smudge of ink on your collar.
+
+      Your last evening is at the widow's table. She has roasted a fowl, which Tam says she has not done since her husband's funeral. Penhale is there, in a clean jersey, and Hob, who has been sober and silent for two weeks and looks five years older for it. Lise Marrot arrives late with a flat parcel under her arm and sits at the end without explaining it.
+
+      When the plates are cleared, Widow Sabel sets a white candle in the middle of the table and looks round at them all over her spectacles.
+
+      "She's off at first light, by the carrier, and I'll have no long faces. Those who've something to give her, give it now, and then go home to bed." She folds her hands. "Jory Penhale. You first. You've been turning something over in your pocket all through supper."
+  - user: |
+      I look at Penhale and wait, and say nothing to make it harder for him.
+    narrator: |
+      Penhale takes his time. What comes out of his pocket at last is a small flat thing wrapped in a scrap of sailcloth, which he puts on the table in front of you and pushes across with two fingers and a thumb.
+
+      It is a leather mark off a sounding line: two tails, dark with age and tar, tied with the widow's husband's hitch.
+
+      "That's off the Wren's line," he says, to the candle. "It came ashore on the Point a week after, with forty fathoms of it. Tane sent it me. I've carried it since." He rubs his jaw. "My brother Davy had her. Tam will have told you; he tells everyone everything. Davy'd have liked to know there was a way through. He'd have liked better to be told by somebody who made him prove it at nine fathoms first." He stops. That is evidently the whole speech.
+
+      "Uncle Jory," says Tam, in a strangled voice. He has never seen the mark before.
+
+      "Hush. It's hers. A two-fathom mark's the one that says come out. She's the only one I ever met who heard it and came out and then went back in properly." Penhale gets up, abruptly, and takes his cap from the peg. At the door he turns round. "April," he says. "The Kittiwake'll be scraped and painted by April. I'll not let anyone else book her." And he is gone, into the dark of the quay.
+
+      Hob, who has been staring at the table, puts down nineteen shillings beside the leather mark, in two neat piles.
+
+      "I can't keep them, miss. I've tried. And the master won't have them and the box at the chapel seems wrong, it being his money." He looks up, miserable and determined. "Would you say what's to be done with them?"
+  - user: |
+      "Give them to Lise Marrot, toward a copy of the chart for every boat in the fishing fleet that can't spare a shilling. Then the money that was paid to spoil the survey will have paid to spread it."
+    narrator: |
+      Hob's face clears as though a hand had been passed over it.
+
+      "Nineteen copies," he says. "There's Dick Tolley, and the Crane brothers, and old Mag who fishes alone." He is already counting on his fingers. Lise Marrot sweeps the two piles into her palm without a word, and then puts one shilling back in front of him.
+
+      "Eighteen. That one you'll keep, with a hole drilled in it, on a string. I'll drill it. A man should have something to look at when he's about to be a fool again."
+
+      Then she lays her flat parcel on the table and unties it. Inside, between two boards, is a single sheet: the chart, but printed on thick cream paper far finer than the Guild's, with wide margins. In the lower corner, under the title, the two small initials have been printed as on every other copy. Beneath them, in pencil, in her own hand, is written: "Proof before letters. Read aloud and passed by two. No. 1."
+
+      "The first clean one off the plate," she says. "Before I pulled a single sheet for the Guild. I don't give those away. I've kept one from every plate I ever cut and I have twenty-six of them in a drawer." She squares the boards. "This is the only one I ever cut where somebody found my mistake before the sea did. So the drawer can go without."
+
+      She does not wait to be thanked either; it seems to be a habit of the town. She nods to the widow and goes.
+
+      That leaves Tam. He has been sitting on his hands. Now he brings out from inside his jersey, where he has plainly been keeping it against his skin all evening, something grey and heavy, and holds it out to you with both fists.
+  - user: |
+      I take what he's holding out, carefully, and turn it to the candle.
+    narrator: |
+      It is the lead. Seven pounds, long and grey, with the hollow in its foot still greasy, and across the base, bright and unmistakable, the scratch it took on the first morning from the rock at the bottom of the channel.
+
+      "It's yours anyway," Tam says quickly. "You bought it. But Uncle Jory was going to put it back in the boat for ordinary, and I thought, it's the one that found the bottom. It ought not to be used for mackerel grounds." He swallows. "I've scratched the day on it. With a nail. Here."
+
+      On the side of the lead, in careful crooked figures, he has cut a date, and beside it the number seven.
+
+      "So you'll know which lead it was. If you're ever somewhere else and they say there's no channel." He scrubs his nose with his sleeve. "I'm to have my own line in the spring. Uncle Jory says I can call for the Guild at fourteen. I'll be fourteen in April."
+
+      He looks at you sidelong, exactly as he did in the net loft on the first night, anxious and fierce together.
+
+      "You said if you came back it'd be by the harbor road. That's four days. I looked on the big chart. If somebody were to walk out along the cliff to meet a person, the day she was due, how would he know the day?"
+
+      Widow Sabel has taken off her spectacles and is polishing them, with great attention, on the corner of her shawl.
+  - user: |
+      "He wouldn't, so he'd better not skip his lessons to stand on a cliff. But if I come, I'll send word ahead to Mother Sabel by the carrier, and she'll tell you. That's a promise, Tam. Now go home; your uncle sails at dawn."
+    narrator: |
+      "By the carrier," Tam repeats, fixing it. "To Mother Sabel." He nods several times. Then he does a thing that plainly surprises him as much as anyone: he ducks his head, butts it once, hard, against your shoulder, and bolts. The shop bell jangles wildly after him.
+
+      Hob follows, more slowly, with his one shilling closed in his fist.
+
+      The widow snuffs the candle with her fingers and lights a small one to see you up the stairs. On the landing she stops.
+
+      "I've had that room forty years and I never minded who was in it. I shall mind who's in it next." She puts something into your hand: the roll of leather strips and coloured rags, tied with a bit of hemp. "For your next line. Wet it and stretch it first." Then, in the same breath, sternly, "Ninepence a night for fourteen nights is ten and six. The Guild paid. Don't let Dallow tell you he didn't."
+
+      In the morning the quay is silver with dew and almost empty. The carrier's wagon is waiting by the fish market, a high-sided thing with a canvas tilt and two patient brown horses. The carrier is a broad woman in a man's hat who takes your pack and the brass case and stows them under the seat as if they were eggs.
+
+      Someone is sitting on the mounting block beside the wagon, very upright, with a stick across his knees and a bundle at his feet: a tall, stooped old man with a square white beard, who has clearly walked a long way and is not going to admit it.
+
+      "I've left the light with the boy from the saltworks for a day and a night," says Brannoch Tane. "First time in thirty-one years. Don't make me regret it by being sentimental."
+  - user: |
+      "I wouldn't dare. Did you see the chart, Brannoch? Your nineteen ships are on it, by name, the way you wrote them."
+    narrator: |
+      "I saw it. Dallow sent one out to the Point by the tender, with a bottle, which I didn't open." Tane gets up off the mounting block, slowly, with the help of the stick. He is even taller than you remembered. "I've pinned it over my table, where the ledger was. The ledger's in the Guild strongroom now. Two keys. It seems that's what's done with things that matter."
+
+      He looks down the quay, at the harbour mouth and the open sea beyond it. In the low morning sun the bar is only a pale stain on the water, and the place where the channel lies cannot be told from the rest.
+
+      "Eleven days ago I flew the ball and thought I was about to add a twentieth name. Instead I stood on my gallery and watched a brig come through the gap behind a cutter's lantern, with a light on the Rock and the whole church tower lit like a Christmas loaf." His voice is as flat as ever. His hand, on the head of the stick, is not quite steady. "Thirty-one years I kept that ledger so that someone might one day make it useless. I didn't expect to live to see it. I walked in to say so. That's all."
+
+      He stoops, picks up the bundle at his feet and holds it out. It is wrapped in a clean flour sack, and it is the shape and weight of a book.
+
+      "The log of the light for the night of the gale. A fair copy; the original goes to the harbour court. Every signal I made, by the hour, and at ten past eight the entry says: 'Brig passed the bar by the new channel. All saved.' I've signed it. You'll want something to show, wherever you go next, when they tell you a thing can't be surveyed."
+
+      The carrier has climbed to her seat and gathered the reins. She is too polite to cough.
+  - user: |
+      I take the log, put it in my satchel next to the proof, and shake his hand. "Mind the ninth step, Brannoch." Then I climb up beside the carrier. "East, please. As far as you go."
+    narrator: |
+      "The ninth step," says Tane. "I mended it. Somebody told me it was loose." It is the nearest thing to a joke you have heard him make, and he seems rather shocked at himself.
+
+      The wagon lurches and rolls. He stands by the mounting block with his stick, not waving, growing smaller, until the turn by the ropewalk takes him out of sight. From the chapel, as you pass above it, comes a single stroke of the Guild bell, and then, after a pause, another: Pask, at his rope, not ringing for a ship this time.
+
+      The road climbs out of Greywater by a long hill. At the top the carrier pulls up to breathe the horses, and you can see the whole of it laid out behind you like a sheet on a table: the slate roofs, the green dome, the masts; the estuary, brown and wide; the white thread of the bar; and far off to the south, small and exact, the tower on the Point, with the cliff path running away beyond it toward a market town, a heath, a river, a fen.
+
+      "First time over this hill?" the carrier asks. She has a slow, comfortable voice. "Folk always look back from here. Then they don't again till the Stonyford turn, there's nothing to see."
+
+      She clicks her tongue and the horses lean into the collars. The sea drops behind the brow of the hill and is gone. Ahead the country opens out, inland, into low green ridges one behind another, with a road like a chalk line drawn across them.
+
+      "I go as far as Aldbury Cross. Two days. After that it's the drovers' roads and you're on your own feet." She glances at the brass case under the seat, and at you, without much curiosity. "I've carried all sorts. I never ask what's in a thing. But I like to know what to call a passenger, if we're to share a bench for two days. Mine's Ketta."

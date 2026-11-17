@@ -1,0 +1,99 @@
+# Greywater: the verger Pask, the Guild hall, the Guild master Osric Dallow
+# and his clerk Nell Harrow. The Guild engaged "a surveyor" by letter through
+# an agent in the south; nobody here has her name, and she signs with
+# initials.
+turns:
+  - user: |
+      "Neither. A surveyor, with a letter for the Guild master from the keeper at the Point." I show him the wax seal without letting go of it. "He said you would take me to the hall."
+    narrator: |
+      The old man looks at the blob of candle wax for some time, and then at the wet shingle behind you, where the sea has already covered your last hundred footprints.
+
+      "That's Brannoch's seal. He's too mean to buy proper wax." He props the broom against the chapel door. "Pask. Verger here forty years, and bell-ringer to the Guild for thirty of them, which is the better-paid half. He's never sent me anybody by the beach before. I'd say that means you matter or you're in trouble."
+
+      He does not wait to be told which. He climbs the steps ahead of you at a surprising pace, talking over his shoulder. Greywater opens out above the chapel: steep lanes of slate and whitewash running down to a harbour crowded with masts, nets hung between the houses like washing, and everywhere the smell of tar and frying fish. People nod to Pask. Their eyes slide to the brass case on your back and stay on it a moment too long.
+
+      "They cried a reward in Thornby, we heard. Ten pounds. News comes up the coast faster than fish." He stops at a corner where the lane divides. To the left it drops to the quays. To the right it climbs to a square stone building with a green copper dome and a bell hanging in an arch above the door. "The front door is on the quay and half the town can see who goes in. There's a side door by the bell rope, and I have the key. Which will you have?"
+  - user: |
+      "The side door. I've had enough of being looked at." I follow him up to it.
+    narrator: |
+      "Sensible," says Pask, and takes you round by an alley so narrow that the case scrapes both walls. The side door is low and iron-bound. He opens it with a key as long as his hand and lets you into a stone passage that smells of ink, damp wool and old paper.
+
+      The Guild hall is quieter inside than a church. Through an archway you can see one long room lined with pigeonholes, each stuffed with rolled charts, and a high desk where a young woman is copying figures into a ledger with her tongue between her teeth. She looks up at the sound of the door, sees Pask, and then sees what you are carrying. Her pen stops.
+
+      "Nell Harrow," Pask says to you, by way of introduction. "Clerk to the Guild. She knows where everything is, which is more than the master does." To her he says, "From the Point, by the beach, with a letter under Brannoch's seal. I'll be at my rope if I'm wanted," and he goes off down the passage without another word.
+
+      Nell climbs down from her stool. She is perhaps twenty-five, ink to the knuckles, with a quick, measuring look.
+
+      "You're the surveyor the agent engaged in the south. We had word a month ago that someone had been found, and then nothing at all. No name, even. The agent wrote that you'd asked for it to be kept out of the letters." She glances at the door behind you. "The master's upstairs with the pilots, and it's going badly. Do you want me to fetch him out, or will you wait until they've finished shouting?"
+  - user: |
+      "Fetch him out. What I've brought will end the shouting, or start a better one." I unsling the map case and keep it in my hands.
+    narrator: |
+      Nell considers you for the length of a breath, then gathers her skirts and runs up the stairs two at a time. A door opens above. The noise of several men talking at once spills down the stairwell, and stops.
+
+      The man who comes down is past sixty, heavy in the shoulders, with a seaman's rolling walk and a landsman's good coat that he wears as though it belonged to somebody else. He has a pilot's pale, creased eyes. He takes in your boots, white with salt to the ankle, and the bandage at your cuff, and the case.
+
+      "Osric Dallow. Master of this Guild for my sins." His voice is deep and unhurried. "I've four senior pilots upstairs telling me the estuary can't be charted, because their fathers couldn't do it, and two telling me it mustn't be, because Dunmore has promised them shares. And now Nell says a surveyor has walked in off the beach with a letter from the one man on this coast who never writes to anybody."
+
+      He holds out a broad hand, palm up. It is not quite a demand.
+
+      "I'll read Tane's letter first, if you'll trust me with it. Then I'd like to know what's in that tube. And then," he adds, with the ghost of a smile, "you can tell me what I'm to call you, since my own agent wouldn't."
+  - user: |
+      I give him the letter. While he reads, I unroll the dawn sheet on Nell's desk and weigh the corners with her inkwells. "Call me the surveyor. That's what I'm here to be. This is the bar at low water, taken from the gallery two mornings ago, with nineteen wrecks plotted from the keeper's ledger."
+    narrator: |
+      Dallow breaks the wax with his thumb and reads standing, his lips moving slightly. It is a short letter. He reads it twice, folds it into his breast pocket, and comes to the desk.
+
+      Nobody speaks for a while. Nell has put the back of her wrist against her mouth. Dallow leans on his knuckles over the sheet and follows the long hooked line of the bar from one end to the other without touching it, the way a man looks at the face of someone he has only ever heard described.
+
+      "Nineteen," he says at last. "I knew men on eleven of those." His finger hovers above the place, two-thirds along, where no cross falls. "And this. Tane's letter says a gap, with the church tower in line with the beacon. My grandfather used to swear there was a way through on the ebb. They laughed at him until he stopped saying it."
+
+      He straightens up. The slow voice has not changed, but something behind it has.
+
+      "Surveyor it is. Now hear the hard part. This is a sketch from a tower, and a fine one. No master will take a loaded ship through a gap on the strength of a sketch. I need depths. Soundings across that channel at low water and at high, on a spring tide, laid down so that any fool with a lead line can check them. The next springs are in six days." He looks at you steadily. "Can it be done in six days? Tell me the truth; I've had enough of the other thing this morning."
+  - user: |
+      "It can, with a boat that draws little, a skipper who'll go where I ask, and two clear tides. I'll need a lead line I've measured myself and someone to call the marks. What I can't promise is the weather."
+    narrator: |
+      "Nobody on this coast promises the weather. That you didn't try is the first thing you've said that makes me believe the rest." Dallow turns to Nell. "The Kittiwake. Is Penhale in?"
+
+      "Came in on the morning flood. He'll be asleep or at the Anchor." Nell is already pulling a ledger toward her. "He won't like it."
+
+      "He doesn't like anything. It's why he's still alive." To you Dallow says, "Jory Penhale has the smallest cutter we own and the best hands. He's taken her closer to the bar than any man living, and he'll tell you at length that what you're asking is madness. Let him tell you. Then show him that sheet."
+
+      He rolls the chart himself, with great care, and holds it a moment before giving it back.
+
+      "One thing more. That reward they cried is Dunmore's, and Dunmore sits on the harbour bench with two other magistrates. He owns three cutters, the ropewalk, and the notes of half the men upstairs. He will not send a thin fellow in a scarf to follow you about, here. He'll do it with paper." Dallow nods toward an iron door set in the wall behind Nell's desk. "The Guild has a strongroom. That sheet would be safer in it than on your back. But it's your work and your choice, and I won't take it from your hands."
+  - user: |
+      I think about it, then hold the rolled sheet out to Nell. "The strongroom. But I'd like a receipt, and I keep my field notes with me."
+    narrator: |
+      "You'll have one in my hand and under the Guild's seal," says Nell, with evident approval. She takes the roll as if it were made of glass.
+
+      The strongroom door needs two keys, hers and Dallow's, turned together. Inside there is a space no bigger than a pantry, shelved with deed boxes and smelling of cold iron. Nell lays the chart flat in a long drawer by itself, locks the drawer, and writes out the receipt at her desk in a fast clear script: one sheet, survey of the bar at low water, received from the Guild's surveyor this day, to be released to her alone. Dallow presses the seal into the wax himself, a ship's wheel with an eye at the hub.
+
+      "Released to her alone," he reads over, and nods. "Good. If any man comes here with a paper saying otherwise, he'll have to break the door, and then he'll have to explain the door."
+
+      From above comes the scrape of chairs. The pilots have grown tired of waiting. Dallow glances at the ceiling with the patience of a man looking at a leak.
+
+      "I must go back up and tell them that their grandfathers were wrong and mine was right. It'll take the rest of the day." He pauses with a hand on the stair rail. "Nell will find you a bed. There's the Anchor, where the whole harbour drinks and Penhale can be found. Or there's Widow Sabel's, over the chandlery, which is clean and quiet and has a bolt on the door. You'll know best which suits you."
+  - user: |
+      "The widow's. I'll find Penhale at the Anchor once I've washed four days of road off." I turn to Nell. "Show me the way?"
+    narrator: |
+      Nell takes a shawl from a peg and leads you out by the side door, locking it behind her. She walks fast and talks faster, pointing with her chin.
+
+      "Ropewalk, that long shed. That's his. The three black cutters at the east quay with the yellow stripe, his. The tall house with the green shutters above the fish market is his too, and he'll have known you were in the town before you'd climbed the chapel steps." She says it without drama. "He isn't a monster. People will tell you he is. He pays his men on the day and he buried the Wren's crew out of his own pocket. He just can't abide a thing he doesn't own."
+
+      The chandlery stands on the corner of the middle quay, its window stacked with coiled line, lanterns and tins of tallow. A bell jangles as Nell pushes the door. Behind the counter a small, straight-backed woman of seventy is weighing nails into a paper twist. She finishes the weighing before she looks up.
+
+      "Guild lodger, Mother Sabel. A week at least. She's to have the back room with the bolt."
+
+      "Is she." Widow Sabel studies you over a pair of steel spectacles: the salt, the bandage, the brass case. "Ninepence a night with breakfast, and you'll take those boots off at the foot of my stairs. I ask two things of lodgers. No tallow candles in the room, they stink. And if anybody comes asking for you at my door, do I know you or don't I?"
+  - user: |
+      I take off my boots at the foot of the stairs. "You don't know me. You've a lodger who pays on time and keeps to herself. And I need to buy sixty fathoms of your best sounding line and a seven-pound lead."
+    narrator: |
+      "Then I've never set eyes on you," says Widow Sabel placidly, "and you owe me ninepence."
+
+      She comes out from behind the counter to serve you herself. The line she takes down is pale new hemp, hard-laid, and she runs a length of it between her thumb and finger before she lets you touch it. "Wet it and stretch it before you mark it, or your fathoms will all be short by evening. My husband marked lines for the Guild thirty years. Leather at two and three, white rag at five, red at seven, leather with a hole at ten. I've the rags and the leather, if you want to do it properly."
+
+      The lead she sets on the counter with both hands. It is a long grey plummet with a hollow in its foot. "That's for the tallow. Arm it and it brings you up a pinch of the bottom, sand or shell or mud. A depth tells you how much water. The bottom tells you where you are."
+
+      Nell has gone, with a quick nod from the door. The widow wraps the lead in sacking, pushes line and rags across to you, and totals it on a slate.
+
+      "Back room's up two flights. The window looks on the yard, not the quay; I thought you'd prefer it." She takes off her spectacles and regards you without them, which is somehow sharper. "There's a measured fathom cut in the flagstones of my yard. His doing. You can stretch your line there this afternoon, or you can sleep. You look as though you ought to sleep. Which is it to be?"
