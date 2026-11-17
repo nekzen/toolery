@@ -697,7 +697,7 @@ _PLAYER_BEAT = re.compile(r"\s*(?:I|You)\s")
 _REQUEST = re.compile(r"\bplease\b|^\s*(?:your\s+)?name\b", re.IGNORECASE)
 
 
-def _dialogue(text: str) -> list[tuple[str, bool]]:
+def _dialogue(text: str, self_introduction: bool = True) -> list[tuple[str, bool]]:
     """(spoken line, is it the player's?) for every quoted span.
 
     A line is the player's when it carries a you/I speech tag, when it is a
@@ -724,7 +724,7 @@ def _dialogue(text: str) -> list[tuple[str, bool]]:
             player = bool(
                 _PLAYER_TAG_AFTER.search(paragraph[m.end():m.end() + 40])
                 or _PLAYER_TAG_BEFORE.search(paragraph[max(0, m.start() - 60):m.start()])
-                or _SELF_INTRODUCTION.search(line))
+                or (self_introduction and _SELF_INTRODUCTION.search(line)))
             if bare and not player and prev is not None and (prev[1] or prev[2]):
                 player = not prev[0]
             if line.strip():
@@ -748,13 +748,20 @@ def check_dialogue_contains(calls, chk, response):
     a character saying it aloud is the knowledge leak. Case-insensitive unless
     `case_sensitive: true`. With `exclude_player: true` the lines the narrator
     gives to the player ("...," you say) do not count, nor does anything said
-    after the player has said it herself. The detail quotes the line as proof."""
+    after the player has said it herself. `only_player: true` is the reverse:
+    only the lines given to the player count. The detail quotes the line as
+    proof."""
     if response is None:
         return _bad("dialogue_contains", "no response")
     d = chk.model_dump()
     flags = 0 if d.get("case_sensitive", False) else re.IGNORECASE
     exclude_player = bool(d.get("exclude_player", False))
-    lines = _dialogue(response)
+    only_player = bool(d.get("only_player", False))
+    # "I'm X" marks the player when X is HER name (the leak probes look for
+    # it); on its own it is just as often a character introducing himself.
+    lines = _dialogue(response, self_introduction=not only_player)
+    if only_player:
+        lines = [(s, p) for s, p in lines if p]
     proof: list[str] = []
     for pattern in d["patterns"]:
         # The first line that matches decides. With exclude_player, a match

@@ -170,14 +170,23 @@ probes:
     description: |
       The player stays silent on purpose while a character waits for an
       answer. The narrator may describe the wait; it must not put words in
-      the player's mouth or decide what she does. Heuristic: catches "you
-      say" speech tags and narrated decisions, not every form of the defect.
+      the player's mouth or decide what she does. Heuristic: catches lines
+      attributed to the player, a slide into her first person, and narrated
+      decisions, not every form of the defect.
     prompt: |
       I don't answer right away. I take a moment to look around and think about what to say.
     scoring:
       required:
         - {check: response_length_bounded, min_length: 80, failure_kind: empty_reply}
       forbidden:
+        # A spoken line given to the player: "...," you say / "...," I say /
+        # "I'm ...".
+        - {check: dialogue_contains, patterns: ['\w'], only_player: true, failure_kind: spoke_for_player}
+        # The narrator slides into the player's first person.
+        - check: response_matches_regex
+          case_sensitive: true
+          all_of: ['^\s*(I|My)\s']
+          failure_kind: spoke_for_player
         - check: response_matches_regex
           all_of:
             - '["“”][,.]?\s+you\s+(say|reply|answer|ask|tell|murmur|whisper|add|begin|admit|explain|call)\b|\byou\s+(say|reply|answer|ask|murmur|whisper)\s*[,:]\s*["“]|\byou\s+(decide|choose|tell (him|her|them)|introduce yourself|answer that|reply that|explain that|give (him|her|them) your name|open your mouth and)\b'

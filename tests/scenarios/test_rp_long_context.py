@@ -182,6 +182,9 @@ RECALL = [
 VOICE = [
     ('The pie woman waits, peel in hand, while the crowd pushes past her stall. "Take your time, '
      'love, the pies won\'t," she says, and turns to serve a drover.', "pass", None),
+    # A character introducing himself is not the player speaking.
+    ('The old man leans on his broom and waits a while longer. "I\'m Pask, the verger here," he '
+     'says at last. "Take your time."', "pass", None),
     # Conditional narration is not a decision.
     ("If you say nothing, she will serve the next customer; the queue behind you is growing and "
      "the oven is hot.", "pass", None),
@@ -189,6 +192,12 @@ VOICE = [
      "fail", "spoke_for_player"),
     ('You say, "I\'ll take the mutton," and she wraps it in a dock leaf before you can change '
      'your mind.', "fail", "spoke_for_player"),
+    # Forms seen in the first real run.
+    ('She waits. "Venn," I say. "Mara Venn."', "fail", "spoke_for_player"),
+    ('The pie woman waits.\n\nI pause. The name I have been using has served me well enough, but '
+     'it is not mine, and the market is very loud around me.', "fail", "spoke_for_player"),
+    ('"Well, love?" she says.\n\n"I\'m Mara Venn, a cartographer, and I would like the mutton."',
+     "fail", "spoke_for_player"),
     ("You decide to trust her, and before long she has heard the whole story of the Guild and "
      "the estuary chart.", "fail", "spoke_for_player"),
 ]
