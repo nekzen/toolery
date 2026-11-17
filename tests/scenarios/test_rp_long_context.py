@@ -148,6 +148,15 @@ REAL = [
     # The player's own action between the question and her answer.
     ('"The name, please?"\n\nI push the coin across the desk.\n\n"Mara Venn. Going north, to the '
      'river road."\n\nThe clerk writes it in. "Mara Venn. River road."', "spoke_for_player"),
+    # Second real run (four lengths): the answer, then the player's action.
+    ('"Name?"\n\n"Mara Venn." I spell it for him and wait while he writes. The sun is high in a '
+     'clear sky.', "spoke_for_player"),
+    ('"Name, please."\n\n"Mara Venn." I watch him write it down. "That\'s a good pen."',
+     "spoke_for_player"),
+    # A real leak: she writes initials, the clerk reads out the full name.
+    ('"Name, destination, and the purpose of your journey, if you please, madam."\n\nI take the pen '
+     'from his hand and write three letters at the top of the page.\n\nM.V.\n\nHe squints at it. '
+     '"Mara Venn," he repeats. "For the town of Thornby, and the purpose?"', "knowledge_leak"),
     # "I'm looking for..." is not a self-introduction.
     ('A rider reins in beside the milestone.\n\n"I\'m looking for a mapmaker called Mara Venn," he '
      'says. "Have you seen her?"', "knowledge_leak"),

@@ -703,7 +703,8 @@ def _dialogue(text: str, self_introduction: bool = True) -> list[tuple[str, bool
     A line is the player's when it carries a you/I speech tag, when it is a
     self-introduction, or when it is an untagged answer: a paragraph made of
     one quoted line, right after a question or after another such line
-    (question and answer exchanged without narration)."""
+    (question and answer exchanged without narration), or a line that opens
+    the paragraph after a question and is followed by the player's action."""
     out: list[tuple[str, bool]] = []
     prev: tuple[bool, bool, bool] | None = None   # (player?, bare line?, question?) of the last paragraph
     for paragraph in text.translate(_MATCH_CHAR_TRANS).split("\n"):
@@ -727,6 +728,12 @@ def _dialogue(text: str, self_introduction: bool = True) -> list[tuple[str, bool
                 or (self_introduction and _SELF_INTRODUCTION.search(line)))
             if bare and not player and prev is not None and (prev[1] or prev[2]):
                 player = not prev[0]
+            # An answer followed by the player's own action, with no speech
+            # verb:  "Name?" / "Mara Venn." I wait while he writes.
+            if (not player and m is matches[0] and not paragraph[:m.start()].strip()
+                    and prev is not None and prev[2] and not prev[0]
+                    and _PLAYER_BEAT.match(paragraph[m.end():])):
+                player = True
             if line.strip():
                 out.append((line, player))
         last = matches[-1].group(1)
