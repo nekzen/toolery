@@ -37,6 +37,7 @@ class Rescored:
     old_score: float
     old_correctness: float | None
     new: ScenarioResult
+    old_failure_kind: str | None = None
 
     @property
     def flipped(self) -> bool:
@@ -45,6 +46,12 @@ class Rescored:
     @property
     def correctness_changed(self) -> bool:
         return self.old_correctness != self.new.correctness_score
+
+    @property
+    def relabelled(self) -> bool:
+        """Still a failure, but for another reason (knowledge_leak ->
+        spoke_for_player): the label is what some reports count."""
+        return (self.old_failure_kind or None) != (self.new.failure_kind or None)
 
 
 def rescore_trace(scenario: Scenario, trace: TraceResult) -> ScenarioResult:
@@ -93,6 +100,7 @@ def rescore_store(store: Store, results_dir: Path, scenarios: dict[str, Scenario
                 scenario_id=sid, adapter=row["adapter"], trial_index=row["trial_index"],
                 old_status=row["status"], old_score=row["score"],
                 old_correctness=row.get("correctness_score"), new=new,
+                old_failure_kind=row.get("failure_kind"),
             ))
     return out, dict(skipped)
 
@@ -103,7 +111,8 @@ def apply_rescore(store: Store, rescored: list[Rescored]) -> int:
     with store.conn() as c:
         for r in rescored:
             n = r.new
-            if not r.flipped and r.old_score == n.score and not r.correctness_changed:
+            if (not r.flipped and r.old_score == n.score and not r.correctness_changed
+                    and not r.relabelled):
                 continue
             c.execute(
                 "UPDATE scenario_results SET status=?, score=?, failure_kind=?, "

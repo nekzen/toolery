@@ -82,6 +82,17 @@ def test_apply_writes_the_new_status_and_is_idempotent(tmp_path):
     assert apply_rescore(store, rescored) == 0
 
 
+def test_a_failure_that_only_changes_label_is_written(tmp_path):
+    store = _seed(tmp_path, _trace("no number here"), status="fail")
+    with store.conn() as c:
+        c.execute("UPDATE scenario_results SET failure_kind='stale_label'")
+    rescored, _ = rescore_store(store, tmp_path, {"t-01-rescore": _scenario()})
+    assert not rescored[0].flipped and rescored[0].relabelled
+    assert apply_rescore(store, rescored) == 1
+    (row,) = store.fetch_results_for_run("r1")
+    assert row["status"] == "fail" and row["failure_kind"] != "stale_label"
+
+
 def test_slack_traces_keep_the_strict_score(tmp_path):
     """A trial recorded with --budget-slack is re-scored like the runner did:
     over budget -> strict fail, correctness from the finished run."""
