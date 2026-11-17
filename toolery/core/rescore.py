@@ -38,6 +38,7 @@ class Rescored:
     old_correctness: float | None
     new: ScenarioResult
     old_failure_kind: str | None = None
+    old_checks_json: str | None = None
 
     @property
     def flipped(self) -> bool:
@@ -52,6 +53,17 @@ class Rescored:
         """Still a failure, but for another reason (knowledge_leak ->
         spoke_for_player): the label is what some reports count."""
         return (self.old_failure_kind or None) != (self.new.failure_kind or None)
+
+    @property
+    def details_changed(self) -> bool:
+        """Same verdict, other check details: a measuring check that reports
+        a new figure (repetition_bounded's `truncated`) changes nothing else,
+        and reports read the figure from the stored details."""
+        try:
+            old = json.loads(self.old_checks_json or "[]")
+        except ValueError:
+            return True
+        return old != [ck.model_dump() for ck in self.new.checks]
 
 
 def rescore_trace(scenario: Scenario, trace: TraceResult) -> ScenarioResult:
@@ -101,6 +113,7 @@ def rescore_store(store: Store, results_dir: Path, scenarios: dict[str, Scenario
                 old_status=row["status"], old_score=row["score"],
                 old_correctness=row.get("correctness_score"), new=new,
                 old_failure_kind=row.get("failure_kind"),
+                old_checks_json=row.get("checks_json"),
             ))
     return out, dict(skipped)
 
@@ -112,7 +125,7 @@ def apply_rescore(store: Store, rescored: list[Rescored]) -> int:
         for r in rescored:
             n = r.new
             if (not r.flipped and r.old_score == n.score and not r.correctness_changed
-                    and not r.relabelled):
+                    and not r.relabelled and not r.details_changed):
                 continue
             c.execute(
                 "UPDATE scenario_results SET status=?, score=?, failure_kind=?, "

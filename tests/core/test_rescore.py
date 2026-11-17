@@ -93,6 +93,22 @@ def test_a_failure_that_only_changes_label_is_written(tmp_path):
     assert row["status"] == "fail" and row["failure_kind"] != "stale_label"
 
 
+def test_a_trial_whose_check_details_change_is_written(tmp_path):
+    """Same status, same label, a new figure in the details: still written,
+    or a report that reads the details never sees the figure."""
+    store = _seed(tmp_path, _trace("no number here"), status="fail")
+    scen = {"t-01-rescore": _scenario()}
+    rescored, _ = rescore_store(store, tmp_path, scen)
+    apply_rescore(store, rescored)
+    with store.conn() as c:
+        c.execute("UPDATE scenario_results SET checks_json='[]'")
+    rescored, _ = rescore_store(store, tmp_path, scen)
+    (r,) = rescored
+    assert not r.flipped and not r.relabelled and r.details_changed
+    assert apply_rescore(store, rescored) == 1
+    (row,) = store.fetch_results_for_run("r1")
+    assert json.loads(row["checks_json"])[0]["check"] == "response_contains"
+
 def test_slack_traces_keep_the_strict_score(tmp_path):
     """A trial recorded with --budget-slack is re-scored like the runner did:
     over budget -> strict fail, correctness from the finished run."""
