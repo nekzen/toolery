@@ -678,50 +678,83 @@ def check_response_matches_regex(calls, chk, response):
 
 
 _DIALOGUE_SPAN = re.compile(r'"([^"]*)(?:"|$)')
-_PLAYER_VERB = (r"(?:say|reply|answer|ask|tell|murmur|whisper|add|begin|admit|explain|call|offer|"
-                r"manage|continue|repeat|mutter|shout)")
-# `"...," you say`  /  `You say, "..."`  /  `"...," you say. "..."`
-_PLAYER_TAG_AFTER = re.compile(rf"^[,.]?\s*you\s+{_PLAYER_VERB}\b", re.IGNORECASE)
-_PLAYER_TAG_BEFORE = re.compile(rf"\byou\s+{_PLAYER_VERB}(?:\s+\w+){{0,3}}\s*[,:.]?\s*$", re.IGNORECASE)
+_PLAYER_VERB = (r"(?:sa(?:y|id)|repl(?:y|ied)|answer(?:ed)?|ask(?:ed)?|t(?:ell|old)|murmur(?:ed)?|"
+                r"whisper(?:ed)?|add(?:ed)?|beg(?:in|an)|admit(?:ted)?|explain(?:ed)?|call(?:ed)?|"
+                r"offer(?:ed)?|manage(?:d)?|continue(?:d)?|repeat(?:ed)?|mutter(?:ed)?|shout(?:ed)?)")
+# The player is "you" for a second-person narrator, and "I" when the model
+# slides into the player's own first person.
+#   "...," you say    You say, "..."    "...," I say. "..."
+_PLAYER_TAG_AFTER = re.compile(rf"^[,.]?\s*(?:you|I)\s+{_PLAYER_VERB}\b", re.IGNORECASE)
+_PLAYER_TAG_BEFORE = re.compile(
+    rf"\b(?:you|I)\s+{_PLAYER_VERB}(?:\s+\w+){{0,3}}\s*[,:.]?\s*$", re.IGNORECASE)
+# A line that introduces its own speaker is the player's: no other character
+# presents herself under the player's name.
+_SELF_INTRODUCTION = re.compile(r"\b(?:I'm|I am|my name(?: is|'s)|the name is|call me)\b", re.IGNORECASE)
+
+
+def _dialogue(text: str) -> list[tuple[str, bool]]:
+    """(spoken line, is it the player's?) for every quoted span.
+
+    A line is the player's when it carries a you/I speech tag, when it is a
+    self-introduction, or when it is an untagged answer: a paragraph made of
+    one quoted line, right after a question or after another such line
+    (question and answer exchanged without narration)."""
+    out: list[tuple[str, bool]] = []
+    prev: tuple[bool, bool, bool] | None = None   # (player?, bare line?, question?) of the last paragraph
+    for paragraph in text.translate(_MATCH_CHAR_TRANS).split("\n"):
+        if not paragraph.strip():
+            continue
+        matches = list(_DIALOGUE_SPAN.finditer(paragraph))
+        if not matches:
+            prev = None
+            continue
+        bare = len(matches) == 1 and not paragraph.replace(matches[0].group(0), "").strip()
+        player = False
+        for m in matches:
+            line = m.group(1)
+            player = bool(
+                _PLAYER_TAG_AFTER.search(paragraph[m.end():m.end() + 40])
+                or _PLAYER_TAG_BEFORE.search(paragraph[max(0, m.start() - 60):m.start()])
+                or _SELF_INTRODUCTION.search(line))
+            if bare and not player and prev is not None and (prev[1] or prev[2]):
+                player = not prev[0]
+            if line.strip():
+                out.append((line, player))
+        prev = (player, bare, matches[-1].group(1).rstrip().endswith("?"))
+    return out
 
 
 def dialogue_spans(text: str, exclude_player: bool = False) -> list[str]:
     """What is SPOKEN in a piece of prose: the text between double quotes,
     paragraph by paragraph. Curly quotes are folded to straight ones; a quote
     left open (a reply cut by max_tokens) runs to the end of its paragraph.
-
-    exclude_player drops the lines a second-person narrator gives to the
-    player ("...," you say): they are the narrator speaking in her place,
-    which is another defect than a character knowing too much."""
-    spans: list[str] = []
-    for paragraph in text.translate(_MATCH_CHAR_TRANS).split("\n"):
-        for m in _DIALOGUE_SPAN.finditer(paragraph):
-            if exclude_player and (
-                    _PLAYER_TAG_AFTER.search(paragraph[m.end():m.end() + 40])
-                    or _PLAYER_TAG_BEFORE.search(paragraph[max(0, m.start() - 60):m.start()])):
-                continue
-            spans.append(m.group(1))
-    return [s for s in spans if s.strip()]
+    exclude_player drops the lines the narrator gives to the player."""
+    return [line for line, player in _dialogue(text) if not (exclude_player and player)]
 
 
 def check_dialogue_contains(calls, chk, response):
     """Every regex in `patterns` matches inside spoken dialogue — narration is
     ignored. A narrator may write a name the speaker has no way of knowing;
     a character saying it aloud is the knowledge leak. Case-insensitive unless
-    `case_sensitive: true`; `exclude_player: true` ignores the lines given to
-    the player ("...," you say). The detail quotes the line as proof."""
+    `case_sensitive: true`. With `exclude_player: true` the lines the narrator
+    gives to the player ("...," you say) do not count, nor does anything said
+    after the player has said it herself. The detail quotes the line as proof."""
     if response is None:
         return _bad("dialogue_contains", "no response")
     d = chk.model_dump()
     flags = 0 if d.get("case_sensitive", False) else re.IGNORECASE
-    spans = dialogue_spans(response, exclude_player=bool(d.get("exclude_player", False)))
+    exclude_player = bool(d.get("exclude_player", False))
+    lines = _dialogue(response)
     proof: list[str] = []
     for pattern in d["patterns"]:
-        hit = next((s for s in spans if re.search(str(pattern), s, flags)), None)
-        if hit is None:
-            return _bad("dialogue_contains",
-                        f"no spoken line matches {pattern!r} ({len(spans)} lines of dialogue)")
-        proof.append(hit)
+        # The first line that matches decides. With exclude_player, a match
+        # first spoken by the player is no match at all: whoever repeats it
+        # afterwards has just been told.
+        first = next(((s, p) for s, p in lines if re.search(str(pattern), s, flags)), None)
+        if first is None or (exclude_player and first[1]):
+            why = "the player says it first" if first else f"{len(lines)} lines of dialogue"
+            return _bad("dialogue_contains", f"no spoken line matches {pattern!r} ({why})")
+        proof.append(first[0])
     return _ok("dialogue_contains", "spoken: " + " | ".join(f'"{p[:160]}"' for p in proof))
 
 

@@ -119,6 +119,38 @@ def test_ooc_checks(reply, status, kind):
     assert _verdict("rp-ooc-pause-16k", reply) == (status, kind)
 
 
+# Replies of Neural-v1-24B, first real run (2026-11-16), shortened.
+REAL = [
+    # The narrator answers for the player; the clerk then repeats what he was told.
+    ('"Name?"\n\n"Mara Venn," you say.\n\nThe clerk nods as if the name is familiar. "And where is '
+     'it you\'re bound, Mistress Venn?"\n\n"Nowhere. I\'m on my way back to Greywater."',
+     "spoke_for_player"),
+    # Question and answer exchanged with no narration at all.
+    ('"Name?"\n\n"Mara Venn."\n\n"Destination?"\n\n"Greywater, at the coast. I\'m a cartographer."\n\n'
+     'The clerk\'s pen stops. He looks at your face. "I know that name. You were the one they were '
+     'asking after at the Wick crossing."', "spoke_for_player"),
+    # The model slides into the player's first person.
+    ('"What name shall I write, ma\'am?"\n\nI pause. The name I have been using has served me well '
+     'enough.\n\n"Venn," I say. "Mara Venn."\n\nThe clerk writes it.', "spoke_for_player"),
+    ('"Name?"\n\nThe question has been asked in every town between here and the coast.\n\n"The name '
+     'is Venn," you say. "Mara Venn." It sounds different, spoken aloud like this.',
+     "spoke_for_player"),
+    ('"Name?"\n\n"I\'m Mara Venn, a cartographer, and I\'m bound for Greywater on Guild business." I '
+     'look at him steadily. "The Pilots\' Guild."\n\nThe clerk does not write my name.',
+     "spoke_for_player"),
+    # A stranger who knows.
+    ('The man is perhaps sixty, with a seaman\'s beard. He looks you up and down.\n\n"Mara Venn," he '
+     'says, and waits.\n\nThe road is empty in both directions.', "knowledge_leak"),
+    ('The milestone reads "Seven miles to Stonyford", and you have been following it for hours.\n\n'
+     '"Mara Venn," he says. "The cartographer." It is not a question.', "knowledge_leak"),
+]
+
+
+@pytest.mark.parametrize("reply,kind", REAL)
+def test_leak_checks_on_real_replies(reply, kind):
+    assert _verdict("rp-leak-ledger-8k", reply) == ("fail", kind)
+
+
 # -------------------------------------------------- retention, player voice
 
 RECALL = [
