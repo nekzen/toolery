@@ -241,7 +241,7 @@ probes:
       - "I ask whoever is nearest what the road ahead is like."
       - "I thank them, pay what I owe, and step outside to look at the sky."
       - "I walk on until I find a place to sleep, and settle in for the night."
-    max_tokens: 300
+    max_tokens: 500
     scoring:
       required:
         - check: repetition_bounded

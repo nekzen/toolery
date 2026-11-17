@@ -23,7 +23,7 @@ def _reply(request: httpx.Request) -> httpx.Response:
     probe = body["messages"][-1]["content"]
     long_context = len(body["messages"]) > 60
     seed = body["seed"]
-    assert body["temperature"] == 0.8 and body["min_p"] == 0.05 and body["max_tokens"] in (300, 350)
+    assert body["temperature"] == 0.8 and body["min_p"] == 0.05 and body["max_tokens"] in (350, 500)
     assert body["messages"][0]["role"] == "system" and "Harbor Road" in body["messages"][0]["content"]
     if "milestone" in probe or "ledger" in probe:
         text = ('The man stops and looks you over for a while before he speaks.\n\n'
@@ -75,7 +75,7 @@ def test_run_then_report(tmp_path, monkeypatch):
     rep = cells[("repetition", "8k")]
     assert rep["failures"] == {"repetitive": 4}
     assert rep["metrics"]["ngram_share"] == 1.0 and rep["metrics"]["same_opener"] == 6
-    # 40 completion tokens per reply against a cap of 300: nothing was cut.
+    # 40 completion tokens per reply against a cap of 500: nothing was cut.
     assert (rep["metrics"]["truncated"], rep["metrics"]["replies"]) == (0, 24)
 
     monkeypatch.setenv("COLUMNS", "220")     # four context lengths side by side
@@ -100,8 +100,10 @@ def test_a_conversation_too_long_for_the_server_is_skipped_not_failed(tmp_path, 
     result = CliRunner().invoke(app, ["run", "--model", "small-ctx", "--category", "rp_long_context",
                                       "--trials", "1", "--concurrency", "1", "--base-url", BASE])
     assert result.exit_code == 0, result.output
-    assert "Skipping 39 scenario(s)" in result.output
-    assert chat.call_count == 10 + 6  # the eleven 8k probes
+    # The ten single-reply 8k probes fit. rp-repetition-8k does not: six
+    # replies of up to 500 tokens on top of ~7000 of conversation.
+    assert "Skipping 40 scenario(s)" in result.output and "rp-repetition-8k" in result.output
+    assert chat.call_count == 10
 
 
 @respx.mock
