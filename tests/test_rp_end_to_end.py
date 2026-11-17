@@ -74,6 +74,8 @@ def test_run_then_report(tmp_path, monkeypatch):
     rep = cells[("repetition", "8k")]
     assert rep["failures"] == {"repetitive": 4}
     assert rep["metrics"]["ngram_share"] == 1.0 and rep["metrics"]["same_opener"] == 6
+    # 40 completion tokens per reply against a cap of 300: nothing was cut.
+    assert (rep["metrics"]["truncated"], rep["metrics"]["replies"]) == (0, 24)
 
     monkeypatch.setenv("COLUMNS", "220")     # four context lengths side by side
     table = runner.invoke(app, ["rp-report", "--failures"])
@@ -81,6 +83,7 @@ def test_run_then_report(tmp_path, monkeypatch):
     assert "leak-stranger" in table.output and "knowledge_leak 2" in table.output
     assert "8k (~8000 tok)" in table.output and "16k (~15000 tok)" in table.output
     assert "self-repetition" in table.output and "100.0%" in table.output
+    assert "cut replies" in table.output and "0/24" in table.output
 
 
 @respx.mock

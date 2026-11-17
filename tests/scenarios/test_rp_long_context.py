@@ -262,6 +262,32 @@ def test_repetition_probe_verdicts():
     assert _verdict("rp-repetition-8k", VARIED[0]) == ("fail", "repetitive")
 
 
+
+def test_repetition_counts_the_replies_cut_at_max_tokens():
+    """The cap comes from the scenario, the token counts from the trace: a
+    rescore of an old run can count them without asking the model again."""
+    import json
+
+    from toolery.core.models import TURN_SEPARATOR, TurnUsage
+    s = load_scenario(RP / "rp-repetition-8k.yaml")
+    cap = s.sampling.max_tokens
+
+    def figures(usage):
+        trace = TraceResult(scenario_id=s.id, adapter="raw", trial_index=0,
+                            messages=[Message(role="user", content=s.prompt)], tool_calls=[],
+                            final_response=TURN_SEPARATOR.join(VARIED),
+                            started_at_iso="2026-11-17T00:00:00Z", duration_ms=1, usage=usage)
+        r = evaluate(s, trace)
+        detail = next(c.detail for c in r.checks if c.check == "repetition_bounded")
+        return r.status, json.loads(detail.partition("repetition: ")[2])
+
+    status, m = figures([TurnUsage(turn_index=i, completion_tokens=n)
+                         for i, n in enumerate([cap, 120, cap])])
+    assert status == "pass" and m["truncated"] == 2      # counted, never judged
+    # A server that reports no usage: unknown, not zero.
+    assert figures([])[1]["truncated"] is None
+
+
 # -------------------------------------------------------------- generated
 
 def test_generated_files_match_their_source():

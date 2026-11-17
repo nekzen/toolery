@@ -886,12 +886,14 @@ def rp_report(
         measured = [c for c in group if c.metrics]
         if measured:
             tic_names = sorted({n for c in measured for n in c.metrics["tics_per_1000"]})
-            mt = Table("probe", "context", "reused 4-grams", "same opener", "words",
+            mt = Table("probe", "context", "reused 4-grams", "same opener", "words", "cut replies",
                        *[f"{n} /1000w" for n in tic_names],
                        title="self-repetition over consecutive replies (medians per trial)")
             for c in measured:
                 mt.add_row(c.probe, c.length, f"{c.metrics['ngram_share'] * 100:.1f}%",
                            f"{c.metrics['same_opener']:g}", f"{c.metrics['words']:g}",
+                           ("n/a" if c.metrics.get("truncated") is None
+                            else f"{c.metrics['truncated']}/{c.metrics['replies']}"),
                            *[f"{c.metrics['tics_per_1000'].get(n, 0):g}" for n in tic_names])
             console.print(mt)
         samplings = {json.dumps(c.sampling, sort_keys=True) for c in group if c.sampling}

@@ -25,7 +25,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Scenario field `follow_ups`: more user turns sent one by one, so the model
   writes several replies in a row. Check `repetition_bounded` measures how
   much those replies repeat one another (probe `rp-repetition`), and
-  `rp-report` prints the figures.
+  `rp-report` prints the figures, with the replies cut at `max_tokens`
+  (counted from the token usage kept in the trace, so a rescore fills it in
+  for older runs).
 - Check `dialogue_contains`: regexes matched only inside spoken dialogue.
 - Any check may declare `failure_kind`, the label recorded when it is the
   one that fails the trial. A wrong final answer is now `wrong_answer`

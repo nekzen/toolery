@@ -819,7 +819,19 @@ def repetition_metrics(replies: list[str], n: int = 4,
             "tics_per_1000": rates}
 
 
-def check_repetition_bounded(calls, chk, response):
+def _cut_replies(trace, scenario) -> int | None:
+    """Replies that stopped at the max_tokens cap, from the per-request usage
+    the trace keeps (one request per reply in a follow_ups scenario). None
+    when there is no cap or the server reported no usage. A reply that ends
+    naturally on the very last allowed token is counted too: rare enough."""
+    cap = scenario.sampling.max_tokens if scenario is not None and scenario.sampling else None
+    usage = trace.usage if trace is not None else []
+    if not cap or not usage or not any(u.completion_tokens for u in usage):
+        return None
+    return sum(u.completion_tokens >= cap for u in usage)
+
+
+def check_repetition_bounded(calls, chk, response, *, trace=None, scenario=None):
     """Self-repetition over the replies of a multi-turn scenario
     (`follow_ups`). Fails above `max_ngram_share` (default 0.10, n-grams of
     `ngram` words, default 4) or when more than `max_same_opener` replies
@@ -832,6 +844,9 @@ def check_repetition_bounded(calls, chk, response):
     d = chk.model_dump()
     replies = [r for r in response.split(TURN_SEPARATOR) if r.strip()]
     metrics = repetition_metrics(replies, n=int(d.get("ngram", 4)), tics=d.get("tics") or {})
+    # Counted, not judged: a cut reply is shorter than the model meant, which
+    # lowers the word count and moves every rate per 1000 words.
+    metrics["truncated"] = _cut_replies(trace, scenario)
     detail = "repetition: " + json.dumps(metrics, sort_keys=True)
     if len(replies) < 2:
         return _bad("repetition_bounded", f"needs several replies, got {len(replies)} | {detail}")
@@ -969,6 +984,8 @@ REGISTRY.update({
     "error_surfaced": check_error_surfaced,
     "final_state_equals": check_final_state_equals,
 })
+# Checks that also read the trace and scenario (keyword arguments).
+_WANTS_TRACE = {check_repetition_bounded}
 
 
 from toolery.core.models import Scenario, ScenarioResult, TraceResult  # noqa: E402
@@ -1085,6 +1102,8 @@ def evaluate(scenario: Scenario, trace: TraceResult) -> ScenarioResult:
         fn = REGISTRY.get(chk.check)
         if fn is None:
             return CheckResult(check=chk.check, result="fail", detail=f"unknown check {chk.check!r}")
+        if fn in _WANTS_TRACE:
+            return fn(calls, chk, response, trace=trace, scenario=scenario)
         return fn(calls, chk, response)
 
     required = [run(c) for c in scenario.scoring.required]

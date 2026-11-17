@@ -680,7 +680,10 @@ How to read it:
   medians per trial: share of reused 4-grams, replies sharing an opener, and
   each tic per 1000 words. The pass/fail thresholds are a convention; compare
   the figures between models and context lengths. It compares the model's
-  replies with one another, not with the frozen conversation.
+  replies with one another, not with the frozen conversation. The `cut
+  replies` column counts replies that stopped at `max_tokens`: when many are
+  cut, the word count and the rates per 1000 words describe the cap as much
+  as the model.
 - **Habit or limit?** Three probes exist a second and third time at 16k,
   with help: `leak-stranger-reminder`, `leak-ledger-reminder`,
   `player-voice-reminder` restate the card's rules in an author's note right

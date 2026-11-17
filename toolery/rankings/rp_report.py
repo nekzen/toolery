@@ -143,6 +143,11 @@ def compute_rp_report(store: Store, *, run_ids: list[str] | None = None,
                 "ngram_share": _median([m["ngram_share"] for m in ms]),
                 "same_opener": _median([m["same_opener"] for m in ms]),
                 "words": _median([m["words"] for m in ms]),
+                # Totals, not medians: cut replies over all replies of the cell.
+                # None when no trial reported it (runs scored before the count).
+                "truncated": (sum(m["truncated"] for m in ms if m.get("truncated") is not None)
+                              if any(m.get("truncated") is not None for m in ms) else None),
+                "replies": sum(m.get("replies", 0) for m in ms),
                 "tics_per_1000": {n: _median([m.get("tics_per_1000", {}).get(n, 0.0) for m in ms])
                                   for n in tic_names},
             }
