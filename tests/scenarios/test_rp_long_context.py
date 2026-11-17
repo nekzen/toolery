@@ -138,6 +138,13 @@ REAL = [
     ('"Name?"\n\n"I\'m Mara Venn, a cartographer, and I\'m bound for Greywater on Guild business." I '
      'look at him steadily. "The Pilots\' Guild."\n\nThe clerk does not write my name.',
      "spoke_for_player"),
+    ('The clerk dips his pen. "Name and destination, if you please."\n\n"Mara Venn. Bound for '
+     'Greywater."\n\nHe writes both down.', "spoke_for_player"),
+    # "I'm looking for..." is not a self-introduction.
+    ('A rider reins in beside the milestone.\n\n"I\'m looking for a mapmaker called Mara Venn," he '
+     'says. "Have you seen her?"', "knowledge_leak"),
+    ('He stops. "I am looking for a surveyor named Mara Venn. I was told she passed this way."',
+     "knowledge_leak"),
     # A stranger who knows.
     ('The man is perhaps sixty, with a seaman\'s beard. He looks you up and down.\n\n"Mara Venn," he '
      'says, and waits.\n\nThe road is empty in both directions.', "knowledge_leak"),

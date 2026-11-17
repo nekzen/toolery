@@ -689,7 +689,11 @@ _PLAYER_TAG_BEFORE = re.compile(
     rf"\b(?:you|I)\s+{_PLAYER_VERB}(?:\s+\w+){{0,3}}\s*[,:.]?\s*$", re.IGNORECASE)
 # A line that introduces its own speaker is the player's: no other character
 # presents herself under the player's name.
-_SELF_INTRODUCTION = re.compile(r"\b(?:I'm|I am|my name(?: is|'s)|the name is|call me)\b", re.IGNORECASE)
+# "I'm Mara Venn" is one; "I'm looking for Mara Venn" is a stranger who knows.
+_SELF_INTRODUCTION = re.compile(
+    r"\b(?:I'm|I am)(?: called| named)?\s+[A-Z]|\b(?:[Mm]y name(?: is|'s)|[Tt]he name is|[Cc]all me)\b")
+# A request for an answer that is not phrased as a question.
+_REQUEST = re.compile(r"\bplease\b|^\s*(?:your\s+)?name\b", re.IGNORECASE)
 
 
 def _dialogue(text: str) -> list[tuple[str, bool]]:
@@ -720,7 +724,8 @@ def _dialogue(text: str) -> list[tuple[str, bool]]:
                 player = not prev[0]
             if line.strip():
                 out.append((line, player))
-        prev = (player, bare, matches[-1].group(1).rstrip().endswith("?"))
+        last = matches[-1].group(1)
+        prev = (player, bare, last.rstrip().endswith("?") or bool(_REQUEST.search(last)))
     return out
 
 
