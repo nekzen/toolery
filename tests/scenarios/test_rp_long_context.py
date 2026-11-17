@@ -224,6 +224,44 @@ def test_player_voice_checks(reply, status, kind):
     assert _verdict("rp-player-voice-8k", reply) == (status, kind)
 
 
+# ------------------------------------------------------------- repetition
+
+VARIED = [
+    "The town of Aldbury keeps its market under a long slate roof. A cookshop at the corner has a "
+    "kettle of barley and mutton on the hob, and the woman behind it waves you to a bench.",
+    "Four drovers have the table by the hearth, boots off, arguing about the price of wethers. A "
+    "tinker mends a pot in the corner and does not look up.",
+    "The talk is all of a bridge washed out at Stonyford and whether the reeve will pay to mend "
+    "it. Nobody mentions the coast.",
+]
+ECHOING = [
+    "The room is warm and smells of peat smoke and boiled barley. Three tables are taken by men "
+    "who glance up at you and go back to their dice. For a moment nobody speaks.",
+    "The room is warm and smells of peat smoke and boiled barley. A man glances up at you and "
+    "goes back to his dice. For a moment nobody speaks.",
+    "The room is warm and smells of peat smoke. The men glance up at you and go back to their "
+    "dice. For a moment nobody speaks — not a word.",
+]
+
+
+def test_repetition_metrics():
+    from toolery.core.scorer import repetition_metrics
+    tics = {"for_a_moment": r"\bfor a (long )?moment\b", "em_dash": "—"}
+    varied, echoing = repetition_metrics(VARIED, tics=tics), repetition_metrics(ECHOING, tics=tics)
+    assert varied["ngram_share"] == 0.0 and varied["same_opener"] == 1
+    assert echoing["ngram_share"] > 0.5 and echoing["same_opener"] == 3
+    assert echoing["tics_per_1000"]["for_a_moment"] > 20 and echoing["tics_per_1000"]["em_dash"] > 0
+    assert varied["tics_per_1000"] == {"for_a_moment": 0.0, "em_dash": 0.0}
+
+
+def test_repetition_probe_verdicts():
+    from toolery.core.models import TURN_SEPARATOR
+    assert _verdict("rp-repetition-8k", TURN_SEPARATOR.join(VARIED)) == ("pass", None)
+    assert _verdict("rp-repetition-8k", TURN_SEPARATOR.join(ECHOING)) == ("fail", "repetitive")
+    # A single reply cannot be compared with anything.
+    assert _verdict("rp-repetition-8k", VARIED[0]) == ("fail", "repetitive")
+
+
 # -------------------------------------------------------------- generated
 
 def test_generated_files_match_their_source():

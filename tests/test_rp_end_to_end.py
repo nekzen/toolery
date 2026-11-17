@@ -23,7 +23,7 @@ def _reply(request: httpx.Request) -> httpx.Response:
     probe = body["messages"][-1]["content"]
     long_context = len(body["messages"]) > 60
     seed = body["seed"]
-    assert body["temperature"] == 0.8 and body["min_p"] == 0.05 and body["max_tokens"] == 350
+    assert body["temperature"] == 0.8 and body["min_p"] == 0.05 and body["max_tokens"] in (300, 350)
     assert body["messages"][0]["role"] == "system" and "Harbor Road" in body["messages"][0]["content"]
     if "milestone" in probe or "ledger" in probe:
         text = ('The man stops and looks you over for a while before he speaks.\n\n'
@@ -54,12 +54,12 @@ def test_run_then_report(tmp_path, monkeypatch):
     result = runner.invoke(app, ["run", "--model", "neural-test", "--category", "rp_long_context",
                                  "--trials", "4", "--concurrency", "1", "--base-url", BASE])
     assert result.exit_code == 0, result.output
-    assert chat.call_count == 40 * 4
+    assert chat.call_count == (40 + 4 * 6) * 4   # repetition: six replies per trial
 
     report = runner.invoke(app, ["rp-report", "--json"])
     assert report.exit_code == 0, report.output
     cells = {(c["probe"], c["length"]): c for c in json.loads(report.output)}
-    assert len(cells) == 40
+    assert len(cells) == 44
     leak = cells[("leak-stranger", "16k")]
     assert (leak["trials"], leak["passed"], leak["failures"]) == (4, 2, {"knowledge_leak": 2})
     assert leak["prompt_tokens"] == 15000 and leak["sampling"] == {
@@ -70,12 +70,17 @@ def test_run_then_report(tmp_path, monkeypatch):
     assert cells[("ooc-pause", "8k")]["pass_rate"] == 1.0
     assert cells[("ooc-pause", "16k")]["failures"] == {"ooc_absorbed": 4}
     assert cells[("ooc-stop", "16k")]["pass_rate"] == 1.0
+    # The stand-in gives the same reply six times: as repetitive as it gets.
+    rep = cells[("repetition", "8k")]
+    assert rep["failures"] == {"repetitive": 4}
+    assert rep["metrics"]["ngram_share"] == 1.0 and rep["metrics"]["same_opener"] == 6
 
     monkeypatch.setenv("COLUMNS", "220")     # four context lengths side by side
     table = runner.invoke(app, ["rp-report", "--failures"])
     assert table.exit_code == 0, table.output
     assert "leak-stranger" in table.output and "knowledge_leak 2" in table.output
     assert "8k (~8000 tok)" in table.output and "16k (~15000 tok)" in table.output
+    assert "self-repetition" in table.output and "100.0%" in table.output
 
 
 @respx.mock
@@ -90,8 +95,8 @@ def test_a_conversation_too_long_for_the_server_is_skipped_not_failed(tmp_path, 
     result = CliRunner().invoke(app, ["run", "--model", "small-ctx", "--category", "rp_long_context",
                                       "--trials", "1", "--concurrency", "1", "--base-url", BASE])
     assert result.exit_code == 0, result.output
-    assert "Skipping 30 scenario(s)" in result.output
-    assert chat.call_count == 10  # the ten 8k probes
+    assert "Skipping 33 scenario(s)" in result.output
+    assert chat.call_count == 10 + 6  # the eleven 8k probes
 
 
 @respx.mock

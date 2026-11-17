@@ -12,7 +12,7 @@ from collections.abc import Callable
 import jsonschema
 import yaml
 
-from toolery.core.models import CheckResult, ScoringCheck, ToolCall
+from toolery.core.models import TURN_SEPARATOR, CheckResult, ScoringCheck, ToolCall
 from toolery.core.text_utils import unwrap_structured_payload
 
 
@@ -782,6 +782,66 @@ def check_dialogue_contains(calls, chk, response):
     return _ok("dialogue_contains", "spoken: " + " | ".join(f'"{p[:160]}"' for p in proof))
 
 
+_WORD_RE = re.compile(r"[a-z']+")
+
+
+def repetition_metrics(replies: list[str], n: int = 4,
+                       tics: dict[str, str] | None = None) -> dict:
+    """How much a model repeats ITSELF over consecutive replies.
+
+    - ngram_share: share of the word n-grams of replies 2..N that already
+      occurred in an earlier reply of the same run.
+    - same_opener: how many replies start with the same three words (the
+      largest such group).
+    - tics_per_1000: occurrences of each named pattern per 1000 words.
+    """
+    tokens = [_WORD_RE.findall(r.translate(_MATCH_CHAR_TRANS).lower()) for r in replies]
+    seen: set[tuple[str, ...]] = set()
+    repeated = total = 0
+    for i, toks in enumerate(tokens):
+        grams = [tuple(toks[j:j + n]) for j in range(len(toks) - n + 1)]
+        if i > 0:
+            total += len(grams)
+            repeated += sum(g in seen for g in grams)
+        seen.update(grams)
+    openers: dict[str, int] = {}
+    for toks in tokens:
+        if len(toks) >= 3:
+            key = " ".join(toks[:3])
+            openers[key] = openers.get(key, 0) + 1
+    words = sum(len(t) for t in tokens)
+    text = "\n\n".join(replies)      # raw: a tic may be a typographic habit
+    rates = {name: round(1000 * len(re.findall(rx, text, re.IGNORECASE)) / words, 2) if words else 0.0
+             for name, rx in (tics or {}).items()}
+    return {"replies": len(replies), "words": words,
+            "ngram_share": round(repeated / total, 4) if total else 0.0,
+            "same_opener": max(openers.values(), default=0),
+            "tics_per_1000": rates}
+
+
+def check_repetition_bounded(calls, chk, response):
+    """Self-repetition over the replies of a multi-turn scenario
+    (`follow_ups`). Fails above `max_ngram_share` (default 0.10, n-grams of
+    `ngram` words, default 4) or when more than `max_same_opener` replies
+    (default 2) open with the same three words. `tics` (name -> regex) are
+    counted and reported, never judged. The detail carries every figure as
+    JSON after "repetition: ", which is what reports read: the thresholds
+    are a convention, the figures are the result."""
+    if response is None:
+        return _bad("repetition_bounded", "no response")
+    d = chk.model_dump()
+    replies = [r for r in response.split(TURN_SEPARATOR) if r.strip()]
+    metrics = repetition_metrics(replies, n=int(d.get("ngram", 4)), tics=d.get("tics") or {})
+    detail = "repetition: " + json.dumps(metrics, sort_keys=True)
+    if len(replies) < 2:
+        return _bad("repetition_bounded", f"needs several replies, got {len(replies)} | {detail}")
+    if metrics["ngram_share"] > float(d.get("max_ngram_share", 0.10)):
+        return _bad("repetition_bounded", detail)
+    if metrics["same_opener"] > int(d.get("max_same_opener", 2)):
+        return _bad("repetition_bounded", detail)
+    return _ok("repetition_bounded", detail)
+
+
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
 
 
@@ -901,6 +961,7 @@ REGISTRY.update({
     "response_diff": check_response_diff,
     "response_length_bounded": check_response_length_bounded,
     "dialogue_contains": check_dialogue_contains,
+    "repetition_bounded": check_repetition_bounded,
     "unique_tools_called": check_unique_tools_called,
     "no_hallucinated_tool": check_no_hallucinated_tool,
     "budget_respected": check_budget_respected,

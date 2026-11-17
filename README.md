@@ -13,7 +13,7 @@ across a matrix of capability dimensions.
 
 ## Overview
 
-Toolery ships **240 scenarios** across **4 difficulty tiers**
+Toolery ships **244 scenarios** across **4 difficulty tiers**
 (`easy` / `medium` / `hard` / `very_hard`) and **21 categories** (coding,
 debugging, security review, data analysis, fact verification, and more).
 Each scenario is a self-contained YAML file describing:
@@ -578,6 +578,7 @@ entry is `{check: <name>, ...check-specific fields}`.
 | `response_matches_regex` | Same `all_of`/`any_of`/`none_of` shape as `response_satisfies`, but entries are regexes. |
 | `response_diff` | **(new)** Flags near-duplicate responses against a `reference` string (Jaccard token-overlap or cosine bag-of-words similarity) — catches regurgitation/padding attacks where a model echoes back a prompt/template instead of answering. Fields: `reference`, `method: token_overlap\|cosine` (default `token_overlap`), `max_similarity` (default 0.95). |
 | `dialogue_contains` | Regexes in `patterns` matched only inside spoken dialogue (text between double quotes; curly quotes folded; an unclosed quote runs to the end of its paragraph). Narration is ignored. The result quotes the matching line. |
+| `repetition_bounded` | Self-repetition across the replies of a multi-turn scenario (`follow_ups`): share of reused word n-grams (`max_ngram_share`, `ngram`), replies opening with the same three words (`max_same_opener`), and named `tics` counted per 1000 words. The figures are in the check's detail as JSON. |
 | `response_length_bounded` | **(new)** Gates response character length to prevent padding attacks and catch truncated/empty responses. Fields: `min_length`, `max_length`, or `target` + `tolerance`. |
 
 ### Multilingual variants
@@ -646,6 +647,7 @@ exchanges lies deeper as the context grows.
 | `control-known` | the one character who *was* told the name no longer says it. Counterpart of the leak probes, and a retention probe. | `forgot_name` |
 | `ooc-pause`, `ooc-stop`, `ooc-paren` | an out-of-character message ("Pause scenario.", "Stop the roleplay.", "(OOC: …)") is answered by the story: a character reacts or the narration goes on (`ooc_absorbed`), the scene "freezes" in narration (`ooc_played_pause`), or nothing acknowledges it. | `ooc_absorbed`, `ooc_played_pause`, `ooc_no_acknowledgment` |
 | `recall-arm`, `recall-compass`, `recall-inn` | a fact stated once in the first exchanges (which arm was burned, the compass engraving and its giver, the first inn and its keeper) is missing or wrong. Asked out of character, so the answer is a plain statement. | `forgot_detail` |
+| `repetition` | over six replies in a row to six plain player turns, the model reuses more than 10% of its own word 4-grams, or opens three replies with the same three words. Named tics ("not X, but Y", "as if", "for a moment", em dashes, ellipses) are counted per 1000 words and reported, not judged. | `repetitive` |
 | `player-voice` | the narrator writes the player's lines (`"…," you say`) or decides what she does, while she is deliberately silent. Catches speech tags and narrated decisions, not every form of the defect. | `spoke_for_player` |
 
 ```bash
@@ -674,6 +676,11 @@ How to read it:
   phrasing can escape them. `tests/scenarios/test_rp_long_context.py` holds
   the good and bad replies they were written against. There is no LLM judge
   yet.
+- **Repetition is a measurement.** `rp-report` prints a second table with the
+  medians per trial: share of reused 4-grams, replies sharing an opener, and
+  each tic per 1000 words. The pass/fail thresholds are a convention; compare
+  the figures between models and context lengths. It compares the model's
+  replies with one another, not with the frozen conversation.
 - **Unranked.** These results stay out of every ranking, `overall` included.
 
 The conversation is written in `fixtures/src/harbor-road/` (chapters, system
@@ -907,7 +914,7 @@ toolery/
 │   ├── rankings/       # ranking computation, category-derived dimensions, role rankings
 │   ├── compare.py      # cross-run diff with McNemar significance
 │   └── tui/             # Textual dashboard (Home/Rankings/Compare/Scenarios/History/Profiles)
-├── scenarios/           # 240 scenarios across easy/medium/hard/very_hard, one dir per category
+├── scenarios/           # 244 scenarios across easy/medium/hard/very_hard, one dir per category
 ├── tests/                # unit + TUI tests
 └── results/              # SQLite + markdown + JSON traces (gitignored)
 ```

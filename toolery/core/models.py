@@ -88,6 +88,11 @@ class Scoring(BaseModel):
     weights: dict[str, float] = {"pass": 1.0, "partial": 0.5, "fail": 0.0}
 
 
+# Joins the replies of a multi-turn scenario (`follow_ups`) into the single
+# final_response the checks receive.
+TURN_SEPARATOR = "\n\n<|turn|>\n\n"
+
+
 class Sampling(BaseModel):
     """Sampling settings sent with each request. Scenarios without one run at
     temperature 0, as every scenario did before this existed."""
@@ -137,6 +142,10 @@ class Scenario(BaseModel):
     conversation: ConversationRef | None = None
     # Filled by the loader from `conversation.fixture`; never written in YAML.
     history: list[HistoryMessage] = []
+    # More user turns, sent one by one after the model has answered `prompt`:
+    # the model writes 1 + len(follow_ups) replies, each seeing its own
+    # earlier ones. For what only shows over several replies (repetition).
+    follow_ups: list[str] = []
 
     @field_validator("id")
     @classmethod
