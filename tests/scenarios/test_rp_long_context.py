@@ -412,6 +412,17 @@ def test_snowline_keeps_its_secret_and_its_facts_where_they_belong():
     assert "Snowline" in s.system_prompt and "globe" not in s.system_prompt.lower()
     assert not (RP / "rp-snowline-ooc-pause-32k.yaml").exists()       # 16k first
 
+
+def test_a_card_variant_changes_the_card_and_nothing_else():
+    base = load_scenario(RP / "rp-snowline-leak-stranger-16k.yaml")
+    card = load_scenario(RP / "rp-snowline-leak-stranger-secretcard-16k.yaml")
+    assert card.history == base.history and card.prompt == base.prompt
+    assert card.scoring == base.scoring and card.sampling == base.sampling
+    assert card.system_prompt.startswith(base.system_prompt)
+    assert "snow globe" in card.system_prompt and "globe" not in base.system_prompt
+    assert card.conversation.name == "snowline" and "card_secretcard" in card.tags
+    assert not (RP / "rp-snowline-player-voice-secretcard-16k.yaml").exists()
+
 # -------------------------------------------------------------- generated
 
 def test_generated_files_match_their_source():

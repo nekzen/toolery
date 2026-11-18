@@ -717,6 +717,12 @@ the story, absent from the system prompt. Its probes keep harbor-road's keys
 so the tables compare line by line; `control-known`'s failure there is
 `forgot_secret`.
 
+A story's card may declare `card_variants`: the same history, probes and
+seeds under a different system prompt. snowline's `secretcard` writes the
+hiding place into the card, as harbor-road's card states the player's name:
+`leak-stranger-secretcard` against `leak-stranger` tells a leak from the
+card apart from a leak from the conversation.
+
 ## Ranking dimensions
 
 `toolery rankings --dimension <name>` and the Rankings tab in the TUI
