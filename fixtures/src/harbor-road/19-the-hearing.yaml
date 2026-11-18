@@ -1,0 +1,61 @@
+# The line laid on the ground, the hearing at Stonyford, and an offer. The
+# conversation ends on Thurlow waiting for an answer.
+turns:
+  - user: |
+      I kneel beside Joby and look closely at the letters and the date without touching them. "Squire, I'll measure from this stone, not guess at it. If its mark matches Corbett's note and the line closes on the church within a link or two, it's the Mill Stone. If not, it's a step."
+    narrator: |
+      "Measure, then," says Thurlow, and there is something almost like eagerness in his long face. "Everybody else: stand back from the surveyor and keep your hands in your pockets."
+
+      It takes the rest of the morning. The stone cannot be moved, so you set the instrument over the wheel mark where it lies and take the bearing back toward the Church Stone, and then send the chain back along it, pin by pin, the two chainmen calling the count, the whole valley following in a quiet straggling procession. Nobody argues now. Abel Crane walks with his hands clasped behind his back and his face like thunder; Marten Hollis walks beside him, not quite close enough to touch, his head bowed. At the gravel ford one of the Crane sons offers a hand to Mistress Hollis over the slippery stones, and she takes it, and both of them look surprised.
+
+      At sixty-two chains and some links, the last pin goes into the grass at the foot of the churchyard wall, a hand's breadth from the cross cut in the Church Stone. The line closes. You check the figures twice, sitting on the wall with the notebook on your knee, while Thurlow waits on his horse and the valley waits behind him, and Sully, who has followed the chain the whole way, lies down in the grass at your feet and sighs.
+  - user: |
+      I check the figures a third time, then close the notebook and stand up. "It closes, Squire. Within two links over sixty-two chains. That's the Mill Stone, and that is Corbett's line."
+    narrator: |
+      A sound goes through the little crowd, not quite a cheer, not quite a groan. Thurlow takes his spectacles off and polishes them on his sleeve for rather longer than they need, which you are beginning to understand is how he hides being pleased.
+
+      "Then the line runs as Corbett drew it," he says, loudly enough for everyone to hear. "Straight, from stone to stone, as the brook ran on Lady Day in my grandfather's time. Not where the brook runs now. Not where it ran when the Crane willows came down, nor where it ran when the Hollis leat was dug." He puts the spectacles back on. "Which means, if I read this right, that both of you have been farming land that belonged to the other, on and off, for forty years."
+
+      There is a long silence. Abel Crane and Marten Hollis look at each other, really look, for perhaps the first time in their lives. "The big field," says Crane at last, hoarsely. "The one with the posts."
+
+      "Is about half yours and half his," says Thurlow. "Split down the middle, near enough, by a line neither of you ever walked." He gathers his reins. "The bench sits at two o'clock. Surveyor, I'll want you there with your figures."
+  - user: |
+      At two o'clock I go to the courtroom with my notebook, Corbett's sketch and a clean copy of the line drawn out on a single sheet.
+    narrator: |
+      The courtroom is the long room over the market hall, with a table at one end for the bench, benches for everyone else, and a fire that smokes. It is crammed. Every soul in the valley seems to have come, and some from over the down: you catch sight of Tom Ashby on his crutch near the back, with Bel beside him, the pencil still behind her ear.
+
+      Thurlow sits at the table in a black coat with a clerk beside him. The clerk is a young man with ink on his fingers and a ledger open in front of him, and when you come up to stand by the table he dips his pen and looks at you expectantly.
+
+      "The witness," says Thurlow, before the clerk can open his mouth, "will be entered as the surveyor engaged by the bench, and the bench is satisfied as to her competence. Write that, Mr. Pryor." The clerk blinks, writes it, and looks a little disappointed. "Now. Surveyor. Show the court your line, and tell it in plain words what you found. Some of us are farmers and one of us reads Latin, and I'd like both kinds to understand you."
+  - user: |
+      I spread the clean copy on the table, facing the room, and explain it plainly: the Church Stone, the Mill Stone at the foot of the steps, the straight line between, and how the old courses and the willows and the leat had moved the water but not the boundary.
+    narrator: |
+      You keep it short. The room listens with the particular, ferocious attention of people hearing about their own land. When you come to the willows, a murmur runs along the Crane side; when you come to the leat and the steps, it runs along the Hollis side. When you say that the brook was never the boundary, only a thing that happened to be lying along it once, an old woman near the front says "Ha!" very loudly, and is shushed.
+
+      Thurlow asks you three questions, all of them sharp, all about the figures, and you answer them from the notebook. Abel Crane's lawyer, a sleek young man from the county town, asks you two more, about the instrument and the chain, and sits down looking thoughtful. Marten Hollis has no lawyer. He stands up when you have finished and says, in his quiet voice, "I've nothing to ask. I believe her," and sits down again.
+
+      Then Thurlow gives judgement. It takes him a quarter of an hour, and it is in English, mostly, with only one sentence of Latin, which he translates for the farmers with obvious relish. The line runs as Corbett drew it. Stones are to be set along it at every ten chains, at the joint cost of both farms. The big field is to be divided. Neither party is to touch the willows, the leat or the brook, ever again, without leave of the bench.
+  - user: |
+      When the court breaks up, I roll up the copy and start to pack my things, keeping out of the crush at the door.
+    narrator: |
+      It takes a long time for the room to empty. People keep stopping by the table. Mistress Hollis presses your hand and says nothing, which says a great deal. The Crane lawyer gives you his card. Old Joby comes and shakes your hand, and then, with enormous dignity, shakes Thurlow's. Bel Ashby edges up, stares at the clean copy of the line with frank professional interest, and asks whether you used the pencil she has, or a different one; you are not sure which answer she would prefer.
+
+      Abel Crane is one of the last. He stands in front of the table with his hat in his hands, red-faced, plainly hating every second of it. "I said I'd know if you cheated," he says abruptly. "You didn't." He turns the hat round twice. "My father cut those willows. I never knew why the brook came over. I thought... well. I thought a lot of things about the Hollises." He jams the hat on his head. "I'll set the stones. My share. Good day to you." He goes out, and from the window you see him stop in the market square beside Marten Hollis, and the two of them stand there, not talking, side by side, looking down the valley at the field.
+
+      When the room is empty but for the clerk, gathering his papers, Thurlow gets up from the bench and comes round the table, and sits on the edge of it, beside your case.
+  - user: |
+      "That's the first time I've seen a judgement make two men stand next to each other, Squire. You did that, not my chain."
+    narrator: |
+      "Nonsense." Thurlow waves a long hand, but he looks pleased. "I've been trying to make those two stand next to each other for five years. I had the law and I had the maps and I hadn't the stone. You found the stone." He takes his spectacles off. "Or Joby did, and you were the first person in thirty years to ask him."
+
+      He looks out of the window at the valley, the stream glittering in its loops through the meadows in the last of the afternoon light, the two small figures still standing side by side in the square. "There are eleven parishes in my division," he says. "Every one of them has a Crane and a Hollis. Every one has a brook, or a common, or a hedge that some grandfather moved. None has a map worth the paper." He turns back to you. "I can't offer what the Guild offered. I'm a country magistrate, not a corporation. But I could offer a year's work, on the bench's account, and a room in my house with a north window, and my library, which is better than you'd think. And you'd keep your name to yourself as long as you like. I'd never ask it."
+
+      The clerk has stopped gathering papers and is pretending very hard not to listen.
+  - user: |
+      I look out of the window at the valley for a while before I answer. "I have a promise to keep in the south before the winter, Squire. I can't stay a year. Let me think on it tonight."
+    narrator: |
+      "Think on it," says Thurlow at once. "That's all I ask. I'd think less of you if you took it on the spot." He stands, and picks up Corbett's burned sketch from the table, and holds it a moment, looking at the scorch mark across the corner. Then, abruptly, he holds it out to you. "Take this. It's no use to me now; your line is the record. And I should like it to belong to someone who could read it."
+
+      Outside, the valley is going gold and blue. The last people are drifting home across the square. Gethin Moss is waiting by the market cross with his crook and his pack, Sully sitting upright at his side, and when he sees you come out onto the steps of the market hall he raises the crook in salute, and Sully's tail sweeps the cobbles.
+
+      "Well?" Gethin calls across the square, grinning. "My sister says you're to come to supper, and Marten says he'll grind you a sack of flour for the road, and Bel Ashby says she's going to be a surveyor, God help us all." He waits until you have come down the steps, and then, more quietly, looking at you closely: "And Thurlow's made you an offer. I can see it on you. Are you staying, or are you going south?"

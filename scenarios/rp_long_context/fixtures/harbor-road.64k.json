@@ -1,5 +1,5 @@
 {
- "approx_tokens": 42851,
+ "approx_tokens": 54433,
  "length": "64k",
  "messages": [
   {
@@ -928,6 +928,286 @@
   },
   {
    "content": "\"The ninth step,\" says Tane. \"I mended it. Somebody told me it was loose.\" It is the nearest thing to a joke you have heard him make, and he seems rather shocked at himself.\n\nThe wagon lurches and rolls. He stands by the mounting block with his stick, not waving, growing smaller, until the turn by the ropewalk takes him out of sight. From the chapel, as you pass above it, comes a single stroke of the Guild bell, and then, after a pause, another: Pask, at his rope, not ringing for a ship this time.\n\nThe road climbs out of Greywater by a long hill. At the top the carrier pulls up to breathe the horses, and you can see the whole of it laid out behind you like a sheet on a table: the slate roofs, the green dome, the masts; the estuary, brown and wide; the white thread of the bar; and far off to the south, small and exact, the tower on the Point, with the cliff path running away beyond it toward a market town, a heath, a river, a fen.\n\n\"First time over this hill?\" the carrier asks. She has a slow, comfortable voice. \"Folk always look back from here. Then they don't again till the Stonyford turn, there's nothing to see.\"\n\nShe clicks her tongue and the horses lean into the collars. The sea drops behind the brow of the hill and is gone. Ahead the country opens out, inland, into low green ridges one behind another, with a road like a chalk line drawn across them.\n\n\"I go as far as Aldbury Cross. Two days. After that it's the drovers' roads and you're on your own feet.\" She glances at the brass case under the seat, and at you, without much curiosity. \"I've carried all sorts. I never ask what's in a thing. But I like to know what to call a passenger, if we're to share a bench for two days. Mine's Ketta.\"",
+   "role": "assistant"
+  },
+  {
+   "content": "\"Pleased to meet you, Ketta. Most people on this coast have called me the mapmaker, or the surveyor. Either will do for two days on a bench.\"",
+   "role": "user"
+  },
+  {
+   "content": "Ketta considers this the way she considers the road ahead, without hurry. \"Surveyor,\" she says at last. \"That's a good plain word. I had a man once who wanted calling 'the Honourable' all the way to Aldbury, and he was a seed merchant.\" She clicks to the horses. \"Surveyor it is.\"\n\nThe wagon rolls down off the brow into the first of the green ridges. The road is chalk, rutted white, with hawthorn hedges on either side gone red with haws and loud with fieldfares. Every so often a gate opens on a slope of sheep, or a flint church squats in a hollow with its tower barely higher than the elms. The smell of the sea goes out of the air within the first hour, and you only notice it is gone when it is.\n\nAt noon Ketta pulls in under a beech by a stream and unpacks bread, a heel of cheese and two apples from a basket under the seat, and divides them without asking. \"There's a good inn at Aldbury and a bad one at Hensey, where we stop tonight,\" she says. \"I tell everyone that so they won't hope.\" She bites an apple. \"What's a surveyor going inland for, if you don't mind me asking? There's no sea to chart past Greywater hill.\"",
+   "role": "assistant"
+  },
+  {
+   "content": "I take the bread and cheese gratefully. \"I made a promise to someone in the south before the winter, and I'm taking the long way round to keep it. On the way I'll take whatever work a pair of hands and a chain can do.\"",
+   "role": "user"
+  },
+  {
+   "content": "\"The long way round.\" Ketta nods slowly, as though this is an answer she hears a good deal. \"Most of my passengers are going the long way round from something. I don't ask which.\" She brushes crumbs off her skirt. \"Work, now, that I can help with. Every parish between here and the downs is quarrelling over a hedge or a ditch or a strip of common, and half of them have never had a proper map in their lives. The other half have two maps, which is worse.\"\n\nShe puts the horses back in the shafts and you go on through the afternoon. The ridges get longer and lower. A pair of rooks, flapping slow over a water meadow, keep pace with the wagon for half a mile and then turn off along a ditch. Twice you pass drovers coming the other way with flocks bound for the coast markets, and Ketta exchanges a word with each of them about the price of wethers and the state of the ford at Mallow.\n\nHensey turns out to be a straggle of cottages around a green, and the inn is exactly as promised: a low dark taproom with a smoking chimney, a landlord with one eyebrow and a supper of something grey. Ketta eats it without comment. When the landlord has gone she leans across the table. \"There's a man at the end of the bar been looking at your brass case since we came in. Big fellow, green neckcloth. Do you know him?\"",
+   "role": "assistant"
+  },
+  {
+   "content": "I look over, without making a show of it, at the man with the green neckcloth.",
+   "role": "user"
+  },
+  {
+   "content": "He is a heavy, sunburnt man of perhaps forty, in a drover's smock and gaiters, with a green neckcloth knotted loosely at his throat and a tankard in a hand like a shovel. A rough-coated grey dog lies across his boots. He is not looking at the brass case now; he is looking at you, openly and with a kind of puzzled interest, the way a man looks at someone he thinks he ought to recognise and can't place.\n\nWhen he sees that you have noticed, he doesn't look away. He picks up his tankard, says a word to the dog, which stays, and comes down the length of the taproom to stand at the end of your table. Ketta folds her arms.\n\n\"Begging your pardon,\" he says. His voice is deep and slow, with the burr of the downs in it. \"Gethin Moss. I drove for the Marrow farms till last spring. That's a surveyor's case, isn't it? The long brass one. I've only seen one like it before, on the man that came to Stonyford in my father's time and set the whole valley fighting.\" He hesitates. \"You wouldn't be going to Stonyford, by any chance?\"",
+   "role": "assistant"
+  },
+  {
+   "content": "\"I hadn't planned on it. What's at Stonyford that needs a surveyor?\"",
+   "role": "user"
+  },
+  {
+   "content": "Gethin Moss lets out a breath, half a laugh. \"What isn't? Two farms, the Crane place and the Hollis place, and a brook between them that's been moving for forty years, and every time it moves, one of them gains a field and the other loses one. They've been to law four times. They've had the magistrate out. Last month Abel Crane put a new fence up in the night and Marten Hollis's lads pulled it down in the morning, and there was a broken arm over it.\" He turns his tankard round in his big hands. \"My sister's married to a Hollis. I'm going there now, to help with the tupping and to keep my brother-in-law from doing something stupid.\"\n\nHe glances at Ketta, who is listening with an expression of polite disbelief, and back to you. \"The magistrate, Thurlow, he's said he'll settle it for good if anyone can show him where the true line runs. The old map's burned, and the man who drew it's dead. Thurlow's offered a fee. Not a big one. But it'd be work, and you'd be fed, and you'd be doing a kindness to a valley that badly needs one.\"\n\nUnder the table the grey dog has come down the room after all and is sniffing, with great interest, at the hem of your coat.",
+   "role": "assistant"
+  },
+  {
+   "content": "I let the dog sniff my hand. \"What's his name?\" Then to Gethin: \"Where does the road to Stonyford leave this one?\"",
+   "role": "user"
+  },
+  {
+   "content": "\"Sully,\" says Gethin, and the dog's tail thumps the floor at the sound of it. \"He likes you. He doesn't like anybody. That's worth something, in my book.\" He jerks a thumb eastward, as though he could point through the wall. \"Day after tomorrow, past Aldbury Cross, there's a drovers' road goes off north over the downs. Two days' walk on that and you come down into the Stony valley. I'll be on it myself. If you're minded to come, you'd be welcome to walk with me and Sully. It's no road to walk alone, the downs, not this time of year. The mist comes down like a lid.\"\n\nKetta speaks for the first time in a while. \"I know Gethin Moss,\" she says to you, in the tone of a woman giving a reference for a horse. \"He's honest, he's slow and he snores. You could do worse on the downs.\" To Gethin, more sharply: \"And you'll not talk her ear off about tupping the whole way.\"\n\nGethin grins and raises his tankard to her. \"I'll be at the Cross the day after tomorrow, at first light, by the stone. If you're there, you're there.\" He whistles once and Sully goes back up the room to him, and he goes back to the end of the bar, and does not look at your brass case again for the rest of the evening.",
+   "role": "assistant"
+  },
+  {
+   "content": "The next morning I ask Ketta, while she harnesses the horses, what she knows about the magistrate, Thurlow.",
+   "role": "user"
+  },
+  {
+   "content": "Ketta buckles a girth and thinks about it. \"Thurlow. Old family, older than the church. He's a fair man, they say, but a proud one, and he hates being made a fool of. He had the Crane and Hollis business in front of him three years ago, decided it one way, and the brook moved again the next spring and made his judgement nonsense. He's never forgiven the brook.\" She pulls the strap tight. \"If you go, don't tell him he was wrong. Tell him the water was.\"\n\nThe second day is longer and emptier. The ridges become the edge of the downs, big bare green shoulders of land with sheep scattered across them like grain, and the road climbs and dips over them in long patient curves. Ketta talks a little, about her husband, who was a carrier too and died of a fever in the year of the floods, about her son, who went for a soldier and writes twice a year. She asks you nothing about yourself at all, which is restful.\n\nToward evening you come down a long hill into Aldbury Cross: a market cross of grey stone at a meeting of five roads, an inn with a painted sign of a wheatsheaf, a forge, a pound with two strayed heifers in it. Ketta draws up in front of the inn, and a stout woman in a white cap comes out wiping her hands, crying out Ketta's name in a voice that sets the heifers bawling.",
+   "role": "assistant"
+  },
+  {
+   "content": "I climb down, stiff from the bench, and take my pack and the brass case. \"Ketta, what do I owe you for the two days?\"",
+   "role": "user"
+  },
+  {
+   "content": "\"The Guild paid me to the Cross. Your Mister Dallow, very particular about it.\" Ketta climbs down more slowly, one hand on the wheel. \"So you owe me nothing but a good word to anyone going east who asks for a carrier.\" She looks at you a moment, in the yellow light from the inn door. \"And you might tell me, since we're parting, whether I was right. About the long way round.\"\n\nThe stout woman, who turns out to be Mother Ainsley and the keeper of the Wheatsheaf, does not wait for an answer. She seizes Ketta, then the pack, then you, and sweeps all three inside into a low warm room smelling of bread and woodsmoke and roasting mutton, with a fire you could stand up in and settles round it full of drovers and carters and a tinker asleep with his mouth open.\n\n\"A bed for the lady, Ainsley, and the good one, not the one over the stable,\" says Ketta. She sits down by the fire with the air of a woman who has earned it. Across the room, by the window, Gethin Moss is eating a pie the size of a hat, with Sully's chin on his knee, and he lifts his fork to you in greeting without stopping.",
+   "role": "assistant"
+  },
+  {
+   "content": "At first light I'm at the market cross with my pack and the brass case. \"Morning, Gethin. Morning, Sully. Which way?\"",
+   "role": "user"
+  },
+  {
+   "content": "Gethin Moss is sitting on the step of the cross with a crook across his knees and a pack twice the size of yours, eating the last of a loaf. Sully is already on his feet, tail going. \"You came,\" Gethin says, as if he had laid a small bet with himself and won it. \"North, past the forge, then up. Ketta sends her respects and says I'm to carry your case if you'll let me, which you won't, she says.\"\n\nThe drovers' road leaves the village between two flint walls and climbs at once onto the open down. It is not so much a road as a wide green track worn by a thousand years of hooves, running along the spine of the hills between low banks, with the country falling away on either side into hazy valleys. Larks go up out of the grass ahead of you, one after another. The air is cold and very clear, and you can see for twenty miles: woods, a spire, a white chalk figure of a horse cut into a far hillside.\n\nGethin walks with a long, slow, rolling stride that eats the ground without seeming to. \"Two days,\" he says. \"Tonight there's a shepherd's hut at Fernhill Bottom, if the shepherd's not in it. Tomorrow we come down into the Stony by evening.\" He squints north, where a faint greyness lies along the horizon. \"If the weather holds. Which it won't.\"",
+   "role": "assistant"
+  },
+  {
+   "content": "\"What do you know about the brook between the two farms? Anything about the way it moves would help me.\"",
+   "role": "user"
+  },
+  {
+   "content": "Gethin is quiet for a hundred yards, which you are learning is how he thinks. \"It's a chalk stream, the Stony. Comes out of the hill clear as glass, cold as a well, summer and winter. Then halfway down the valley it meets the clay, and on the clay it wanders. Floods every spring, when the snow comes off the downs. Every flood it cuts the outside of a bend and drops gravel on the inside.\" He traces a lazy S in the air with the end of his crook. \"My grandfather said it used to run right under the Crane house. Now it's a quarter-mile off. Old Crane says the land it left is his. Old Hollis says the brook's the boundary wherever it runs. Neither of them's ever going to give.\"\n\nHe walks on. \"There's one thing nobody's thought of, mind. There's an old mill leat on the Hollis side, dry now, all grown over with willow. My father used to say the brook ran down the leat before it ran where it does now. I don't know if that helps.\"\n\nThe track dips into a fold of the down where a dew pond lies round and grey as a coin, rimmed with trampled chalk. Sully runs ahead to drink. Beyond the pond, the greyness on the northern horizon has thickened into a wall, and the far chalk horse has gone.",
+   "role": "assistant"
+  },
+  {
+   "content": "I look at the grey wall coming. \"How long before that reaches us?\"",
+   "role": "user"
+  },
+  {
+   "content": "\"An hour,\" says Gethin. \"Less.\" He whistles Sully back from the pond and looks along the track ahead, where it runs on along the bare spine of the down with nothing to mark it but the low banks on either side. \"We'll keep to the banks. If we lose them, we stop, and we sit, and we wait. People die up here walking in circles in a mist, a mile from a farm.\"\n\nIt comes faster than an hour. First the far valleys go soft and then go out, one by one, like lamps. Then a cold breath moves across the grass, and the larks stop singing, and the mist arrives all at once: a wet white wall that swallows the track twenty yards ahead, and then ten, and then there is nothing but the grass at your feet, the bank beside you, Gethin's broad back and Sully's grey tail going in and out of sight in front of you. Sound goes strange. Your own footsteps are muffled. Somewhere off to the right, impossibly close or impossibly far, a sheep is bleating over and over.\n\nGethin stops. \"Hear that?\" He listens, head on one side. \"That's not one sheep. That's a flock, scattered, and a flock doesn't scatter on its own.\" Sully is standing rigid beside him, nose to the right, quivering.",
+   "role": "assistant"
+  },
+  {
+   "content": "\"Someone's lost their flock, or their flock's lost them. Do we go and look, or keep to the bank?\"",
+   "role": "user"
+  },
+  {
+   "content": "Gethin rubs his jaw. \"Rule says keep to the bank.\" He looks down at Sully, who is whining very softly, every hair along his back up. \"Dog says otherwise. And I've never known the dog wrong about sheep.\" He makes up his mind. \"We go, but we go on a line. You stay here by the bank, where I can find you. I'll go out with Sully and call. You call back, every time I call, so I can follow your voice home. If you stop hearing me, you stay put and you shout till you're hoarse.\"\n\nHe unslings his pack, drops it at your feet, and goes off into the white with Sully at his heel. In three steps he is a shadow. In five he is gone. You hear him whistle, and the dog's feet in the wet grass, and then his voice, deep and long: \"Hup-hup-hup-ho-o-o!\"\n\nThe mist presses close around you. The bank is a dark lump beside you. The bleating comes and goes. Then Gethin's call again, further off: \"Hup-hup-ho-o-o!\"",
+   "role": "assistant"
+  },
+  {
+   "content": "I cup my hands around my mouth and call back as loud as I can, \"Here! By the bank!\" and keep calling each time he calls.",
+   "role": "user"
+  },
+  {
+   "content": "For a long time it is only that: his call, far off and muffled, and yours flung back into the white, and the bleating of sheep coming nearer and then further, and once the sharp double bark of Sully working. Your voice comes back to you strangely flat. Your hands are cold and wet. The light, what there is of it, does not change, so there is no telling whether ten minutes have passed or forty.\n\nThen the bleating swells into a confused, pattering din, and sheep begin to come past you out of the mist, close enough to touch, a dozen, two dozen, grey-backed and dripping, with Sully running low and silent at their flank, turning them, holding them against the bank like water against a wall. Behind them comes Gethin, and with him, stumbling and soaked to the knees, a small figure in a sack apron with a crook much too big for her: a girl of perhaps ten, her face white and furious and streaked with crying she would clearly rather die than admit to.\n\n\"Found the shepherd,\" says Gethin, breathing hard. \"Bel Ashby, from Fernhill. Her father's laid up with his leg, so she brought the flock up herself to the top grazing, and the mist came down.\" He puts a big hand on the girl's head; she shakes it off. \"She'd have been fine. She says.\"",
+   "role": "assistant"
+  },
+  {
+   "content": "I crouch down to the girl's height. \"That's a good flock, and you kept most of it. I'd have been lost in five minutes up here. Can you take us to Fernhill?\"",
+   "role": "user"
+  },
+  {
+   "content": "The girl looks at you suspiciously, as though checking whether she is being made fun of, and finds that she isn't. Some of the fury goes out of her face. \"Four's missing,\" she says, low. \"Four of forty. Da will skin me.\" Then, gathering herself, very much the shepherd: \"Fernhill's down off the end of the bank, by the thorn. I can find it in the mist. I've done it before.\" Which, by the look Gethin gives you over her head, is a lie, but a brave one.\n\nShe leads, with the crook over her shoulder like a pike, and Sully moves the flock along behind her, and you and Gethin bring up the rear. The bank runs out at a lone thorn tree, bent flat by the wind, that looms up out of the white like a crouching man. From there a narrow path goes down steeply, slippery with wet chalk, into a fold of the hills where the mist is thinner, and then, quite suddenly, you are under it. The world comes back grey and dim and dripping: a combe with a little stream at the bottom, a sheepfold of hurdles, and a stone cottage with a turf roof and a light in the window.\n\nThe door bangs open and a man hops out on a crutch, one leg bound in splints, shouting the girl's name before he has even seen who is with her.",
+   "role": "assistant"
+  },
+  {
+   "content": "I hang back by the fold and let the girl and her father have their moment, and help Gethin pen the sheep.",
+   "role": "user"
+  },
+  {
+   "content": "There is a good deal of shouting and then a good deal of hugging, and then more shouting, in which the words \"four\" and \"skin\" and \"your mother\" are prominent, and then the man, Tom Ashby, hops over to the fold on his crutch, still red in the face, and shakes Gethin's hand and then yours, hard, both his hands round yours.\n\n\"I don't know you,\" he says to you, \"and I don't need to. You'll come in. You'll eat. You'll sleep by the fire, the both of you and the dog, and I'll hear no word about it.\" His wife is in the doorway, a thin dark woman with a baby on her hip, already saying something about the pot. Bel, behind her, is looking at you with an expression of fierce, reluctant gratitude.\n\nInside, the cottage is one room with a loft, smoky and warm, with a fire of furze and sheep dung and a pot of something that smells of onions and mutton. Gethin, who has evidently stayed in a hundred such places, takes off his boots, sits down on the settle, and is handed a bowl before anyone has asked him anything. Tom lowers himself into the chair opposite with a grunt. \"Bel says you're a surveyor,\" he says, eyeing your brass case. \"Going to Stonyford, Gethin says. To sort out Crane and Hollis.\" He laughs, not unkindly. \"God help you.\"",
+   "role": "assistant"
+  },
+  {
+   "content": "I take the bowl with thanks. \"Gethin's told me a little. What do you know about it, up here on the hill?\"",
+   "role": "user"
+  },
+  {
+   "content": "Tom Ashby eats a spoonful, considering. \"I'll tell you what everybody up here knows and nobody down there will say. It's not the brook. Brook's just water, it goes where it's pushed.\" He points his spoon at you. \"Thirty years back, Old Crane, Abel's father, he cleared the willows off the bank on his side, to make a field. And when you clear willows off a clay bank, the next flood takes the bank. Brook came over onto his side and he was glad of it, because it took Hollis land too, the way it bent. Then twenty years back the Hollises dug the old leat out again, to run the mill, and the brook went the other way.\"\n\nHis wife sets down a loaf with a thump. \"Tom. You'll not get mixed in it.\"\n\n\"I'm not mixed in it. I'm telling the lady.\" He leans forward. \"So when they say the brook moved, what they mean is, it was moved. Both of them moved it, one after the other. That's why Thurlow can't settle it. He keeps asking where the brook ran. Nobody's asking who moved it.\" He sits back, pleased with himself. Gethin has stopped eating, and is looking at Tom with his mouth slightly open.",
+   "role": "assistant"
+  },
+  {
+   "content": "In the morning I thank the Ashbys, give Bel one of my spare pencils for keeping the flock, and walk on with Gethin and Sully. \"Tell me about Thurlow before we get there.\"",
+   "role": "user"
+  },
+  {
+   "content": "Bel takes the pencil as if it might bite her, then puts it behind her ear the way she must have seen you do it, and does not take it out again while you are in sight. Tom Ashby stands in the doorway on his crutch and shouts after you that if the Hollises give you any trouble you are to tell them Tom Ashby of Fernhill said so, which seems to settle something for him.\n\nThe mist has lifted overnight into a high grey sky. Gethin walks for a long while before he answers. \"Thurlow. Squire Thurlow, they call him in the valley, though he's no more a squire than I am. Owns the big house at the head of the valley and most of the water meadows, and sits on the bench at Stonyford every second Tuesday. Clever. Reads books in Latin, they say, for pleasure.\" He spits thoughtfully into the grass. \"Doesn't like being told things. Likes to be shown them, so he can say he found them himself. You'll want to remember that.\"\n\nBy noon the track begins to drop off the north side of the downs, and the Stony valley opens below you: a long green trough between bare hills, a church, a straggle of grey roofs, a mill, and a stream, glinting, wandering in loops across a flat floor of meadows like a dropped thread. Even from up here you can see the scars of old courses, pale crescents in the grass where water used to run.",
+   "role": "assistant"
+  },
+  {
+   "content": "I stop on the brow, get out my notebook and sketch the shape of the valley floor and the old courses while the light is flat.",
+   "role": "user"
+  },
+  {
+   "content": "Gethin sits on a tussock with his crook across his knees and lets you work. Sully lies down beside him with a groan. From up here, with the grey light taking the shadows off everything, the old courses show better than they ever will from the ground: three, four, five pale crescents, some sharp, some so faint you are not sure you are not imagining them, looping back and forth across the floor of the valley on either side of the present stream.\n\nOne of them is not a crescent at all. It runs dead straight for a furlong from a point just below the church, along the foot of the eastern slope, through a line of pollarded willows, to the mill. Too straight for water to have made.\n\n\"That's the leat,\" says Gethin, following your pencil. \"Hollis mill. And that bit there,\" he points to a broad loop below the leat that swings close under a group of farm buildings on the western side, \"that's where the brook ran when I was a boy, right under the Crane yard. And there, see that big field with the new posts in it? That's the one they're fighting over now.\" The new posts are a raw yellow line across the green, some standing, some lying flat in the grass as though they had been pushed over.",
+   "role": "assistant"
+  },
+  {
+   "content": "I close the notebook. \"Let's go down. I'd like to see the magistrate before either of the farmers hears I'm here.\"",
+   "role": "user"
+  },
+  {
+   "content": "\"Too late for that,\" says Gethin cheerfully, and points down the hill with his crook.\n\nA boy on a pony is already halfway up the track toward you, kicking it on, and behind him, at the bottom of the hill by the first cottages, a small knot of people has gathered to stare up at the two figures and the dog on the skyline. \"Valley's got eyes,\" Gethin says. \"They'll have seen your case from the church tower. By supper everybody from here to the mill will know there's a surveyor come over the down, and half of them will have decided whose side you're on.\"\n\nThe boy pulls up in front of you, red-faced and breathless, and blurts out his message in one go, as though he has been rehearsing it all the way up: \"Squire Thurlow's compliments and if the surveyor's come about the Stony, he'll see her at the house now, before she speaks to anyone, and would she please not speak to anyone, especially not Mr. Crane or Mr. Hollis, sir, madam.\" He goes redder. \"That's all.\"",
+   "role": "assistant"
+  },
+  {
+   "content": "\"Thank you. Tell Squire Thurlow I'll come directly.\" To Gethin: \"Will you come with me, or go on to your sister?\"",
+   "role": "user"
+  },
+  {
+   "content": "Gethin looks down the hill toward the cottages and back at you, and scratches Sully's ears. \"I'll come as far as his gate. He doesn't care for drovers in his parlour, and I'd as soon not be seen walking in with you, for your sake. If the Hollises think you came over the down with Marten's brother-in-law, they'll take you for theirs, and the Cranes will never believe a word you say.\" He stands up. \"After, come to the Hollis farm, the one by the mill. My sister'll feed you whatever you say to Thurlow.\"\n\nThurlow's house stands at the head of the valley, where the stream comes out of the chalk: a long grey building, older than it pretends to be, with a newer front stuck onto it and a walled garden. Gethin leaves you at the gate with a nod, and Sully looks back at you twice as they go off down the lane.\n\nA maid shows you through a hall full of dark portraits and fishing rods into a library, warm and book-lined, where a man of sixty in a velvet coat is standing at a table covered with old maps, weighted at the corners with books. He is tall and thin and grey, with a long clever face and spectacles pushed up onto his forehead. He looks at your brass case first, and then at you. \"You came over the down,\" he says. \"In the mist. With Gethin Moss, who is Marten Hollis's brother-in-law. Sit down, please. Tell me why I should trust a word you say.\"",
+   "role": "assistant"
+  },
+  {
+   "content": "I sit and set the case across my knees. \"You shouldn't, Squire, not until you've seen the work. Gethin walked me over the down because it's no road to walk alone. I've met neither farmer. Show me what you have, and I'll tell you what it can and can't prove.\"",
+   "role": "user"
+  },
+  {
+   "content": "Thurlow looks at you over his spectacles for a long moment. Then, unexpectedly, he smiles, a thin and rather sour smile. \"That,\" he says, \"is the first sensible thing anyone has said to me about the Stony in five years.\" He pulls the spectacles down onto his nose and turns the maps on the table toward you.\n\nThere are four of them. The oldest, on brown parchment cracked along the folds, shows the valley as a few strokes of ink and a brook drawn as a ruler-straight line from the church to the mill. The second, a hundred years younger, has the brook wandering in loops and the farms marked with little houses. The third is a lawyer's plan of the Crane property, neatly coloured, with the brook running along the edge of the yard. The fourth is a rough sketch, much rubbed out, in pencil, with a burn-mark across one corner.\n\n\"My grandfather's survey, made by a man named Corbett, who drew the true line.\" Thurlow taps the fourth. \"The only copy. The rest went in a fire at the Crane house twelve years ago. A convenient fire, some said. This is what survived.\" He takes his spectacles off again. \"I need someone to tell me where this line runs on the ground today. I'll need a name for the record, too, at the hearing. The bench writes down who gave evidence.\"",
+   "role": "assistant"
+  },
+  {
+   "content": "\"You'll have my evidence, Squire, measured and signed with my mark. My name I keep to myself, for reasons that have nothing to do with the Stony. If the bench can't take evidence on those terms, I'll walk back over the down tonight.\"",
+   "role": "user"
+  },
+  {
+   "content": "Thurlow's eyebrows go up, slowly. For a moment you think he will be offended; he has the look of a man who has not been refused anything in his own library in a very long time. Then he laughs, a short surprised bark.\n\n\"Good God. A woman who'll walk over the downs in January rather than give her name to a country magistrate.\" He shakes his head. \"The bench will take evidence from 'the surveyor', so long as the surveyor stands up in front of it and answers questions. I've had worse. I've had a witness who gave his name as the Archangel Gabriel, and he was sober.\" He waves a long hand. \"Keep it. It's no business of mine. I'm rather more interested in whether you can read Corbett.\"\n\nHe slides the burned pencil sketch across the table to you. Up close, it is the work of a careful hand: a baseline, triangles, bearings in a tiny script, distances in chains and links. And at the bottom, half lost in the scorch mark, a note: \"Line of the boundary taken along the old water, from the Church Stone to the Mill Stone, as the brook ran in Lady Day 17—.\" The rest of the year is burned away.",
+   "role": "assistant"
+  },
+  {
+   "content": "I study the sketch carefully, comparing Corbett's bearings to the shape I drew from the brow. \"Squire, where are the Church Stone and the Mill Stone? Do they still stand?\"",
+   "role": "user"
+  },
+  {
+   "content": "Thurlow sits back in his chair and steeples his fingers, looking very pleased with himself, and with you, and most of all with the question. \"That,\" he says, \"is the second sensible thing. The Church Stone stands. It's a boundary stone in the churchyard wall, with a cross cut in it, older than the church. Everybody in the valley knows it.\" He pauses. \"The Mill Stone, nobody's seen for thirty years. It was supposed to be by the mill race. When the Hollises dug out the leat, it vanished. Marten Hollis says it was never there. Abel Crane says Marten's father broke it up and used it for the mill steps.\"\n\nHe gets up and goes to the window, which looks down the whole length of the valley, the stream glittering in its loops through the meadows. \"If you can find where that stone stood, you can lay Corbett's line on the ground, and I can settle this before somebody gets killed over a field of wet grass.\" He turns. \"You'll want a chain and two men to carry it, and a horse, and somewhere to sleep that isn't either farm. I can give you all four. When do you want to begin?\"",
+   "role": "assistant"
+  },
+  {
+   "content": "\"Tomorrow at first light, from the Church Stone. And I'd like both farmers there to watch, Squire. If they see every measurement taken, neither can say afterward that it was done behind his back.\"",
+   "role": "user"
+  },
+  {
+   "content": "Thurlow considers this, tapping his spectacles against his teeth. \"Both of them. In the same field. With a chain between them.\" He sighs. \"You're either very wise or you've never met Abel Crane. Very well. I'll send word to both farms tonight that the bench requires them at the churchyard at seven, and that any man who lays a hand on the surveyor or her chain will answer to me.\"\n\nHe gives you a room at the Thurlow Arms, the inn by the church, which he owns, with a fire already lit and a supper of trout from the Stony itself. Gethin's sister, it turns out, has sent a pie over by a small nephew, with a note in a careful round hand saying that the Hollis family wishes the surveyor good luck and an honest chain, underlined twice. Twenty minutes later a second boy brings a basket of apples from the Crane farm, with no note at all, which is somehow more pointed.\n\nIn the morning a cold white fog lies along the valley floor, waist-deep, with the church tower standing up out of it into clear sky. At the churchyard wall, by a squat grey stone with a cross cut deep into its face, a small crowd is already waiting, divided very precisely into two groups with a yard of empty grass between them.",
+   "role": "assistant"
+  },
+  {
+   "content": "I walk up to the stone with my case and nod to both groups. \"Good morning. Which of you is Mr. Crane, and which Mr. Hollis?\"",
+   "role": "user"
+  },
+  {
+   "content": "Two men step forward at the same moment, and both stop, as if neither will be first.\n\nAbel Crane is short and wide, about fifty, with a red face, a bristling grey moustache and a good blue coat buttoned to the neck. Behind him stand two grown sons built on the same lines and a hired man with a shovel he has not been asked to bring. Marten Hollis is tall and stooped and thin, with sad brown eyes and big floury hands, the miller's dust still in the creases of his knuckles; his wife, a broad woman who must be Gethin's sister, stands at his shoulder with her arms folded, and behind them, a little apart, leaning on his crook as if he just happened to be passing, is Gethin himself, with Sully sitting at his feet.\n\n\"Crane,\" says the short man. \"I'll say this once, so you know where I stand. I don't hold with a woman surveyor, and I don't hold with Thurlow's fancy maps, and I don't need anybody to tell me where my own land is.\" He jerks his chin at the stone. \"But I'll watch. And I'll know if you cheat.\"\n\n\"Hollis,\" says the tall man quietly. \"Good morning, ma'am. We're obliged to you for coming.\"",
+   "role": "assistant"
+  },
+  {
+   "content": "\"Mr. Crane, I'd think less of you if you didn't watch. Mr. Hollis, thank you.\" I open the case, set up the instrument over the Church Stone and take the first bearing from Corbett's sketch. \"Now: Corbett's line runs from here toward a stone by the mill that nobody has seen in thirty years. Does anyone want to tell me where it stood?\"",
+   "role": "user"
+  },
+  {
+   "content": "There is a silence in which the fog drips off the yew trees. Abel Crane opens his mouth, looks at Thurlow, who has arrived on a tall grey horse at the edge of the churchyard and is watching with his hands folded on the pommel, and shuts it again.\n\nThen, from the back of the Crane group, the hired man with the shovel says, \"By the old ash. Below the race. It were a big stone with a mark on it like a wheel.\" Everyone turns to stare at him. He is old, much older than he looked, with a face like a walnut. \"I were a lad. I seen it. I sat on it, eating me dinner, when I worked for old Hollis, before I went to Crane's.\"\n\n\"Joby,\" says Abel Crane, in a voice like a door slamming. \"Nobody asked you.\"\n\n\"She did,\" says Joby, mildly, and leans on his shovel.\n\nMarten Hollis's wife makes a small sound. Marten himself has gone very still. Across the empty yard of grass between the two groups, the sun is beginning to burn through the fog, and the bearing from the Church Stone, when you sight along it through the instrument, runs straight down the valley floor toward a distant line of willows, a gap, and beyond it, the grey shape of the mill.",
+   "role": "assistant"
+  },
+  {
+   "content": "\"Thank you, Joby. Would you walk the line with us and show me where the old ash was?\" I signal the two men Thurlow lent me to start the chain.",
+   "role": "user"
+  },
+  {
+   "content": "Joby looks at his master. Abel Crane looks at Thurlow on his horse. Thurlow looks back at Abel Crane without any expression at all. After a moment Crane jerks his head, a short furious nod, and Joby shoulders his shovel and comes forward to walk beside you, grinning toothlessly, as though this is the best day he has had in years.\n\nThe chain goes out along Corbett's bearing: twenty-two yards, a pin; twenty-two yards, a pin; the chainmen calling the count, you checking the bearing at every fifth chain. The whole valley follows behind at a careful distance, Cranes on one side and Hollises on the other, the yard of empty grass travelling with them like something alive. You cross the present stream at a gravel ford, the chainmen up to their knees, swearing at the cold. You cross the new posts in the disputed field; two of Crane's sons start forward, and Thurlow, on his horse, says, \"Gentlemen,\" in a voice that stops them both.\n\nAt thirty-one chains the line meets the willows along the old leat, and passes between them, and comes out on the far side among nettles and brambles at the edge of the mill race, where the water runs dark and fast under the wheel. There is no ash tree. There is a stump, huge and grey and rotten, sprouting a fringe of new shoots. Joby stops beside it and points down with his shovel at the bank. \"There,\" he says. \"It were there.\"",
+   "role": "assistant"
+  },
+  {
+   "content": "I look at where he's pointing, then at the mill steps a few yards away. \"Mr. Hollis, how old are your mill steps?\"",
+   "role": "user"
+  },
+  {
+   "content": "Every head turns to the mill. The steps run down from the mill door to the race: four broad stone slabs, worn hollow in the middle by generations of boots. The bottom one is bigger than the rest, a great rough grey block half sunk in the mud, and green with moss.\n\nMarten Hollis has gone pale under the flour. \"My father laid them,\" he says slowly. \"When the leat was dug. I was a boy.\" He swallows. \"I never... he never said where the stone came from.\"\n\n\"Thief,\" says Abel Crane, quite softly, and then louder: \"Thief! Forty years! Forty years I've been told I was a liar, and it's been sat at the bottom of his steps the whole...\" His sons surge forward; Marten Hollis's wife steps in front of her husband with her arms folded; Gethin is suddenly there too, not doing anything, just standing very large between the two groups with Sully pressed against his legs. Thurlow's horse comes down the bank, scattering nettles.\n\n\"Nobody,\" says Thurlow, \"has proved anything yet. Least of all you, Abel.\" He looks down from the saddle at you. \"Surveyor. Is that the Mill Stone, or isn't it?\"",
+   "role": "assistant"
+  },
+  {
+   "content": "\"I don't know yet, Squire, and I won't guess. Joby said it bore a mark like a wheel. If Mr. Hollis will allow it, I'd like the moss scraped off the bottom step so we can all see the face of it.\"",
+   "role": "user"
+  },
+  {
+   "content": "Marten Hollis looks at the step, and at his wife, and at the faces of his neighbours, and at last at you. \"Do it,\" he says. \"Whatever's there. I'd rather know.\"\n\nJoby goes down the bank before anyone else can move, kneels in the mud and starts scraping the moss off the face of the bottom step with the blade of his shovel, carefully, almost tenderly, like a man cleaning a gravestone. Green comes away in long wet strips. Under it the stone is grey and rough and pitted. The whole valley crowds the bank to look, Cranes and Hollises shoulder to shoulder now without noticing, the yard of empty grass gone.\n\nJoby scrapes. Wipes the stone with his sleeve. Sits back on his heels.\n\nCut into the face of the stone, worn shallow but clear in the low sun, is a circle with eight spokes, like a cartwheel. And below it, much smaller and much fresher, as though someone had tried to chisel it away and given up halfway, the remains of two letters and a date.\n\nNo one says anything at all. The mill wheel creaks and turns. Abel Crane's mouth is working. Thurlow leans down from his saddle to look, and then straightens, and looks at you, and waits.",
+   "role": "assistant"
+  },
+  {
+   "content": "I kneel beside Joby and look closely at the letters and the date without touching them. \"Squire, I'll measure from this stone, not guess at it. If its mark matches Corbett's note and the line closes on the church within a link or two, it's the Mill Stone. If not, it's a step.\"",
+   "role": "user"
+  },
+  {
+   "content": "\"Measure, then,\" says Thurlow, and there is something almost like eagerness in his long face. \"Everybody else: stand back from the surveyor and keep your hands in your pockets.\"\n\nIt takes the rest of the morning. The stone cannot be moved, so you set the instrument over the wheel mark where it lies and take the bearing back toward the Church Stone, and then send the chain back along it, pin by pin, the two chainmen calling the count, the whole valley following in a quiet straggling procession. Nobody argues now. Abel Crane walks with his hands clasped behind his back and his face like thunder; Marten Hollis walks beside him, not quite close enough to touch, his head bowed. At the gravel ford one of the Crane sons offers a hand to Mistress Hollis over the slippery stones, and she takes it, and both of them look surprised.\n\nAt sixty-two chains and some links, the last pin goes into the grass at the foot of the churchyard wall, a hand's breadth from the cross cut in the Church Stone. The line closes. You check the figures twice, sitting on the wall with the notebook on your knee, while Thurlow waits on his horse and the valley waits behind him, and Sully, who has followed the chain the whole way, lies down in the grass at your feet and sighs.",
+   "role": "assistant"
+  },
+  {
+   "content": "I check the figures a third time, then close the notebook and stand up. \"It closes, Squire. Within two links over sixty-two chains. That's the Mill Stone, and that is Corbett's line.\"",
+   "role": "user"
+  },
+  {
+   "content": "A sound goes through the little crowd, not quite a cheer, not quite a groan. Thurlow takes his spectacles off and polishes them on his sleeve for rather longer than they need, which you are beginning to understand is how he hides being pleased.\n\n\"Then the line runs as Corbett drew it,\" he says, loudly enough for everyone to hear. \"Straight, from stone to stone, as the brook ran on Lady Day in my grandfather's time. Not where the brook runs now. Not where it ran when the Crane willows came down, nor where it ran when the Hollis leat was dug.\" He puts the spectacles back on. \"Which means, if I read this right, that both of you have been farming land that belonged to the other, on and off, for forty years.\"\n\nThere is a long silence. Abel Crane and Marten Hollis look at each other, really look, for perhaps the first time in their lives. \"The big field,\" says Crane at last, hoarsely. \"The one with the posts.\"\n\n\"Is about half yours and half his,\" says Thurlow. \"Split down the middle, near enough, by a line neither of you ever walked.\" He gathers his reins. \"The bench sits at two o'clock. Surveyor, I'll want you there with your figures.\"",
+   "role": "assistant"
+  },
+  {
+   "content": "At two o'clock I go to the courtroom with my notebook, Corbett's sketch and a clean copy of the line drawn out on a single sheet.",
+   "role": "user"
+  },
+  {
+   "content": "The courtroom is the long room over the market hall, with a table at one end for the bench, benches for everyone else, and a fire that smokes. It is crammed. Every soul in the valley seems to have come, and some from over the down: you catch sight of Tom Ashby on his crutch near the back, with Bel beside him, the pencil still behind her ear.\n\nThurlow sits at the table in a black coat with a clerk beside him. The clerk is a young man with ink on his fingers and a ledger open in front of him, and when you come up to stand by the table he dips his pen and looks at you expectantly.\n\n\"The witness,\" says Thurlow, before the clerk can open his mouth, \"will be entered as the surveyor engaged by the bench, and the bench is satisfied as to her competence. Write that, Mr. Pryor.\" The clerk blinks, writes it, and looks a little disappointed. \"Now. Surveyor. Show the court your line, and tell it in plain words what you found. Some of us are farmers and one of us reads Latin, and I'd like both kinds to understand you.\"",
+   "role": "assistant"
+  },
+  {
+   "content": "I spread the clean copy on the table, facing the room, and explain it plainly: the Church Stone, the Mill Stone at the foot of the steps, the straight line between, and how the old courses and the willows and the leat had moved the water but not the boundary.",
+   "role": "user"
+  },
+  {
+   "content": "You keep it short. The room listens with the particular, ferocious attention of people hearing about their own land. When you come to the willows, a murmur runs along the Crane side; when you come to the leat and the steps, it runs along the Hollis side. When you say that the brook was never the boundary, only a thing that happened to be lying along it once, an old woman near the front says \"Ha!\" very loudly, and is shushed.\n\nThurlow asks you three questions, all of them sharp, all about the figures, and you answer them from the notebook. Abel Crane's lawyer, a sleek young man from the county town, asks you two more, about the instrument and the chain, and sits down looking thoughtful. Marten Hollis has no lawyer. He stands up when you have finished and says, in his quiet voice, \"I've nothing to ask. I believe her,\" and sits down again.\n\nThen Thurlow gives judgement. It takes him a quarter of an hour, and it is in English, mostly, with only one sentence of Latin, which he translates for the farmers with obvious relish. The line runs as Corbett drew it. Stones are to be set along it at every ten chains, at the joint cost of both farms. The big field is to be divided. Neither party is to touch the willows, the leat or the brook, ever again, without leave of the bench.",
+   "role": "assistant"
+  },
+  {
+   "content": "When the court breaks up, I roll up the copy and start to pack my things, keeping out of the crush at the door.",
+   "role": "user"
+  },
+  {
+   "content": "It takes a long time for the room to empty. People keep stopping by the table. Mistress Hollis presses your hand and says nothing, which says a great deal. The Crane lawyer gives you his card. Old Joby comes and shakes your hand, and then, with enormous dignity, shakes Thurlow's. Bel Ashby edges up, stares at the clean copy of the line with frank professional interest, and asks whether you used the pencil she has, or a different one; you are not sure which answer she would prefer.\n\nAbel Crane is one of the last. He stands in front of the table with his hat in his hands, red-faced, plainly hating every second of it. \"I said I'd know if you cheated,\" he says abruptly. \"You didn't.\" He turns the hat round twice. \"My father cut those willows. I never knew why the brook came over. I thought... well. I thought a lot of things about the Hollises.\" He jams the hat on his head. \"I'll set the stones. My share. Good day to you.\" He goes out, and from the window you see him stop in the market square beside Marten Hollis, and the two of them stand there, not talking, side by side, looking down the valley at the field.\n\nWhen the room is empty but for the clerk, gathering his papers, Thurlow gets up from the bench and comes round the table, and sits on the edge of it, beside your case.",
+   "role": "assistant"
+  },
+  {
+   "content": "\"That's the first time I've seen a judgement make two men stand next to each other, Squire. You did that, not my chain.\"",
+   "role": "user"
+  },
+  {
+   "content": "\"Nonsense.\" Thurlow waves a long hand, but he looks pleased. \"I've been trying to make those two stand next to each other for five years. I had the law and I had the maps and I hadn't the stone. You found the stone.\" He takes his spectacles off. \"Or Joby did, and you were the first person in thirty years to ask him.\"\n\nHe looks out of the window at the valley, the stream glittering in its loops through the meadows in the last of the afternoon light, the two small figures still standing side by side in the square. \"There are eleven parishes in my division,\" he says. \"Every one of them has a Crane and a Hollis. Every one has a brook, or a common, or a hedge that some grandfather moved. None has a map worth the paper.\" He turns back to you. \"I can't offer what the Guild offered. I'm a country magistrate, not a corporation. But I could offer a year's work, on the bench's account, and a room in my house with a north window, and my library, which is better than you'd think. And you'd keep your name to yourself as long as you like. I'd never ask it.\"\n\nThe clerk has stopped gathering papers and is pretending very hard not to listen.",
+   "role": "assistant"
+  },
+  {
+   "content": "I look out of the window at the valley for a while before I answer. \"I have a promise to keep in the south before the winter, Squire. I can't stay a year. Let me think on it tonight.\"",
+   "role": "user"
+  },
+  {
+   "content": "\"Think on it,\" says Thurlow at once. \"That's all I ask. I'd think less of you if you took it on the spot.\" He stands, and picks up Corbett's burned sketch from the table, and holds it a moment, looking at the scorch mark across the corner. Then, abruptly, he holds it out to you. \"Take this. It's no use to me now; your line is the record. And I should like it to belong to someone who could read it.\"\n\nOutside, the valley is going gold and blue. The last people are drifting home across the square. Gethin Moss is waiting by the market cross with his crook and his pack, Sully sitting upright at his side, and when he sees you come out onto the steps of the market hall he raises the crook in salute, and Sully's tail sweeps the cobbles.\n\n\"Well?\" Gethin calls across the square, grinning. \"My sister says you're to come to supper, and Marten says he'll grind you a sack of flour for the road, and Bel Ashby says she's going to be a surveyor, God help us all.\" He waits until you have come down the steps, and then, more quietly, looking at you closely: \"And Thurlow's made you an offer. I can see it on you. Are you staying, or are you going south?\"",
    "role": "assistant"
   }
  ],

@@ -1,0 +1,63 @@
+# The survey of the Stony: the Church Stone, the farmers, and the search for
+# the Mill Stone along the old leat.
+turns:
+  - user: |
+      "Tomorrow at first light, from the Church Stone. And I'd like both farmers there to watch, Squire. If they see every measurement taken, neither can say afterward that it was done behind his back."
+    narrator: |
+      Thurlow considers this, tapping his spectacles against his teeth. "Both of them. In the same field. With a chain between them." He sighs. "You're either very wise or you've never met Abel Crane. Very well. I'll send word to both farms tonight that the bench requires them at the churchyard at seven, and that any man who lays a hand on the surveyor or her chain will answer to me."
+
+      He gives you a room at the Thurlow Arms, the inn by the church, which he owns, with a fire already lit and a supper of trout from the Stony itself. Gethin's sister, it turns out, has sent a pie over by a small nephew, with a note in a careful round hand saying that the Hollis family wishes the surveyor good luck and an honest chain, underlined twice. Twenty minutes later a second boy brings a basket of apples from the Crane farm, with no note at all, which is somehow more pointed.
+
+      In the morning a cold white fog lies along the valley floor, waist-deep, with the church tower standing up out of it into clear sky. At the churchyard wall, by a squat grey stone with a cross cut deep into its face, a small crowd is already waiting, divided very precisely into two groups with a yard of empty grass between them.
+  - user: |
+      I walk up to the stone with my case and nod to both groups. "Good morning. Which of you is Mr. Crane, and which Mr. Hollis?"
+    narrator: |
+      Two men step forward at the same moment, and both stop, as if neither will be first.
+
+      Abel Crane is short and wide, about fifty, with a red face, a bristling grey moustache and a good blue coat buttoned to the neck. Behind him stand two grown sons built on the same lines and a hired man with a shovel he has not been asked to bring. Marten Hollis is tall and stooped and thin, with sad brown eyes and big floury hands, the miller's dust still in the creases of his knuckles; his wife, a broad woman who must be Gethin's sister, stands at his shoulder with her arms folded, and behind them, a little apart, leaning on his crook as if he just happened to be passing, is Gethin himself, with Sully sitting at his feet.
+
+      "Crane," says the short man. "I'll say this once, so you know where I stand. I don't hold with a woman surveyor, and I don't hold with Thurlow's fancy maps, and I don't need anybody to tell me where my own land is." He jerks his chin at the stone. "But I'll watch. And I'll know if you cheat."
+
+      "Hollis," says the tall man quietly. "Good morning, ma'am. We're obliged to you for coming."
+  - user: |
+      "Mr. Crane, I'd think less of you if you didn't watch. Mr. Hollis, thank you." I open the case, set up the instrument over the Church Stone and take the first bearing from Corbett's sketch. "Now: Corbett's line runs from here toward a stone by the mill that nobody has seen in thirty years. Does anyone want to tell me where it stood?"
+    narrator: |
+      There is a silence in which the fog drips off the yew trees. Abel Crane opens his mouth, looks at Thurlow, who has arrived on a tall grey horse at the edge of the churchyard and is watching with his hands folded on the pommel, and shuts it again.
+
+      Then, from the back of the Crane group, the hired man with the shovel says, "By the old ash. Below the race. It were a big stone with a mark on it like a wheel." Everyone turns to stare at him. He is old, much older than he looked, with a face like a walnut. "I were a lad. I seen it. I sat on it, eating me dinner, when I worked for old Hollis, before I went to Crane's."
+
+      "Joby," says Abel Crane, in a voice like a door slamming. "Nobody asked you."
+
+      "She did," says Joby, mildly, and leans on his shovel.
+
+      Marten Hollis's wife makes a small sound. Marten himself has gone very still. Across the empty yard of grass between the two groups, the sun is beginning to burn through the fog, and the bearing from the Church Stone, when you sight along it through the instrument, runs straight down the valley floor toward a distant line of willows, a gap, and beyond it, the grey shape of the mill.
+  - user: |
+      "Thank you, Joby. Would you walk the line with us and show me where the old ash was?" I signal the two men Thurlow lent me to start the chain.
+    narrator: |
+      Joby looks at his master. Abel Crane looks at Thurlow on his horse. Thurlow looks back at Abel Crane without any expression at all. After a moment Crane jerks his head, a short furious nod, and Joby shoulders his shovel and comes forward to walk beside you, grinning toothlessly, as though this is the best day he has had in years.
+
+      The chain goes out along Corbett's bearing: twenty-two yards, a pin; twenty-two yards, a pin; the chainmen calling the count, you checking the bearing at every fifth chain. The whole valley follows behind at a careful distance, Cranes on one side and Hollises on the other, the yard of empty grass travelling with them like something alive. You cross the present stream at a gravel ford, the chainmen up to their knees, swearing at the cold. You cross the new posts in the disputed field; two of Crane's sons start forward, and Thurlow, on his horse, says, "Gentlemen," in a voice that stops them both.
+
+      At thirty-one chains the line meets the willows along the old leat, and passes between them, and comes out on the far side among nettles and brambles at the edge of the mill race, where the water runs dark and fast under the wheel. There is no ash tree. There is a stump, huge and grey and rotten, sprouting a fringe of new shoots. Joby stops beside it and points down with his shovel at the bank. "There," he says. "It were there."
+  - user: |
+      I look at where he's pointing, then at the mill steps a few yards away. "Mr. Hollis, how old are your mill steps?"
+    narrator: |
+      Every head turns to the mill. The steps run down from the mill door to the race: four broad stone slabs, worn hollow in the middle by generations of boots. The bottom one is bigger than the rest, a great rough grey block half sunk in the mud, and green with moss.
+
+      Marten Hollis has gone pale under the flour. "My father laid them," he says slowly. "When the leat was dug. I was a boy." He swallows. "I never... he never said where the stone came from."
+
+      "Thief," says Abel Crane, quite softly, and then louder: "Thief! Forty years! Forty years I've been told I was a liar, and it's been sat at the bottom of his steps the whole..." His sons surge forward; Marten Hollis's wife steps in front of her husband with her arms folded; Gethin is suddenly there too, not doing anything, just standing very large between the two groups with Sully pressed against his legs. Thurlow's horse comes down the bank, scattering nettles.
+
+      "Nobody," says Thurlow, "has proved anything yet. Least of all you, Abel." He looks down from the saddle at you. "Surveyor. Is that the Mill Stone, or isn't it?"
+  - user: |
+      "I don't know yet, Squire, and I won't guess. Joby said it bore a mark like a wheel. If Mr. Hollis will allow it, I'd like the moss scraped off the bottom step so we can all see the face of it."
+    narrator: |
+      Marten Hollis looks at the step, and at his wife, and at the faces of his neighbours, and at last at you. "Do it," he says. "Whatever's there. I'd rather know."
+
+      Joby goes down the bank before anyone else can move, kneels in the mud and starts scraping the moss off the face of the bottom step with the blade of his shovel, carefully, almost tenderly, like a man cleaning a gravestone. Green comes away in long wet strips. Under it the stone is grey and rough and pitted. The whole valley crowds the bank to look, Cranes and Hollises shoulder to shoulder now without noticing, the yard of empty grass gone.
+
+      Joby scrapes. Wipes the stone with his sleeve. Sits back on his heels.
+
+      Cut into the face of the stone, worn shallow but clear in the low sun, is a circle with eight spokes, like a cartwheel. And below it, much smaller and much fresher, as though someone had tried to chisel it away and given up halfway, the remains of two letters and a date.
+
+      No one says anything at all. The mill wheel creaks and turns. Abel Crane's mouth is working. Thurlow leans down from his saddle to look, and then straightens, and looks at you, and waits.

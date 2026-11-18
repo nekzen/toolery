@@ -1,0 +1,60 @@
+# Two days on the carrier's wagon to Aldbury Cross. Ketta asks the name and
+# does not get it. Added to fill the 64k conversation toward ~56k tokens;
+# the shorter lengths, which end earlier, are unchanged.
+turns:
+  - user: |
+      "Pleased to meet you, Ketta. Most people on this coast have called me the mapmaker, or the surveyor. Either will do for two days on a bench."
+    narrator: |
+      Ketta considers this the way she considers the road ahead, without hurry. "Surveyor," she says at last. "That's a good plain word. I had a man once who wanted calling 'the Honourable' all the way to Aldbury, and he was a seed merchant." She clicks to the horses. "Surveyor it is."
+
+      The wagon rolls down off the brow into the first of the green ridges. The road is chalk, rutted white, with hawthorn hedges on either side gone red with haws and loud with fieldfares. Every so often a gate opens on a slope of sheep, or a flint church squats in a hollow with its tower barely higher than the elms. The smell of the sea goes out of the air within the first hour, and you only notice it is gone when it is.
+
+      At noon Ketta pulls in under a beech by a stream and unpacks bread, a heel of cheese and two apples from a basket under the seat, and divides them without asking. "There's a good inn at Aldbury and a bad one at Hensey, where we stop tonight," she says. "I tell everyone that so they won't hope." She bites an apple. "What's a surveyor going inland for, if you don't mind me asking? There's no sea to chart past Greywater hill."
+  - user: |
+      I take the bread and cheese gratefully. "I made a promise to someone in the south before the winter, and I'm taking the long way round to keep it. On the way I'll take whatever work a pair of hands and a chain can do."
+    narrator: |
+      "The long way round." Ketta nods slowly, as though this is an answer she hears a good deal. "Most of my passengers are going the long way round from something. I don't ask which." She brushes crumbs off her skirt. "Work, now, that I can help with. Every parish between here and the downs is quarrelling over a hedge or a ditch or a strip of common, and half of them have never had a proper map in their lives. The other half have two maps, which is worse."
+
+      She puts the horses back in the shafts and you go on through the afternoon. The ridges get longer and lower. A pair of rooks, flapping slow over a water meadow, keep pace with the wagon for half a mile and then turn off along a ditch. Twice you pass drovers coming the other way with flocks bound for the coast markets, and Ketta exchanges a word with each of them about the price of wethers and the state of the ford at Mallow.
+
+      Hensey turns out to be a straggle of cottages around a green, and the inn is exactly as promised: a low dark taproom with a smoking chimney, a landlord with one eyebrow and a supper of something grey. Ketta eats it without comment. When the landlord has gone she leans across the table. "There's a man at the end of the bar been looking at your brass case since we came in. Big fellow, green neckcloth. Do you know him?"
+  - user: |
+      I look over, without making a show of it, at the man with the green neckcloth.
+    narrator: |
+      He is a heavy, sunburnt man of perhaps forty, in a drover's smock and gaiters, with a green neckcloth knotted loosely at his throat and a tankard in a hand like a shovel. A rough-coated grey dog lies across his boots. He is not looking at the brass case now; he is looking at you, openly and with a kind of puzzled interest, the way a man looks at someone he thinks he ought to recognise and can't place.
+
+      When he sees that you have noticed, he doesn't look away. He picks up his tankard, says a word to the dog, which stays, and comes down the length of the taproom to stand at the end of your table. Ketta folds her arms.
+
+      "Begging your pardon," he says. His voice is deep and slow, with the burr of the downs in it. "Gethin Moss. I drove for the Marrow farms till last spring. That's a surveyor's case, isn't it? The long brass one. I've only seen one like it before, on the man that came to Stonyford in my father's time and set the whole valley fighting." He hesitates. "You wouldn't be going to Stonyford, by any chance?"
+  - user: |
+      "I hadn't planned on it. What's at Stonyford that needs a surveyor?"
+    narrator: |
+      Gethin Moss lets out a breath, half a laugh. "What isn't? Two farms, the Crane place and the Hollis place, and a brook between them that's been moving for forty years, and every time it moves, one of them gains a field and the other loses one. They've been to law four times. They've had the magistrate out. Last month Abel Crane put a new fence up in the night and Marten Hollis's lads pulled it down in the morning, and there was a broken arm over it." He turns his tankard round in his big hands. "My sister's married to a Hollis. I'm going there now, to help with the tupping and to keep my brother-in-law from doing something stupid."
+
+      He glances at Ketta, who is listening with an expression of polite disbelief, and back to you. "The magistrate, Thurlow, he's said he'll settle it for good if anyone can show him where the true line runs. The old map's burned, and the man who drew it's dead. Thurlow's offered a fee. Not a big one. But it'd be work, and you'd be fed, and you'd be doing a kindness to a valley that badly needs one."
+
+      Under the table the grey dog has come down the room after all and is sniffing, with great interest, at the hem of your coat.
+  - user: |
+      I let the dog sniff my hand. "What's his name?" Then to Gethin: "Where does the road to Stonyford leave this one?"
+    narrator: |
+      "Sully," says Gethin, and the dog's tail thumps the floor at the sound of it. "He likes you. He doesn't like anybody. That's worth something, in my book." He jerks a thumb eastward, as though he could point through the wall. "Day after tomorrow, past Aldbury Cross, there's a drovers' road goes off north over the downs. Two days' walk on that and you come down into the Stony valley. I'll be on it myself. If you're minded to come, you'd be welcome to walk with me and Sully. It's no road to walk alone, the downs, not this time of year. The mist comes down like a lid."
+
+      Ketta speaks for the first time in a while. "I know Gethin Moss," she says to you, in the tone of a woman giving a reference for a horse. "He's honest, he's slow and he snores. You could do worse on the downs." To Gethin, more sharply: "And you'll not talk her ear off about tupping the whole way."
+
+      Gethin grins and raises his tankard to her. "I'll be at the Cross the day after tomorrow, at first light, by the stone. If you're there, you're there." He whistles once and Sully goes back up the room to him, and he goes back to the end of the bar, and does not look at your brass case again for the rest of the evening.
+  - user: |
+      The next morning I ask Ketta, while she harnesses the horses, what she knows about the magistrate, Thurlow.
+    narrator: |
+      Ketta buckles a girth and thinks about it. "Thurlow. Old family, older than the church. He's a fair man, they say, but a proud one, and he hates being made a fool of. He had the Crane and Hollis business in front of him three years ago, decided it one way, and the brook moved again the next spring and made his judgement nonsense. He's never forgiven the brook." She pulls the strap tight. "If you go, don't tell him he was wrong. Tell him the water was."
+
+      The second day is longer and emptier. The ridges become the edge of the downs, big bare green shoulders of land with sheep scattered across them like grain, and the road climbs and dips over them in long patient curves. Ketta talks a little, about her husband, who was a carrier too and died of a fever in the year of the floods, about her son, who went for a soldier and writes twice a year. She asks you nothing about yourself at all, which is restful.
+
+      Toward evening you come down a long hill into Aldbury Cross: a market cross of grey stone at a meeting of five roads, an inn with a painted sign of a wheatsheaf, a forge, a pound with two strayed heifers in it. Ketta draws up in front of the inn, and a stout woman in a white cap comes out wiping her hands, crying out Ketta's name in a voice that sets the heifers bawling.
+  - user: |
+      I climb down, stiff from the bench, and take my pack and the brass case. "Ketta, what do I owe you for the two days?"
+    narrator: |
+      "The Guild paid me to the Cross. Your Mister Dallow, very particular about it." Ketta climbs down more slowly, one hand on the wheel. "So you owe me nothing but a good word to anyone going east who asks for a carrier." She looks at you a moment, in the yellow light from the inn door. "And you might tell me, since we're parting, whether I was right. About the long way round."
+
+      The stout woman, who turns out to be Mother Ainsley and the keeper of the Wheatsheaf, does not wait for an answer. She seizes Ketta, then the pack, then you, and sweeps all three inside into a low warm room smelling of bread and woodsmoke and roasting mutton, with a fire you could stand up in and settles round it full of drovers and carters and a tinker asleep with his mouth open.
+
+      "A bed for the lady, Ainsley, and the good one, not the one over the stable," says Ketta. She sits down by the fire with the air of a woman who has earned it. Across the room, by the window, Gethin Moss is eating a pie the size of a hat, with Sully's chin on his knee, and he lifts his fork to you in greeting without stopping.

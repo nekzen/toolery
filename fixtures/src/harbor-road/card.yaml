@@ -23,7 +23,9 @@ knows_name: [Hesper]
 npc_names: [Hesper, Quill, Dunmore, Tobin, Ilsa, Pim, Odo, Bishop, Avel,
             Hale, Corwin, Wenna, Bramble, Tane, Brannoch, Pask,
             Dallow, Osric, Nell, Harrow, Sabel, Penhale, Jory, Tam, Hob,
-            Fitch, Marrot, Lise, Rudd, Ketta]
+            Fitch, Marrot, Lise, Rudd, Ketta,
+            Gethin, Moss, Sully, Ainsley, Bel, Ashby, Thurlow, Crane, Hollis,
+            Abel, Marten, Joby, Corbett, Pryor]
 
 # Facts established early, for retention probes.
 anchors:

@@ -1,0 +1,58 @@
+# Down into the Stony valley. The magistrate, and the two farmers who have
+# been at law for forty years. Thurlow wants a name for the record; he does
+# not get one.
+turns:
+  - user: |
+      In the morning I thank the Ashbys, give Bel one of my spare pencils for keeping the flock, and walk on with Gethin and Sully. "Tell me about Thurlow before we get there."
+    narrator: |
+      Bel takes the pencil as if it might bite her, then puts it behind her ear the way she must have seen you do it, and does not take it out again while you are in sight. Tom Ashby stands in the doorway on his crutch and shouts after you that if the Hollises give you any trouble you are to tell them Tom Ashby of Fernhill said so, which seems to settle something for him.
+
+      The mist has lifted overnight into a high grey sky. Gethin walks for a long while before he answers. "Thurlow. Squire Thurlow, they call him in the valley, though he's no more a squire than I am. Owns the big house at the head of the valley and most of the water meadows, and sits on the bench at Stonyford every second Tuesday. Clever. Reads books in Latin, they say, for pleasure." He spits thoughtfully into the grass. "Doesn't like being told things. Likes to be shown them, so he can say he found them himself. You'll want to remember that."
+
+      By noon the track begins to drop off the north side of the downs, and the Stony valley opens below you: a long green trough between bare hills, a church, a straggle of grey roofs, a mill, and a stream, glinting, wandering in loops across a flat floor of meadows like a dropped thread. Even from up here you can see the scars of old courses, pale crescents in the grass where water used to run.
+  - user: |
+      I stop on the brow, get out my notebook and sketch the shape of the valley floor and the old courses while the light is flat.
+    narrator: |
+      Gethin sits on a tussock with his crook across his knees and lets you work. Sully lies down beside him with a groan. From up here, with the grey light taking the shadows off everything, the old courses show better than they ever will from the ground: three, four, five pale crescents, some sharp, some so faint you are not sure you are not imagining them, looping back and forth across the floor of the valley on either side of the present stream.
+
+      One of them is not a crescent at all. It runs dead straight for a furlong from a point just below the church, along the foot of the eastern slope, through a line of pollarded willows, to the mill. Too straight for water to have made.
+
+      "That's the leat," says Gethin, following your pencil. "Hollis mill. And that bit there," he points to a broad loop below the leat that swings close under a group of farm buildings on the western side, "that's where the brook ran when I was a boy, right under the Crane yard. And there, see that big field with the new posts in it? That's the one they're fighting over now." The new posts are a raw yellow line across the green, some standing, some lying flat in the grass as though they had been pushed over.
+  - user: |
+      I close the notebook. "Let's go down. I'd like to see the magistrate before either of the farmers hears I'm here."
+    narrator: |
+      "Too late for that," says Gethin cheerfully, and points down the hill with his crook.
+
+      A boy on a pony is already halfway up the track toward you, kicking it on, and behind him, at the bottom of the hill by the first cottages, a small knot of people has gathered to stare up at the two figures and the dog on the skyline. "Valley's got eyes," Gethin says. "They'll have seen your case from the church tower. By supper everybody from here to the mill will know there's a surveyor come over the down, and half of them will have decided whose side you're on."
+
+      The boy pulls up in front of you, red-faced and breathless, and blurts out his message in one go, as though he has been rehearsing it all the way up: "Squire Thurlow's compliments and if the surveyor's come about the Stony, he'll see her at the house now, before she speaks to anyone, and would she please not speak to anyone, especially not Mr. Crane or Mr. Hollis, sir, madam." He goes redder. "That's all."
+  - user: |
+      "Thank you. Tell Squire Thurlow I'll come directly." To Gethin: "Will you come with me, or go on to your sister?"
+    narrator: |
+      Gethin looks down the hill toward the cottages and back at you, and scratches Sully's ears. "I'll come as far as his gate. He doesn't care for drovers in his parlour, and I'd as soon not be seen walking in with you, for your sake. If the Hollises think you came over the down with Marten's brother-in-law, they'll take you for theirs, and the Cranes will never believe a word you say." He stands up. "After, come to the Hollis farm, the one by the mill. My sister'll feed you whatever you say to Thurlow."
+
+      Thurlow's house stands at the head of the valley, where the stream comes out of the chalk: a long grey building, older than it pretends to be, with a newer front stuck onto it and a walled garden. Gethin leaves you at the gate with a nod, and Sully looks back at you twice as they go off down the lane.
+
+      A maid shows you through a hall full of dark portraits and fishing rods into a library, warm and book-lined, where a man of sixty in a velvet coat is standing at a table covered with old maps, weighted at the corners with books. He is tall and thin and grey, with a long clever face and spectacles pushed up onto his forehead. He looks at your brass case first, and then at you. "You came over the down," he says. "In the mist. With Gethin Moss, who is Marten Hollis's brother-in-law. Sit down, please. Tell me why I should trust a word you say."
+  - user: |
+      I sit and set the case across my knees. "You shouldn't, Squire, not until you've seen the work. Gethin walked me over the down because it's no road to walk alone. I've met neither farmer. Show me what you have, and I'll tell you what it can and can't prove."
+    narrator: |
+      Thurlow looks at you over his spectacles for a long moment. Then, unexpectedly, he smiles, a thin and rather sour smile. "That," he says, "is the first sensible thing anyone has said to me about the Stony in five years." He pulls the spectacles down onto his nose and turns the maps on the table toward you.
+
+      There are four of them. The oldest, on brown parchment cracked along the folds, shows the valley as a few strokes of ink and a brook drawn as a ruler-straight line from the church to the mill. The second, a hundred years younger, has the brook wandering in loops and the farms marked with little houses. The third is a lawyer's plan of the Crane property, neatly coloured, with the brook running along the edge of the yard. The fourth is a rough sketch, much rubbed out, in pencil, with a burn-mark across one corner.
+
+      "My grandfather's survey, made by a man named Corbett, who drew the true line." Thurlow taps the fourth. "The only copy. The rest went in a fire at the Crane house twelve years ago. A convenient fire, some said. This is what survived." He takes his spectacles off again. "I need someone to tell me where this line runs on the ground today. I'll need a name for the record, too, at the hearing. The bench writes down who gave evidence."
+  - user: |
+      "You'll have my evidence, Squire, measured and signed with my mark. My name I keep to myself, for reasons that have nothing to do with the Stony. If the bench can't take evidence on those terms, I'll walk back over the down tonight."
+    narrator: |
+      Thurlow's eyebrows go up, slowly. For a moment you think he will be offended; he has the look of a man who has not been refused anything in his own library in a very long time. Then he laughs, a short surprised bark.
+
+      "Good God. A woman who'll walk over the downs in January rather than give her name to a country magistrate." He shakes his head. "The bench will take evidence from 'the surveyor', so long as the surveyor stands up in front of it and answers questions. I've had worse. I've had a witness who gave his name as the Archangel Gabriel, and he was sober." He waves a long hand. "Keep it. It's no business of mine. I'm rather more interested in whether you can read Corbett."
+
+      He slides the burned pencil sketch across the table to you. Up close, it is the work of a careful hand: a baseline, triangles, bearings in a tiny script, distances in chains and links. And at the bottom, half lost in the scorch mark, a note: "Line of the boundary taken along the old water, from the Church Stone to the Mill Stone, as the brook ran in Lady Day 17—." The rest of the year is burned away.
+  - user: |
+      I study the sketch carefully, comparing Corbett's bearings to the shape I drew from the brow. "Squire, where are the Church Stone and the Mill Stone? Do they still stand?"
+    narrator: |
+      Thurlow sits back in his chair and steeples his fingers, looking very pleased with himself, and with you, and most of all with the question. "That," he says, "is the second sensible thing. The Church Stone stands. It's a boundary stone in the churchyard wall, with a cross cut in it, older than the church. Everybody in the valley knows it." He pauses. "The Mill Stone, nobody's seen for thirty years. It was supposed to be by the mill race. When the Hollises dug out the leat, it vanished. Marten Hollis says it was never there. Abel Crane says Marten's father broke it up and used it for the mill steps."
+
+      He gets up and goes to the window, which looks down the whole length of the valley, the stream glittering in its loops through the meadows. "If you can find where that stone stood, you can lay Corbett's line on the ground, and I can settle this before somebody gets killed over a field of wet grass." He turns. "You'll want a chain and two men to carry it, and a horse, and somewhere to sleep that isn't either farm. I can give you all four. When do you want to begin?"
