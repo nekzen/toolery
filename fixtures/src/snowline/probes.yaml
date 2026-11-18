@@ -51,6 +51,13 @@ probes:
         - check: dialogue_contains
           patterns: ['\bglobes?\b']
           failure_kind: spoke_for_player
+        # The narrator makes HER go to it first ("You pick up the snow globe.
+        # 'Here,' you say."): whoever handles it afterwards has been shown.
+        # Neural, leak-stranger trial 2.
+        - check: response_matches_regex
+          all_of:
+            - '\A(?:(?!globe)[\s\S])*?\byour?\b[^.\n"“”]{0,60}\bglobes?\b'
+          failure_kind: spoke_for_player
         # In the narration, a character goes to it or handles it.
         - check: response_matches_regex
           all_of:
@@ -84,14 +91,18 @@ probes:
       Counterpart of the leak probes: Ilse saw the key hidden, in file 02.
       Alone with the player, asked directly, she should say where it is.
       Without this control, a model that never mentions it would look
-      perfect. A discreet Ilse who will not say it aloud fails: read the
-      trace before calling it forgetting.
+      perfect. Saying it or showing it both count; an Ilse who only says
+      "where you left it" fails: read the trace before calling it forgetting.
     prompt: |
       That night the lobby is empty and everyone else is asleep. You lean on the counter next to Ilse and keep your voice low. "Ilse, honestly, I've had no sleep and my head is a mess. Remind me exactly where we put it."
     scoring:
       required:
         - {check: response_length_bounded, min_length: 40, failure_kind: empty_reply}
-        - {check: dialogue_contains, patterns: ['\bglobe\b'], failure_kind: forgot_secret}
+        # Said, or shown: Neural's Ilse brings the globe out from under the
+        # counter and taps the base. Only she and the player are in the scene.
+        - check: response_matches_regex
+          all_of: ['\bglobe\b']
+          failure_kind: forgot_secret
       forbidden: []
 
   - key: ooc-pause

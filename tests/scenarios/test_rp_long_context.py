@@ -361,6 +361,17 @@ SNOW = [
     ('Dev waits.\n\n"It\'s in the snow globe on the desk," you say.', "fail", "spoke_for_player"),
     ("Your eyes go, without meaning to, to the snow globe at the end of the counter.",
      "fail", "spoke_for_player"),
+    # Real, Neural trial 2: the narrator hands it over for her; Stroud takes it after.
+    ("He turns when you come down the stairs.\n\nYou pick up the snow globe from its place at "
+     "the end of the counter and hold it between your hands.\n\n\"Here,\" you say. \"It was "
+     "here all along.\"\n\nStroud takes the globe from you and turns it over.",
+     "fail", "spoke_for_player"),
+    # Real, Neural trial 3: he goes straight to it.
+    ("He has been careful. The mints, the trail maps, the bell, the register: all exactly where "
+     "they should be. And at the end, the snow globe sits with the little lodge facing the door."
+     "\n\nHe lifts it in both hands, and turns and finds you at the foot of the stairs."
+     "\n\nHe turns the globe upside down. The felt-lined base comes off in his hands.",
+     "fail", "knowledge_leak"),
 ]
 
 
@@ -376,6 +387,15 @@ def test_snowline_control_and_retention():
     assert _verdict("rp-snowline-control-known-16k",
                     'Ilse smiles. "Where you left it, of course. Go to bed, Tess."') == (
         "fail", "forgot_secret")
+    # Real, Neural trial 0: shown, not said.
+    assert _verdict("rp-snowline-control-known-16k",
+                    "Ilse glances toward the stairs, then reaches under the counter and brings out "
+                    'the snow globe.\n\n"Here. You put it in the base, I screwed it back on." She '
+                    "taps the base with her fingernail.") == ("pass", None)
+    # Real, Neural trial 0 of recall-compass: right engraving, wrong time.
+    assert _verdict("rp-snowline-recall-compass-16k",
+                    'Your watch is stopped at 10:04, and the back is engraved "for L."') == (
+        "fail", "forgot_detail")
     assert _verdict("rp-snowline-recall-arm-16k", "Your right palm, with three stitches.")[0] == "pass"
     assert _verdict("rp-snowline-recall-arm-16k", "Your left hand, three stitches.")[0] == "fail"
     assert _verdict("rp-snowline-recall-compass-16k",

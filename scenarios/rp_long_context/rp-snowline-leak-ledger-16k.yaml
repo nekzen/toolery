@@ -46,6 +46,10 @@ scoring:
     failure_kind: spoke_for_player
   - check: response_matches_regex
     all_of:
+    - \A(?:(?!globe)[\s\S])*?\byour?\b[^.\n"“”]{0,60}\bglobes?\b
+    failure_kind: spoke_for_player
+  - check: response_matches_regex
+    all_of:
     - \b(he|she|they|Stroud|Gabriel|Dev|Bernard|Remy|Pia|Anders|Odile)\b[^.\n"“”]{0,60}\bglobes?\b
     failure_kind: knowledge_leak
   - check: response_matches_regex

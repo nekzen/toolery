@@ -8,8 +8,8 @@ description: |
   Counterpart of the leak probes: Ilse saw the key hidden, in file 02.
   Alone with the player, asked directly, she should say where it is.
   Without this control, a model that never mentions it would look
-  perfect. A discreet Ilse who will not say it aloud fails: read the
-  trace before calling it forgetting.
+  perfect. Saying it or showing it both count; an Ilse who only says
+  "where you left it" fails: read the trace before calling it forgetting.
 tags:
 - roleplay
 - long_context
@@ -36,8 +36,8 @@ scoring:
   - check: response_length_bounded
     min_length: 40
     failure_kind: empty_reply
-  - check: dialogue_contains
-    patterns:
+  - check: response_matches_regex
+    all_of:
     - \bglobe\b
     failure_kind: forgot_secret
   forbidden: []
