@@ -697,7 +697,18 @@ _PLAYER_BEAT = re.compile(r"\s*(?:I|You)\s")
 _REQUEST = re.compile(r"\bplease\b|^\s*(?:your\s+)?name\b", re.IGNORECASE)
 
 
-def _dialogue(text: str, self_introduction: bool = True) -> list[tuple[str, bool]]:
+def _introduces_player(line: str, player_name: re.Pattern | None) -> bool:
+    """A self-introduction marks the player's line. With `player_name`, only
+    when the name introduced is hers: "My name is Gair Venn", "I'm Edrin
+    Venn" are characters presenting themselves (Pale-Sonneteer, Magistral)."""
+    for m in _SELF_INTRODUCTION.finditer(line):
+        if player_name is None or player_name.search(line[m.end() - 1:m.end() + 30]):
+            return True
+    return False
+
+
+def _dialogue(text: str, self_introduction: bool = True,
+              player_name: re.Pattern | None = None) -> list[tuple[str, bool]]:
     """(spoken line, is it the player's?) for every quoted span.
 
     A line is the player's when it carries a you/I speech tag, when it is a
@@ -725,7 +736,7 @@ def _dialogue(text: str, self_introduction: bool = True) -> list[tuple[str, bool
             player = bool(
                 _PLAYER_TAG_AFTER.search(paragraph[m.end():m.end() + 40])
                 or _PLAYER_TAG_BEFORE.search(paragraph[max(0, m.start() - 60):m.start()])
-                or (self_introduction and _SELF_INTRODUCTION.search(line)))
+                or (self_introduction and _introduces_player(line, player_name)))
             if bare and not player and prev is not None and (prev[1] or prev[2]):
                 player = not prev[0]
             # An answer followed by the player's own action, with no speech
@@ -756,8 +767,9 @@ def check_dialogue_contains(calls, chk, response):
     `case_sensitive: true`. With `exclude_player: true` the lines the narrator
     gives to the player ("...," you say) do not count, nor does anything said
     after the player has said it herself. `only_player: true` is the reverse:
-    only the lines given to the player count. The detail quotes the line as
-    proof."""
+    only the lines given to the player count. `player_name` (a regex) limits
+    the self-introduction rule to lines introducing HER name. The detail
+    quotes the line as proof."""
     if response is None:
         return _bad("dialogue_contains", "no response")
     d = chk.model_dump()
@@ -766,7 +778,9 @@ def check_dialogue_contains(calls, chk, response):
     only_player = bool(d.get("only_player", False))
     # "I'm X" marks the player when X is HER name (the leak probes look for
     # it); on its own it is just as often a character introducing himself.
-    lines = _dialogue(response, self_introduction=not only_player)
+    name = d.get("player_name")
+    lines = _dialogue(response, self_introduction=not only_player,
+                      player_name=re.compile(str(name), re.IGNORECASE) if name else None)
     if only_player:
         lines = [(s, p) for s, p in lines if p]
     proof: list[str] = []
