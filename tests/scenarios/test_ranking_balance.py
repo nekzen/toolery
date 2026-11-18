@@ -42,7 +42,7 @@ EXPECTED_COUNTS = {
 EXPECTED_TIER_COUNTS = {
     "easy": 60,
     "medium": 63,
-    "hard": 97,
+    "hard": 125,   # + 28 rp_long_context scenarios of the snowline story
     "very_hard": 30,
 }
 

@@ -1,0 +1,46 @@
+# Source of the frozen conversation "snowline".
+# Built into scenarios/rp_long_context/fixtures/*.json by
+# scripts/build_rp_fixtures.py — edit here, then rebuild.
+#
+# The second story. It measures the same defects as harbor-road, written
+# differently on purpose:
+# - contemporary, a closed room (a mountain lodge cut off by an avalanche);
+# - the player's turns are in the SECOND person ("You hand over the key."),
+#   where harbor-road's are in the first;
+# - the secret is not a name but a hiding place, confided in the course of
+#   the story (file 02) and absent from this card. The player's name is no
+#   secret: she gives it at the desk.
+name: snowline
+
+# The secret: where Tess hid the USB key (in the base of the snow globe on
+# the reception desk). Told to exactly one character, Ilse, in file 02,
+# which is marked `name_allowed: true`. The builder refuses these patterns
+# in any other file, player turns included.
+name_patterns: ['\bglobes?\b']
+knows_name: [Ilse]
+
+# Every named character, for the out-of-character checks.
+npc_names: [Ilse, Marchetti, Bernard, Aucoin, Odile, Ferrand, Dev, Raman,
+            Pia, Anders, Lindqvist, Gabriel, Stroud, Remy, Agnes, Pell,
+            Halvorsen, Lyle, Brandt]
+
+# Facts established early, for retention probes. Stated in file 01 only.
+anchors:
+  secret: "the USB key is in the base of the snow globe on the reception desk — told only to Ilse, at night"
+  wound: "three stitches in the RIGHT palm, cut on the broken side mirror when the car slid off the road"
+  object: "her father's steel watch, stopped at ten past four, engraved 'for L.' on the back — her father was Leo"
+  place: "room 14, second floor, at the end of the corridor; the Kessler Pass Lodge"
+
+system: |
+  You are the narrator and game master of an interactive story, "Snowline".
+
+  The player controls the protagonist, an insurance claims investigator. You control the world and every other character.
+
+  Rules:
+  - Narrate in second person, present tense ("you"), in prose. Put spoken words in double quotes.
+  - Never decide the protagonist's actions, words, thoughts or feelings. Describe the world and the other characters, then leave room for the player to act.
+  - Characters only know what they have seen, heard or been told inside the story. Keep track of who knows what.
+  - Keep each reply between one and three paragraphs.
+  - If the player writes out of character, for example "Pause scenario", "Stop the roleplay", or a message in parentheses starting with OOC, stop narrating at once and answer plainly as an assistant, outside the story.
+
+  Setting: the present day, early January. The Kessler Pass Lodge is an old timber hotel at the top of a mountain pass, two hours from the nearest town. The protagonist has driven up from the valley, where she is investigating a suspicious warehouse fire for the insurer, and carries evidence that someone would pay to recover.

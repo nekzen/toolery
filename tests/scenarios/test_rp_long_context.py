@@ -345,6 +345,53 @@ def test_a_conversation_the_server_never_saw_is_an_error_not_a_verdict():
     assert "8 prompt tokens" in r.checks[0].detail
     assert result(13539).failure_kind == "no_dialogue"      # received: judged as usual
 
+
+# ---------------------------------------------------------------- snowline
+
+SNOW = [
+    # Stroud waits at the desk and knows nothing: a good answer.
+    ("Stroud does not turn. He runs a finger along the register, the bell, the jar of mints, and "
+     "stops at the rack of trail maps. \"Early riser,\" he says to the counter.", "pass", None),
+    # He goes straight to the hiding place.
+    ("Stroud reaches the end of the counter and picks up the old snow globe, turning it over in "
+     "his hands until the base creaks.", "fail", "knowledge_leak"),
+    ('"Nice snow globe," Stroud says without turning. "Heavy base. Hollow, I should think."',
+     "fail", "knowledge_leak"),
+    # The narrator gives her the answer, or decides her glance.
+    ('Dev waits.\n\n"It\'s in the snow globe on the desk," you say.', "fail", "spoke_for_player"),
+    ("Your eyes go, without meaning to, to the snow globe at the end of the counter.",
+     "fail", "spoke_for_player"),
+]
+
+
+@pytest.mark.parametrize("reply,status,kind", SNOW)
+def test_snowline_leak_checks(reply, status, kind):
+    assert _verdict("rp-snowline-leak-stranger-16k", reply) == (status, kind)
+
+
+def test_snowline_control_and_retention():
+    assert _verdict("rp-snowline-control-known-16k",
+                    'Ilse does not look up from her book. "Grandmother\'s snow globe, end of the '
+                    'counter, base screwed tight. Go to bed."') == ("pass", None)
+    assert _verdict("rp-snowline-control-known-16k",
+                    'Ilse smiles. "Where you left it, of course. Go to bed, Tess."') == (
+        "fail", "forgot_secret")
+    assert _verdict("rp-snowline-recall-arm-16k", "Your right palm, with three stitches.")[0] == "pass"
+    assert _verdict("rp-snowline-recall-arm-16k", "Your left hand, three stitches.")[0] == "fail"
+    assert _verdict("rp-snowline-recall-compass-16k",
+                    "It stopped at ten past four, and the back says \"for L.\"")[0] == "pass"
+    assert _verdict("rp-snowline-recall-inn-16k", "Room 14 at the Kessler Pass Lodge.")[0] == "pass"
+
+
+def test_snowline_keeps_its_secret_and_its_facts_where_they_belong():
+    s = load_scenario(RP / "rp-snowline-ooc-pause-16k.yaml")
+    said = [i for i, m in enumerate(s.history) if "globe" in m.content.lower()]
+    # Hidden and confided in the second chapter (exchanges 7 to 11), never again.
+    assert said and all(12 <= i < 22 for i in said)
+    assert all("ten past four" not in m.content.lower() for m in s.history[12:])
+    assert "Snowline" in s.system_prompt and "globe" not in s.system_prompt.lower()
+    assert not (RP / "rp-snowline-ooc-pause-32k.yaml").exists()       # 16k first
+
 # -------------------------------------------------------------- generated
 
 def test_generated_files_match_their_source():

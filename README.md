@@ -710,6 +710,13 @@ harbor-road, the first, keeps `rp-<probe>-<length>` (`ids_include_story:
 false`) so its stored results stay comparable. `rp-report` prints one table
 per model and story.
 
+The second story, `snowline` (16k and 8k only), measures the same defects
+written differently: a contemporary closed room, the player's turns in the
+second person, and a secret that is a hiding place confided in the course of
+the story, absent from the system prompt. Its probes keep harbor-road's keys
+so the tables compare line by line; `control-known`'s failure there is
+`forgot_secret`.
+
 ## Ranking dimensions
 
 `toolery rankings --dimension <name>` and the Rankings tab in the TUI

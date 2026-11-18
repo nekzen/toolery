@@ -1,0 +1,48 @@
+# Arrival. The retention facts are stated here and never again: the RIGHT
+# palm (three stitches), the watch stopped at ten past four engraved
+# "for L." (her father Leo), room 14 on the second floor.
+turns:
+  - user: |
+      You shoulder the door open against the wind and stamp the snow off your boots on the mat. Blood is dripping from your hand onto the floorboards. "Sorry about the mess. My car's in the ditch half a mile down. Is anyone here?"
+    narrator: |
+      The lobby of the Kessler Pass Lodge is a long room of dark pine, lit by a fire that has burned down to red coals and a row of brass lamps along the reception desk. Antlers over the hearth, a rack of old wooden skis by the door, a smell of woodsmoke and wet wool. The wind keeps leaning on the windows as if it means to come in after you.
+
+      A woman in her forties comes through a door behind the desk, drying her hands on a dish towel. She has dark hair cut short, reading glasses pushed up on her head, and the steady look of someone who has handled worse than a bleeding stranger at nine at night. She sees your hand and drops the towel on the counter.
+
+      "Here. Sit." She pulls a chair out from the wall by the fire. "I'm Ilse, I run the night desk. Don't drip on the rug, it's older than me." She is already reaching under the desk for a first-aid box. "Is it just the hand, or did you hit your head too? People who go in the ditch on this road usually hit something."
+  - user: |
+      You sit and hold your right hand up, palm open. A gash runs across it below the fingers. "Just the hand. The side mirror snapped off when I slid, and I grabbed it like an idiot. I didn't hit my head."
+    narrator: |
+      Ilse kneels in front of you and turns your right hand toward the lamp. The cut runs across the palm, clean but deep, and it opens when you flex your fingers. She presses a wad of gauze into it and folds your fingers over it.
+
+      "Hold that. Hard." She stands and goes to the foot of the staircase. "Odile! Are you still awake? I've got one for you."
+
+      A door opens upstairs and a small white-haired woman in a cardigan comes down, one hand on the banister, a leather bag in the other as though she had been expecting the call. "I am seventy-three years old, Ilse, I am always awake." She sits on the hearth stones in front of you and peels back the gauze with quick, unbothered fingers. "Dr. Ferrand. Retired, but my hands are not. This wants stitches, three I think. I have lidocaine, if you are not one of those people who faint."
+  - user: |
+      You glance at the needle, then look away at the fire. "Go ahead. I won't faint. Thank you, Doctor."
+    narrator: |
+      Odile works quickly. The lidocaine stings and then the palm goes numb and distant, as though it belongs to someone else. She puts in three neat stitches across your right palm, ties them off, and wraps the hand in a white bandage that leaves your fingers free.
+
+      "Three," she says, snipping the thread. "Keep it dry. No gripping anything for a week, and that includes steering wheels and mirrors." She notices your left wrist as she packs her bag: a heavy steel watch on a worn leather strap, its hands stopped. "Your watch has died, I think. It says ten past four."
+
+      Ilse brings a mug of tea and sets it on the hearth beside you. "On the house, for bleeding on my floor. When you can hold a pen, I'll need you to sign in. We've rooms, God knows. Nobody comes up the pass in January if they can help it."
+  - user: |
+      You turn your wrist to look at the watch. "It stopped years ago. It was my father's, Leo. My mother had 'for L.' engraved on the back the year they married. I just wear it." You stand and go to the desk with your tea. "I'll sign in now. Tess Morrow. Just the one night, hopefully."
+    narrator: |
+      Odile pauses on the stairs with her bag. "Then it is not broken, it is keeping somebody's time," she says. "Ten past four. Good night, Ms. Morrow." She nods to both of you and goes up to bed, and a door closes softly on the floor above.
+
+      Ilse opens a leather-bound register on the counter and turns it to face you. "Morrow. Tess." She writes the name herself, to spare your bandaged hand, then takes a key with a heavy brass tag from the board behind her. "Fourteen. Second floor, at the end of the corridor, past the ice machine that doesn't work. It's the warmest room in the house because it's over the kitchen. Breakfast from seven, if the cook makes it up the hill, which he won't." She pauses. "Do you have bags in that car? Because I'm not sending anybody down the road for them tonight."
+  - user: |
+      You lift the leather satchel hanging from your shoulder. "This is all I need tonight. The rest can wait." You keep a hand on the satchel strap. "Is there a phone? My cell has had no signal since the second switchback."
+    narrator: |
+      "There's a landline in the office, and a payphone in the hall that hasn't taken coins since 1998." Ilse lifts the hinged flap of the counter. "Office is through here. Dial nine for outside. It works when the wind lets it."
+
+      The office is a narrow room crowded with filing cabinets, a space heater ticking under the desk, and a corkboard covered with road reports and a laminated avalanche map of the pass. The phone is an old beige thing with a curly cord. When you lift the receiver there is a dial tone, faint and scratchy, as though the line runs a very long way through snow.
+
+      Ilse stays in the doorway with her arms folded, not hovering, but not leaving either. "If you need the tow service, it's Halvorsen's in town, and they won't come before the plough does. If it's anything else," she adds, "the walls in this place are thick and I don't listen at doors."
+  - user: |
+      You dial a number from memory and wait. After a while you hang up. "Voicemail." You turn to Ilse. "Who else is staying here tonight?"
+    narrator: |
+      Ilse counts on her fingers. "Odile, who you've met. She's here every winter, writing a book she won't let anyone read. A Swedish couple, the Lindqvists, Pia and Anders, honeymoon, God help them, in January. Bernard, who owns the place, asleep in the back since eight. Remy, our kitchen boy, sixteen, who'll be eating cereal in the pantry at midnight. And me." She shrugs. "That's the Kessler Pass Lodge in winter. Six people and a lot of empty rooms."
+
+      She switches off the office light and walks you back to the foot of the stairs. Outside, the wind has picked up into a long, low howl, and somewhere above the roofline something creaks and settles. "That's just the snow on the roof," she says. "You get used to it. Or you don't, and you leave in the morning." She hands you the brass key to room fourteen. "Anything else before I lock the front door?"

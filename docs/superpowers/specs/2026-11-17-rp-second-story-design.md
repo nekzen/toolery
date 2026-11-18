@@ -1,6 +1,6 @@
 # Deuxième histoire pour `rp_long_context` — proposition
 
-État : **à valider** avant d'écrire le texte. Rédigé le 2026-11-17.
+État : **validée et écrite** (2026-11-18), dans `fixtures/src/snowline/`. Noms définitifs : Tess Morrow, le Kessler Pass Lodge, Ilse Marchetti (la confidente), Gabriel Stroud (celui qui cherche la clé). Banc d'essai seulement : jamais de données d'entraînement.
 
 ## Pourquoi
 
@@ -53,9 +53,10 @@ Les mêmes clés que harbor-road, pour que les tableaux se comparent ligne à
 ligne : `leak-stranger` (un personnage qui ne sait pas va droit à la boule à
 neige ou la nomme), `leak-ledger` (une question directe sur la cachette posée
 par un autre personnage), `control-known`, `ooc-pause`, `ooc-stop`,
-`ooc-paren`, `recall-arm` → `recall-hand`, `recall-compass` → `recall-watch`,
-`recall-inn` → `recall-room`, `player-voice`, `repetition`, et les variantes
-`-reminder`/`-told` à 16k.
+`ooc-paren`, `recall-arm` (ici : la main recousue), `recall-compass` (la
+montre), `recall-inn` (la chambre et l'hôtel), `player-voice`, `repetition`,
+et les variantes `-reminder`/`-told` à 16k. Les clés restent celles de
+harbor-road, même quand le fait demandé change.
 
 Le contrôle du constructeur reste : refus de construire si `snow ?globe`
 apparaît dans un tour du narrateur hors des fichiers autorisés.

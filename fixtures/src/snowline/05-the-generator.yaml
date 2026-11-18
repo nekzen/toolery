@@ -1,0 +1,51 @@
+# Evening: the power fails, the generator in the cellar has to be started,
+# and in the dark someone goes through the office. Ilse comes on shift.
+turns:
+  - user: |
+      You spend the afternoon by the fire with a book you don't read, keeping the stairs and the desk in view. When it starts to get dark, you go to the window to look at the snow.
+    narrator: |
+      Outside, the light is going blue. The snow has stopped falling and lies over everything in deep, smooth drifts that bury the porch rail and round off the shapes of the cars in the lot into soft white hills. Dev's plough sits at the edge of the lot like a sleeping animal, its blade furred with ice. Beyond it, the road simply ends in white. There is no sound at all.
+
+      Behind you the lodge is filling with its evening noises: Remy banging pots in the kitchen, the clink of Bernard setting out glasses in the bar, Pia laughing at something her husband said. Stroud has moved to a leather armchair near the bar, a glass of whisky on the table at his elbow, and is talking quietly with Anders Lindqvist about skiing in the Alps.
+
+      Then every light in the building goes out at once. The hum of the refrigerators stops. In the sudden dark there is only the red glow of the fire, and Pia's voice saying, "Oh!" and from somewhere upstairs, Odile calling, perfectly calm, "Bernard, the power."
+  - user: |
+      You stay where you are, your back to the window, and let your eyes adjust to the firelight. You count the shapes you can see in the room.
+    narrator: |
+      In the firelight the lobby turns to shadows and orange edges. You can make out Pia and Anders together by the bar, Pia's pale plait, Anders's glasses catching the glow. Remy appears in the kitchen doorway with a lit candle, his face young and alarmed above it. Bernard is coming around the end of the desk with a big rubber flashlight, swearing under his breath in French.
+
+      The leather armchair by the bar is empty. The whisky glass is still on the table beside it.
+
+      "Generator," Bernard announces to the room. The flashlight beam swings across the ceiling. "It's in the cellar. It starts, eventually, if you talk to it nicely. Remy, candles in the dining room, the box under the sink. Dev!" he calls toward the dining room. "I need a strong arm on the pull cord." There is no answer from the dining room. The beam swings that way and finds an empty table, a radio, a map. "Dev?"
+  - user: |
+      You cross to Bernard. "I'll come with you to the cellar. I can hold the light, at least." You keep your voice even. "Where's Gabriel?"
+    narrator: |
+      "Bathroom, I hope, and not falling down the stairs in it." Bernard hands you the flashlight, which is heavy and reassuring in your left hand. "Mind the third step, it moves."
+
+      The cellar door is off the kitchen passage. The stairs are steep and wooden, and the air below is cold and smells of earth, diesel and apples. Your beam picks out shelves of preserves, stacked firewood, a chest freezer, and in the far corner the generator: a squat green machine on a concrete plinth, with a red fuel can beside it.
+
+      Bernard primes it, sets the choke, and yanks the cord. It coughs and dies. He yanks again. A third time. On the fourth, it catches with a roar that fills the cellar, and a bare bulb over the stairs flickers and comes on. Above your heads, through the floorboards, you hear the refrigerators shudder back to life. Bernard straightens up, breathing hard, and wipes his hands on his trousers. "There. Talk to it nicely." Then he frowns past you at the cellar stairs. "That's odd. I'd have sworn I heard the office door."
+  - user: |
+      You go back up the cellar stairs quickly, the flashlight in your hand, and head straight for the office.
+    narrator: |
+      The lobby lights are back on, dim and yellow on generator power. The office door behind the desk is half open. It was closed when the lights went out: Bernard closes it every time he leaves, with a little push of his hip.
+
+      Inside, the space heater is ticking as it warms up again. At first glance nothing looks wrong. Then you see the safe under the desk, a squat black box with a dial: its door is shut, but a paper clip lies on the carpet in front of it, and the top drawer of the filing cabinet is pulled out a few inches. The papers inside have been riffled, the folders not quite straight.
+
+      Footsteps on the stairs behind you. Stroud comes down from the second floor, unhurried, drying his hands on a handkerchief. He looks at you through the office doorway and raises his eyebrows. "Light's back. Thank heavens. I was trapped in the bathroom like a Victorian heroine." Behind him, from the dining room, Dev appears in the kitchen doorway, red-faced and out of breath, with snow on his shoulders.
+  - user: |
+      You step out of the office and pull the door shut behind you. You look from Stroud to Dev. "Dev, where were you? Bernard was calling for you."
+    narrator: |
+      Dev holds up a coil of orange cable. "Outside. Went to plug the block heater on the plough into the outlet on the porch when it got dark, otherwise the engine freezes solid and we're really stuck." He stamps snow off his boots. "Then everything went black and I couldn't find the door for a minute. Sorry, Bernard."
+
+      Stroud folds his handkerchief and puts it away. "And I," he says pleasantly, "was upstairs washing my hands for an unreasonably long time because the hot water is the only warm thing in my room." He glances past you at the office door, then back at your face, and smiles. "Is something wrong? You look like a woman who's found something."
+
+      The front door opens behind them and Ilse comes in from outside in a long parka with the hood up, carrying a thermos, snow up to her knees. She pushes the hood back, takes in the four of you standing around the desk, and stops. "Well," she says. "Somebody tell me what I've missed."
+  - user: |
+      You catch Ilse's eye and give her the smallest shake of the head. "The power went out. Bernard got the generator going. That's all." You move to stand beside the desk.
+    narrator: |
+      Ilse looks at you for half a second longer than anyone else would notice, then nods as if the power going out is the most boring thing that has ever happened. "That thing always goes when the snow's heavy on the line," she says, unwinding her scarf. "Bernard, you're filthy. Go and wash." She sets her thermos on the counter and lifts the flap. "I'm on. Everybody go and eat something, Remy's been cooking since four and he gets sulky if nobody finishes it."
+
+      The others drift toward the dining room: Dev with his cable, Bernard muttering about diesel, Stroud last of all, with a glance back at the desk that takes in Ilse, the counter, the office door, and you. When they've gone, Ilse straightens the register, the bell, the jar of mints, without looking at any of them in particular.
+
+      "Everything on my counter is exactly where it was when I left it this morning," she says quietly, to the register. "I always know. It's a night-desk thing." Then, in a normal voice: "Someone was in my office, weren't they? I can smell that cologne from here."

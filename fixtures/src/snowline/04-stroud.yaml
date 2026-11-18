@@ -1,0 +1,51 @@
+# Stroud makes himself known, and room 14 is searched. He learns her name
+# from the register (no secret), and nothing about where the key is.
+turns:
+  - user: |
+      You finish your coffee without hurrying, then take your plate back to the buffet, close enough to the desk to hear what name Stroud signs.
+    narrator: |
+      Stroud signs with a fountain pen he takes from his own inside pocket, a fat black thing with a gold clip, and his signature is large and looping. Bernard gives him eleven, on the second floor, three doors down from yours. "Lunch is at one, if the boy cooks," Bernard says. "Bar opens when I say so."
+
+      "Then I'll be your best customer." Stroud caps the pen, and as he turns from the desk he finds you standing at the buffet and smiles as though you were old friends. "You're the other casualty of the road, I think. I saw a little blue car on the way up, nose in a snowbank. I hope that wasn't yours."
+
+      Up close he smells of cold air and expensive cologne. His eyes are pale grey and very steady, and they rest on your bandaged hand, then on the satchel, then come back to your face. He holds out his hand. "Gabriel. We'll be neighbours for a while, it seems. Better to be friends than strangers in a snowed-in hotel, don't you think? I've read the novels. The strangers always come off worse."
+  - user: |
+      You shake his hand briefly with your left hand. "Tess. That was my car. What brings you up the pass in January, Gabriel?"
+    narrator: |
+      "Business, I'm afraid. Always business." He lets go of your hand and spreads his own in a gesture of mock apology. "I'm a lawyer, which I know is nobody's favourite thing to be stuck in a lodge with. I represent a company down in the valley, a storage firm, Kessler Valley Cold Storage, who had a very bad week before Christmas." He watches your face as he says it, pleasantly, without any change of expression. "A fire. Perhaps you saw it on the news. Total loss. My client is desperate to have the insurance settled so they can rebuild and keep their people employed."
+
+      He takes a cup and fills it from the urn. "I was driving up to meet a former employee of theirs who's supposed to be staying in the village on the far side of the pass. A bookkeeper. She left rather suddenly and took some files with her that don't belong to her." He blows on his coffee. "Small world, these mountains. Everybody seems to be going somewhere with something that belongs to somebody else."
+
+      Across the dining room, Pia Lindqvist has given up all pretence of not listening.
+  - user: |
+      You give him a level look. "Small world," you agree. "I hope you find your bookkeeper." You pick up your satchel and go upstairs to your room.
+    narrator: |
+      The corridor is empty and quiet, lit by the grey snow light from a window at the far end. The ice machine hums. Your door is closed, the way you left it, and the key turns in the lock the way it should.
+
+      Inside, the room is not the way you left it. It is tidy, almost: someone has been careful. But the quilt is smoother than you left it and tucked in at the foot, which you did not do. The drawer of the bedside table is closed all the way, and you left it open a crack because it sticks. Your spare sweater, folded on the chair, is folded the other way, sleeves outward. In the bathroom, the lid of the toilet cistern is sitting very slightly askew.
+
+      Nothing seems to be missing. Whoever it was had perhaps twenty minutes, while you were at breakfast, and was looking for something small.
+  - user: |
+      You check the window latch, then go back down to the desk. "Bernard. Who has keys to the rooms besides the guests?"
+    narrator: |
+      Bernard looks up from a ledger of what appear to be grocery orders. "Me. Ilse. The master key's on my belt and the spare's in the office safe." He touches a ring of keys clipped to his trousers. "Why?"
+
+      When you tell him, his heavy face goes still and then red. "Nobody on my staff goes into a guest's room without knocking. Remy does the rooms on Tuesdays, and it's not Tuesday." He lowers his voice and glances toward the stairs. "And the safe, well. Half the valley knows that combination. I keep meaning to change it." He rubs his face with both hands. "Is anything missing? Do I need to... I don't know what I'd do. Lock everybody in the bar until the plough comes?"
+
+      Behind you, the office door opens and Dev comes out with his radio, catching the end of it. He looks from Bernard to you. "Someone go in your room? Same day as your car window?" He whistles softly. "That's not the cold, then."
+  - user: |
+      You keep your voice low. "Nothing's missing. I'd rather this stays between the three of us for now. Dev, who was in the lobby while I was at breakfast?"
+    narrator: |
+      Dev thinks about it, counting off on his raw fingers. "Me, in the office, on the radio, most of the time. Bernard at the desk, mostly." Bernard nods. "The Swedes went up and came back down, I think, she'd forgotten her book. The doctor went up and down once for a pen. The kid was in the kitchen." He frowns. "And the lawyer guy, when he came in, Bernard gave him the key and he went up to drop his coat before he came back down to talk to you. Five minutes, maybe less."
+
+      "And I went to the cellar for wood," Bernard says slowly. "Ten minutes. Maybe fifteen. The desk was empty." He looks at the board behind him, where the keys hang on their brass hooks, then at the stairs. "Anybody could have gone up."
+
+      The front door rattles in a gust. Upstairs, a door closes. Bernard looks at you with a mixture of worry and stubborn pride. "This is my house," he says. "Tell me what you need me to do."
+  - user: |
+      You think it over. "Nothing yet. Just keep an eye on who goes upstairs, and don't mention this to anyone. When does Ilse come on?"
+    narrator: |
+      "Seven tonight." Bernard looks relieved to be asked something he can answer. "She sleeps in the staff cottage behind the kitchen when the road's shut, so she's here, just asleep. I wouldn't wake her unless the building's on fire. Last person who woke Ilse before noon is still apologising."
+
+      Dev tucks the radio into his jacket. "I'll be around. Not going anywhere, am I?" He gives you a crooked smile and wanders back into the dining room, where he sits down two tables from Stroud, who has returned and is reading a paperback from the lodge's shelf with every sign of contentment.
+
+      The afternoon stretches ahead of you, white and slow. Snow slides off the roof every so often with a soft roar and a thump. In the dining room, Stroud turns a page, glances up over the top of his book toward the lobby where you are standing, and goes back to reading.
