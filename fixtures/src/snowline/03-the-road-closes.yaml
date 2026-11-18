@@ -1,0 +1,48 @@
+# Morning: the avalanche closes the pass, the phone line is down, and a
+# stranger walks in out of the snow. Nobody but Ilse knows where the key is,
+# and from here on the hiding place is never named again.
+turns:
+  - user: |
+      You wake to grey light and a deep, total silence. You dress, check the corridor, and go down to the lobby.
+    narrator: |
+      The lobby is full of a flat white light from the windows, which are blank with snow to halfway up the glass. The fire has been built up again and a long table by the hearth has been laid for breakfast: a coffee urn, a basket of bread, a block of butter, jars of jam with handwritten labels.
+
+      Behind the desk, instead of Ilse, there is a heavy man in his sixties in a cardigan with leather elbow patches, holding a cup of coffee in both hands and staring at the telephone as if it had insulted him. He looks up when you come down. "You'll be fourteen. Morrow." He doesn't offer a hand. "Bernard Aucoin. It's my hotel, for what that's worth this morning." He sets the cup down. "The road's gone. Slid at about five, between the second and third switchbacks. I heard it from my bed, like a train. And the phone's dead since six." He picks up the receiver and holds it out to you, as if you might not believe him. There is no tone at all.
+  - user: |
+      You take the receiver, listen, and hand it back. "How long does it usually take them to clear a slide like that?"
+    narrator: |
+      "Usually?" Bernard puts the receiver down with care. "Two days if it's small and they've got a machine free. A week if it's big and they don't. Last time it was nine days, in '09, and we ate a lot of soup." He jerks his chin toward the dining room. "The plough driver's in there. He came up last night behind you and got as far as the lot before the blade iced up. He's been on his radio since dawn, he'll know more than me."
+
+      Through the double doors to the dining room you can see a young man in a hi-vis jacket hunched over a table with a handheld radio, a map of the pass spread out under his elbows. Across the room, at a table by the window, a fair-haired couple in matching sweaters are eating toast very slowly, the way people eat when they have nowhere to be and are starting to realise it.
+
+      Bernard pours a second cup of coffee and pushes it across the counter toward you without asking. "Ilse said you came in bleeding. She said nothing else, which with Ilse means there's a story."
+  - user: |
+      You take the coffee with your left hand and nod your thanks. "No story. I hit a mirror." You go through to the dining room and stop at the plough driver's table. "Bernard says you've got a radio. Any news from down the mountain?"
+    narrator: |
+      The young man looks up. He is maybe twenty-five, with a shaved head, a short beard and the red, raw hands of someone who works outside all winter. "Dev," he says. "Dev Raman. County roads." He taps the map with a pencil. "Slide came down right here, across both lanes, maybe four metres deep at the middle and two hundred long. Dispatch says they can't send the big blower till the weather breaks, and the weather's not breaking before Thursday. So." He spreads his hands. "Welcome to the Kessler Pass Lodge, everybody. Checkout's Friday at the earliest."
+
+      The radio on the table crackles and a woman's voice says something about the lower road and a jackknifed truck. Dev turns it down. "Radio's only good to dispatch and only when the wind's right. Phone lines run along the road, so they're under the slide too." He looks at your bandaged hand, then at your face. "You the one whose car's in the ditch below the bend? Blue hatchback? I passed it last night. Your back window was open. I figured you knew."
+  - user: |
+      You set your coffee down. "Open? I closed every window before I walked up. Was anyone near the car?"
+    narrator: |
+      Dev frowns and scratches his beard. "Didn't see anybody. It was blowing pretty hard, I wasn't looking at much except the road. But it was open, the back one on the driver's side, and there was snow on the seat." He shrugs. "Could've popped when you went in the ditch. Glass does funny things in the cold."
+
+      At the window table the fair-haired woman has stopped eating and is watching you openly, with the frank curiosity of someone who has run out of other entertainment. She is in her early thirties, with a long plait over one shoulder. Her husband, a tall man with wire-rimmed glasses, puts a hand on her arm as if to say don't, and she ignores it.
+
+      "Sorry," she calls across the room, not sounding sorry. "Pia Lindqvist. We couldn't help hearing. Somebody broke into your car? Up here?" Her English is perfect, with a faint lilt. "That's the most exciting thing that's happened since we arrived, and we've been here four days."
+  - user: |
+      You give the couple a polite smile. "Probably just the cold, like Dev says. Nothing in there worth stealing." You sit at an empty table with your coffee and some bread, where you can see the front door.
+    narrator: |
+      Pia looks faintly disappointed and goes back to her toast. Her husband gives you a small apologetic nod across the room, the kind of nod that says he has been married to her for exactly long enough to know she will try again later.
+
+      For a while nothing happens. Remy, a gangly boy in a stained apron, comes out of the kitchen with a tray of scrambled eggs and sets it on the buffet without a word, then retreats. Odile comes down with a notebook under her arm, takes a plate, and sits by the fire, writing in tiny handwriting. Dev's radio mutters. The snow keeps falling past the windows, slow and heavy now that the wind has dropped.
+
+      Then, at a quarter to ten, someone knocks on the front door. Not a guest's knock: three hard blows of a fist. Bernard looks up from the desk. Through the frosted glass panel of the door you can see the shape of a tall figure, and behind him nothing but white.
+  - user: |
+      You stay in your seat and watch the door, your hand resting on the satchel at your side.
+    narrator: |
+      Bernard opens the door and a gust of snow comes in with the man. He is tall, in his fifties, in a black wool coat that was not made for mountains, and leather city shoes soaked dark to the ankle. Snow is caked in his short grey hair. He stamps his feet on the mat, as you did last night, and takes off a pair of thin leather gloves finger by finger.
+
+      "Thank God," he says to Bernard, in a pleasant, educated voice. "My car's off the road two miles down, on the other side of what I'm told is an avalanche. I climbed over the top of it. Not an experience I'd recommend." He laughs, and the sound is easy and practised. "Gabriel Stroud. I need a room, a phone and a very large drink, not necessarily in that order."
+
+      Bernard tells him about the phone. Stroud listens, nods, takes it well. While Bernard opens the register, Stroud's eyes go round the lobby the way a man's eyes go round a room he means to remember: the stairs, the office door, the board of keys, the desk, the dining room. They pass over you at your table, and stop, and stay a moment longer than they need to.

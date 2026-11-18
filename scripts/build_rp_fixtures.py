@@ -80,6 +80,11 @@ def build_story(story_dir: Path) -> dict[Path, str]:
     probes = yaml.safe_load(probes_text.replace("__NPCS__", "|".join(card["npc_names"])))
     defaults = probes["defaults"]
     files: dict[Path, str] = {}
+    # Scenario ids carry the story's name (rp-<story>-<probe>-<length>), so
+    # two stories can ask the same probe. harbor-road came first and keeps
+    # its bare ids (rp-<probe>-<length>): results already stored under them
+    # stay comparable.
+    prefix = "" if card.get("ids_include_story") is False else f"{card['name']}-"
     conditions = probes.get("conditions") or []
     for cond in conditions:
         if any(rx.search(cond["note"]) for rx in map(re.compile, card["name_patterns"])):
@@ -98,7 +103,7 @@ def build_story(story_dir: Path) -> dict[Path, str]:
                      for probe in probes["probes"] if probe["key"] in cond["probes"]]
         for probe, cond in variants:
             name = probe["key"] + (f"-{cond['key']}" if cond else "")
-            sid = f"rp-{name}-{length}"
+            sid = f"rp-{prefix}{name}-{length}"
             follow_ups = probe.get("follow_ups") or []
             generations = 1 + len(follow_ups)
             sampling = dict(defaults["sampling"])
@@ -110,7 +115,8 @@ def build_story(story_dir: Path) -> dict[Path, str]:
                          + (f", with {cond['key']})" if cond else ")"),
                 "tier": defaults["tier"], "category": "rp_long_context", "domain": "generic",
                 "description": probe["description"],
-                "tags": probe["tags"] + ([f"condition_{cond['key']}"] if cond else []),
+                "tags": probe["tags"] + [f"story_{card['name']}"]
+                        + ([f"condition_{cond['key']}"] if cond else []),
                 # Unranked: read these as rates, with `toolery rp-report`.
                 "ranking_dimensions": [],
                 "prompt": (probe["prompt"].rstrip() + "\n\n" + cond["note"] + "\n") if cond

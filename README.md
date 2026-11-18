@@ -704,6 +704,19 @@ Four lengths are built: 8k, 16k, 32k and 64k. The 64k conversation is about
 inside a 65k server context. Editing the story changes every conversation's
 hash: results taken before and after an edit are not the same test.
 
+Each folder under `fixtures/src/` with a `card.yaml` is a story, with its own
+probes. A story's scenarios are named `rp-<story>-<probe>-<length>`;
+harbor-road, the first, keeps `rp-<probe>-<length>` (`ids_include_story:
+false`) so its stored results stay comparable. `rp-report` prints one table
+per model and story.
+
+The second story, `snowline` (16k and 8k only), measures the same defects
+written differently: a contemporary closed room, the player's turns in the
+second person, and a secret that is a hiding place confided in the course of
+the story, absent from the system prompt. Its probes keep harbor-road's keys
+so the tables compare line by line; `control-known`'s failure there is
+`forgot_secret`.
+
 ## Ranking dimensions
 
 `toolery rankings --dimension <name>` and the Rankings tab in the TUI

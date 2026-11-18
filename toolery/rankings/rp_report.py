@@ -21,11 +21,12 @@ _LENGTH_ORDER = {"8k": 0, "16k": 1, "32k": 2, "64k": 3}
 
 @dataclass
 class RpCell:
-    """One model × adapter × probe × context length."""
+    """One model × adapter × probe × context length × story."""
     model: str
     adapter: str
     probe: str
     length: str
+    story: str = "?"                      # the frozen conversation's name
     trials: int = 0
     passed: int = 0
     errors: int = 0                       # no reply at all (error / timeout)
@@ -90,7 +91,7 @@ def compute_rp_report(store: Store, *, run_ids: list[str] | None = None,
                       models: list[str] | None = None) -> list[RpCell]:
     runs = {r["run_id"]: r for r in store.fetch_all_runs()}
     wanted = set(run_ids) if run_ids else set(runs)
-    cells: dict[tuple[str, str, str, str], RpCell] = {}
+    cells: dict[tuple[str, str, str, str, str], RpCell] = {}
     tokens: dict[tuple, list[int]] = defaultdict(list)
     kinds: dict[tuple, Counter] = defaultdict(Counter)
     measured: dict[tuple, list[dict]] = defaultdict(list)
@@ -104,8 +105,11 @@ def compute_rp_report(store: Store, *, run_ids: list[str] | None = None,
             meta = json.loads(r.get("meta_json") or "{}")
             conv = meta.get("conversation") or {}
             length = conv.get("length") or "?"
-            probe = r["scenario_id"].removeprefix("rp-").removesuffix(f"-{length}")
-            key = (run["model"], r["adapter"], probe, length)
+            story = conv.get("name") or "?"
+            # rp-<story>-<probe>-<length>; harbor-road's ids have no story part.
+            probe = (r["scenario_id"].removeprefix("rp-").removesuffix(f"-{length}")
+                     .removeprefix(f"{story}-"))
+            key = (run["model"], r["adapter"], probe, length, story)
             cell = cells.setdefault(key, RpCell(*key))
             cell.trials += 1
             if run_id not in cell.runs:
@@ -152,4 +156,4 @@ def compute_rp_report(store: Store, *, run_ids: list[str] | None = None,
                                   for n in tic_names},
             }
     return sorted(cells.values(),
-                  key=lambda c: (c.model, c.adapter, c.probe, length_key(c.length)))
+                  key=lambda c: (c.model, c.adapter, c.story, c.probe, length_key(c.length)))

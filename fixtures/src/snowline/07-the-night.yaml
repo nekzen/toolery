@@ -1,0 +1,51 @@
+# The night: someone tries the door of fourteen, Stroud goes out into the
+# snow and comes back with Agnes Pell's bag. Odile has seen him before.
+turns:
+  - user: |
+      You go up to room fourteen, lock the door, wedge the chair under the handle, and lie on the bed fully dressed with the light off, listening.
+    narrator: |
+      For a long time there is nothing but the building: the radiator clanking as it cools, the faint thud of the generator two floors down, the hum of the ice machine at the end of the corridor, a branch scraping somewhere against the eaves. Your watch tells you nothing, as usual. The travel clock on the bedside table says 1:12, then 1:40, then 2:05.
+
+      At 2:17 the floorboards in the corridor creak, slowly, one after another, the way boards creak under someone who knows they creak and is trying to be quiet. The steps come toward the end of the corridor and stop outside your door.
+
+      In the thin line of light under the door, a shadow stands still. Then the handle turns, very gently, as far as it will go against the lock. It holds there for a second, two seconds. The chair wedged under it shifts a millimetre on the floorboards with a tiny scrape. The handle eases back. The shadow stays where it is.
+  - user: |
+      You stay absolutely still on the bed and keep your breathing quiet. You wait.
+    narrator: |
+      The shadow under the door waits too. Ten seconds. Twenty. Somewhere downstairs a log collapses in the lobby fire with a soft crunch.
+
+      Then the steps go away, back down the corridor, as slowly and carefully as they came. You hear them pass ten, eleven, twelve; they do not stop at any door. At the far end, the stairs creak once, twice, and then there is nothing.
+
+      A minute later, from below your window, comes the muffled thump of the front door closing. When you look out, keeping to the side of the frame, a single figure is wading away from the porch through snow up to its thighs, a flashlight beam bobbing in front of it, heading not toward the parking lot but down toward the buried road, toward the slide and whatever lies beyond it. Tall. A long dark coat.
+  - user: |
+      You take the chair away from the door, pull on your boots and jacket, and go quietly down to the lobby.
+    narrator: |
+      The lobby is lit only by the fire and one brass lamp at the end of the desk. Ilse is behind the counter, wide awake, her paperback face down beside her and her parka already half on. Dev is asleep on the couch in the lounge under a pile of blankets, snoring gently, one arm hanging to the floor. And in the armchair by the fire, in a dressing gown and boots, her notebook on her knees, sits Odile.
+
+      "He went out ninety seconds ago," Ilse says, low. "Didn't see me, or pretended not to. I was about to wake Dev." She looks at the black window. "That's the way to the slide. In the dark. He's either a fool or he knows exactly where he's going."
+
+      Odile closes her notebook. "He knows," she says calmly. "He went the same way at eleven o'clock last night, Ms. Morrow, after you had gone up to bed. I saw him from my window. He did not come here then. He had a car below the slide, and he went down to it, and came back up, and then down again." She folds her hands on the notebook. "I am old and I don't sleep, and I write down everything. It is a vice."
+  - user: |
+      You stare at Odile. "Last night? He told everyone he arrived this morning, that he climbed over the slide at dawn." You keep your voice down. "Doctor, what exactly did you see?"
+    narrator: |
+      Odile opens her notebook and turns back a few pages, holding it to the firelight. Her handwriting is tiny and very neat. "Twenty-three ten. A car stops on the road below the fourth bend, lights off. A man gets out, tall, dark coat. He walks up and down the road with a torch, looking at the cars." She glances up. "Yours, and another one, under the trees at the viewpoint. He opens yours. He spends a long time at the other." She turns a page. "Twenty-three fifty-five. He goes back to his car. It does not leave. Then in the morning, the slide, and he comes knocking at our door like a lost lamb with wet shoes."
+
+      Ilse has gone very still behind the desk. "The car under the trees at the viewpoint," she says. "That's where Dev saw the green one."
+
+      On the couch, Dev has stopped snoring. He pushes the blankets off and sits up, hair flattened on one side, entirely awake. "Agnes Pell's car," he says. "He's going back down to her car."
+  - user: |
+      You look at the three of them. "Nobody goes out after him. It's dark, it's deep snow, and he's dangerous. We wait here, by the door, and we see what he brings back."
+    narrator: |
+      Nobody argues. Dev pulls on his boots and takes up a position by the front window with his radio, which gives only static at this hour. Ilse puts the kettle on in the office and comes back with four mugs of tea nobody drinks. Odile writes in her notebook: the time, and then everything everyone says.
+
+      The fire burns down. At 3:40 a flashlight beam appears far down the white slope, tiny and wavering, climbing. It takes him almost half an hour to come back up through the snow. When the front door opens he is plastered with snow to the chest, his city shoes gone shapeless, his face grey with cold. He has a bag over his shoulder that was not his when he left: a woman's canvas tote, sodden, with a red scarf knotted to the strap.
+
+      He stops dead on the mat when he sees the four of you waiting in the firelight. For a moment his face shows nothing at all. Then the pleasant smile comes back, slowly, like a lamp being turned up. "Insomnia," he says. "It's going round."
+  - user: |
+      You stand between him and the stairs. "That's not your bag, Gabriel. Whose is it?"
+    narrator: |
+      Stroud looks down at the tote on his shoulder as though noticing it for the first time. Water drips from the hem of his coat onto Bernard's mat. "This? I found it in the snow by the road. Someone must have dropped it. I thought I'd bring it in and hand it to the authorities when they arrive. Civic duty." He shrugs it off his shoulder and holds it out toward Ilse, not toward you. "Lost property. You'll have a box for that, I imagine."
+
+      Ilse doesn't move to take it. Dev doesn't move from the window. Odile writes.
+
+      Stroud lowers the bag slowly and sets it on the floor by his feet. The red scarf trails across the wet boards. He looks at each of you in turn, last of all at you, and something in his face settles, the way a man settles who has decided to stop pretending about one thing in order to keep pretending about another. "It's very late," he says quietly. "Tess. Could we talk? Just the two of us. I think it would save everybody a great deal of trouble."

@@ -1,0 +1,266 @@
+# Probes asked at the end of the frozen conversation "snowline". One scenario
+# is generated per probe and per context length by
+# scripts/build_rp_fixtures.py (ids rp-snowline-<probe>-<length>).
+# __NPCS__ is replaced by the card's npc_names joined with "|".
+#
+# Same probe keys as harbor-road, so the two stories' tables compare line by
+# line; what each probe asks is adapted to this story. The player's turns
+# are in the second person, as in the conversation. The secret is the hiding
+# place of the USB key (the snow globe), told to Ilse only.
+defaults:
+  tier: hard
+  sampling: {temperature: 0.8, min_p: 0.05, seed: 1000, max_tokens: 350}
+
+conditions:
+  - key: reminder
+    lengths: ["16k"]
+    probes: [leak-stranger, leak-ledger, player-voice]
+    note: >-
+      [Author's note: characters only know what they have seen, heard or
+      been told inside the story. Never write the player character's words,
+      actions or thoughts; stop where she would speak or act.]
+  - key: told
+    lengths: ["16k"]
+    probes: [leak-stranger, leak-ledger, player-voice]
+    note: >-
+      [Author's note: the player character has told exactly one person in
+      this story, Ilse, where she hid the USB key. Nobody else knows where it
+      is, has seen it, or can guess it. Never write the player character's
+      words, actions or thoughts; stop where she would speak or act.]
+
+probes:
+  - key: leak-stranger
+    title: "Knowledge leak: the man searching for the key must not know where it is"
+    tags: [roleplay, long_context, knowledge_leak]
+    description: |
+      Only Ilse was told where the key is hidden. Stroud, who is looking for
+      it, sits down with the player at breakfast, away from the lobby, and
+      speaks first. If he names the hiding place or goes to it, he knows
+      what he was never told.
+      A first version put him alone at the reception desk, looking along the
+      counter: Neural and Pale-Sonneteer had him lift the globe 27 to 29
+      times in 30 even when told who knew. The scene staged a reveal, so it
+      measured the pull of the reveal, not who knows what.
+    prompt: |
+      Hours later, at breakfast, you sit alone at a table in the dining room. Stroud comes in, pours himself a coffee, sits down across from you without asking, and speaks first.
+    scoring:
+      required:
+        - {check: response_length_bounded, min_length: 2, failure_kind: empty_reply}
+      forbidden: &leak_forbidden
+        # A character names the hiding place. The player naming it ("It's in
+        # the snow globe," you say) is the narrator answering in her place.
+        - check: dialogue_contains
+          patterns: ['\bglobes?\b']
+          exclude_player: true
+          failure_kind: knowledge_leak
+        - check: dialogue_contains
+          patterns: ['\bglobes?\b']
+          failure_kind: spoke_for_player
+        # The narrator makes HER go to it first ("You pick up the snow globe.
+        # 'Here,' you say."): whoever handles it afterwards has been shown.
+        # Neural, leak-stranger trial 2.
+        - check: response_matches_regex
+          all_of:
+            - '\A(?:(?!globe)[\s\S])*?\byour?\b[^.\n"“”]{0,60}\bglobes?\b'
+          failure_kind: spoke_for_player
+        # In the narration, a character goes to it or handles it.
+        - check: response_matches_regex
+          all_of:
+            # Every character but Ilse, who saw it hidden.
+            - '\b(he|she|they|Stroud|Gabriel|Dev|Bernard|Remy|Pia|Anders|Odile)\b[^.\n"“”]{0,60}\bglobes?\b'
+          failure_kind: knowledge_leak
+        # Any other mention in the narration: the narrator decided where her
+        # eyes or her thoughts go.
+        - check: response_matches_regex
+          all_of: ['\bglobes?\b']
+          failure_kind: spoke_for_player
+
+  - key: leak-ledger
+    title: "Knowledge leak: asked straight out, the narrator must not answer for her"
+    tags: [roleplay, long_context, knowledge_leak]
+    description: |
+      Dev, who was never told, asks the player directly where she hid the
+      key. The narrator must leave the answer to her; Dev must not guess it.
+      Silence and waiting are a good answer.
+    prompt: |
+      Later that morning you go out to the plough with Dev to help him chip the ice off the blade. When you are alone, he lowers his voice and asks you where you've hidden the thing everybody is after.
+    scoring:
+      required:
+        - {check: response_length_bounded, min_length: 2, failure_kind: empty_reply}
+      forbidden: *leak_forbidden
+
+  - key: control-known
+    title: "Control: the one character who was told still knows where it is"
+    tags: [roleplay, long_context, retention]
+    description: |
+      Counterpart of the leak probes: Ilse saw the key hidden, in file 02.
+      Alone with the player, asked directly, she should say where it is.
+      Without this control, a model that never mentions it would look
+      perfect. Saying it or showing it both count; an Ilse who only says
+      "where you left it" fails: read the trace before calling it forgetting.
+    prompt: |
+      That night the lobby is empty and everyone else is asleep. You lean on the counter next to Ilse and keep your voice low. "Ilse, honestly, I've had no sleep and my head is a mess. Remind me exactly where we put it."
+    scoring:
+      required:
+        - {check: response_length_bounded, min_length: 40, failure_kind: empty_reply}
+        # Said, or shown: Neural's Ilse brings the globe out from under the
+        # counter and taps the base. Only she and the player are in the scene.
+        - check: response_matches_regex
+          all_of: ['\bglobe\b']
+          failure_kind: forgot_secret
+      forbidden: []
+
+  - key: ooc-pause
+    title: "Out of character: \"Pause scenario.\""
+    tags: [roleplay, long_context, ooc]
+    description: |
+      The player steps out of the story. The model must stop narrating and
+      answer plainly. Observed defects: the instruction is absorbed (the
+      story goes on, a character reacts to it) or "played" (the scene
+      freezes, in narration).
+    prompt: "Pause scenario."
+    scoring: &ooc
+      required:
+        - {check: response_length_bounded, min_length: 2, failure_kind: empty_reply}
+        - check: response_matches_regex
+          all_of:
+            - '\b(paus(ed|ing)|on hold|out of character|OOC|role-?play|scenario|resum(e|ing)|stopp(ed|ing)|end(ed|ing)|stepp(ed|ing) out|whenever you([''’]re| are) ready|let me know|how (can|may) I help|what([''’]s| is) your question|what would you like|understood|of course|no problem|certainly|sure|happy to|go ahead|ask away)\b'
+          failure_kind: ooc_no_acknowledgment
+      forbidden:
+        # The pause is acted out inside the story.
+        - check: response_matches_regex
+          all_of:
+            - '\b(the (world|tide|sea|waves?|wind|air|moment|fire)|time|everything)\s+(itself\s+)?(freezes|pauses|stops|halts|stills|hangs|stands still|goes still|falls silent|holds its breath)\b|\bthe scene (freezes|hangs|holds|stills|goes still)\b|\bfrozen in (place|time|mid)|(?<!\*)\*[^*\n]{3,}\*(?!\*)'
+          failure_kind: ooc_played_pause
+        # The story goes on: somebody speaks, with a speech tag.
+        - check: response_matches_regex
+          all_of:
+            - '["“”][^"“”\n]*["“”][,.]?\s+(\w+\s+){0,3}(says|asks|replies|mutters|calls|adds|answers|repeats|whispers|grunts|murmurs|shouts|continues)\b|["“”]\s+you (say|ask|reply)\b|\b(says|asks|replies|mutters|calls|adds|answers|repeats|whispers|grunts|murmurs|shouts)[,:]?\s+["“]'
+          failure_kind: ooc_absorbed
+        # The story goes on: a character acts, or "you" are narrated.
+        - check: response_matches_regex
+          all_of:
+            - '\b(__NPCS__|the (verger|keeper|old man|girl|woman|man|boy|sister|stranger)|he|she)\s+(leans|looks|blinks|frowns|tilts|raises|lowers|stares|waits|nods|shrugs|chuckles|laughs|squints|scratches|studies|glances|pauses|stops|straightens|watches|turns|smiles|grins|snorts|sighs)\b|^\s*You (stand|sit|hear|watch|walk|step|climb|remain|lean)\b'
+          failure_kind: ooc_absorbed
+
+  - key: ooc-stop
+    title: "Out of character: \"Stop the roleplay.\""
+    tags: [roleplay, long_context, ooc]
+    description: |
+      Same defect as the pause probe, with the other instruction observed to
+      be absorbed: an explicit request to stop.
+    prompt: "Stop the roleplay."
+    scoring: *ooc
+
+  - key: ooc-paren
+    title: "Out of character: a parenthesised OOC message"
+    tags: [roleplay, long_context, ooc]
+    description: |
+      The conventional form: parentheses and the OOC marker. Easier than the
+      bare instructions; a model failing here fails everywhere.
+    prompt: "(OOC: pause here for a second — I have a question about the story so far.)"
+    scoring: *ooc
+
+  # ---- Retention: facts stated once, in the first chapter, never repeated.
+  - key: recall-arm
+    title: "Retention: which hand was stitched, and how many stitches"
+    tags: [roleplay, long_context, retention]
+    description: |
+      Three stitches in the RIGHT palm, stated in the first chapter; later
+      chapters only say "the bandaged hand".
+    prompt: "(OOC: quick continuity check. Which of my hands was stitched, and how many stitches did it get? Answer in one short sentence.)"
+    scoring:
+      required:
+        - check: response_matches_regex
+          all_of: ['\bright\b', '\b(three|3)\b']
+          none_of: ['\bleft\s+(hand|palm|one)\b']
+          failure_kind: forgot_detail
+      forbidden: []
+
+  - key: recall-compass
+    title: "Retention: the time on the stopped watch and its engraving"
+    tags: [roleplay, long_context, retention]
+    description: |
+      Her father's watch, stopped at ten past four, engraved "for L." on the
+      back. Both stated once, in the first chapter.
+    prompt: "(OOC: quick continuity check. What time is my watch stopped at, and what is engraved on the back of it? Answer in one or two sentences.)"
+    scoring:
+      required:
+        - check: response_matches_regex
+          all_of: ['\b(ten past four|4:10|four[- ]ten|16:10)\b', '\bfor L\b']
+          failure_kind: forgot_detail
+      forbidden: []
+
+  - key: recall-inn
+    title: "Retention: the room number and the hotel"
+    tags: [roleplay, long_context, retention]
+    description: |
+      Room 14 at the Kessler Pass Lodge, given at check-in in the first
+      chapter.
+    prompt: "(OOC: quick continuity check. What is my room number, and what is the hotel called? Answer in one sentence.)"
+    scoring:
+      required:
+        - check: response_matches_regex
+          all_of: ['\b(14|fourteen)\b', '\bKessler\b']
+          failure_kind: forgot_detail
+      forbidden: []
+
+  # ---- Speaking for the player.
+  - key: player-voice
+    title: "Speaking for the player: the narrator must not write her lines"
+    tags: [roleplay, long_context, player_agency]
+    description: |
+      The player stays silent on purpose while a character waits for an
+      answer. The narrator may describe the wait; it must not put words in
+      the player's mouth or decide what she does.
+    prompt: |
+      You don't answer right away. You take a moment to look around the room and think about what to say.
+    scoring:
+      required:
+        - {check: response_length_bounded, min_length: 80, failure_kind: empty_reply}
+      forbidden:
+        # A spoken line given to the player: "...," you say / "...," I say /
+        # "I'm ...".
+        - {check: dialogue_contains, patterns: ['\w'], only_player: true, failure_kind: spoke_for_player}
+        # The narrator slides into the player's first person.
+        - check: response_matches_regex
+          case_sensitive: true
+          all_of: ['^\s*(I|My)\s']
+          failure_kind: spoke_for_player
+        - check: response_matches_regex
+          all_of:
+            - '["“”][,.]?\s+you\s+(say|reply|answer|ask|tell|murmur|whisper|add|begin|admit|explain|call)\b|\byou\s+(say|reply|answer|ask|murmur|whisper)\s*[,:]\s*["“]|\byou\s+(decide|choose|tell (him|her|them)|introduce yourself|answer that|reply that|explain that|give (him|her|them) your name|open your mouth and)\b'
+          failure_kind: spoke_for_player
+
+  # ---- Repetition and tics: six replies in a row, each seeing the earlier
+  # ones, to plain player turns.
+  - key: repetition
+    title: "Repetition: six replies in a row must not echo one another"
+    tags: [roleplay, long_context, repetition]
+    description: |
+      After the frozen conversation the player takes six plain turns in a new
+      place. The model's six replies are compared with one another.
+    prompt: |
+      A week later the road is open. You drive down into the valley and stop at a roadside diner as it gets dark.
+    follow_ups:
+      - "You take a booth by the window and look at who else is in the diner."
+      - "You eat slowly and listen to what the people around you are talking about."
+      - "You ask the waitress what the road ahead is like."
+      - "You thank her, pay, and step outside to look at the sky."
+      - "You drive on until you find a motel, and settle in for the night."
+    max_tokens: 500
+    scoring:
+      required:
+        - check: repetition_bounded
+          ngram: 4
+          max_ngram_share: 0.10
+          max_same_opener: 2
+          failure_kind: repetitive
+          tics:
+            not_but: '\bnot\b[^.;!?\n]{1,40}?[,;]\s+but\b|\bnot (just|only|merely|simply)\b'
+            as_if: '\bas (if|though)\b'
+            something: '\bsomething (like|close to|that might|in (his|her|their|your) (eyes|face|voice))\b'
+            for_a_moment: '\bfor a (long |brief |short )?(moment|while|beat|breath)\b'
+            em_dash: '—|--'
+            ellipsis: '…|\.\.\.'
+      forbidden: []

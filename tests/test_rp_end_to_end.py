@@ -24,8 +24,10 @@ def _reply(request: httpx.Request) -> httpx.Response:
     long_context = len(body["messages"]) > 60
     seed = body["seed"]
     assert body["temperature"] == 0.8 and body["min_p"] == 0.05 and body["max_tokens"] in (350, 500)
-    assert body["messages"][0]["role"] == "system" and "Harbor Road" in body["messages"][0]["content"]
-    if "milestone" in probe or "ledger" in probe:
+    assert body["messages"][0]["role"] == "system"
+    if "Snowline" in body["messages"][0]["content"]:
+        text = "Paused. Let me know when you would like to resume."     # the second story: no defect
+    elif "milestone" in probe or "ledger" in probe:
         text = ('The man stops and looks you over for a while before he speaks.\n\n'
                 + ('"Mara Venn, as I live," he says.' if seed % 2 else '"What do they call you, traveller?" he asks.'))
     elif "Hesper?" in probe:
@@ -54,11 +56,16 @@ def test_run_then_report(tmp_path, monkeypatch):
     result = runner.invoke(app, ["run", "--model", "neural-test", "--category", "rp_long_context",
                                  "--trials", "4", "--concurrency", "1", "--base-url", BASE])
     assert result.exit_code == 0, result.output
-    assert chat.call_count == (46 + 4 * 6) * 4   # repetition: six replies per trial
+    # harbor-road: 46 single replies + 4 repetition probes of six replies;
+    # snowline (8k and 16k): 26 + 2 x 6.
+    assert chat.call_count == (46 + 4 * 6 + 26 + 2 * 6) * 4
 
     report = runner.invoke(app, ["rp-report", "--json"])
     assert report.exit_code == 0, report.output
-    cells = {(c["probe"], c["length"]): c for c in json.loads(report.output)}
+    every = json.loads(report.output)
+    assert len(every) == 50 + 28
+    assert {c["story"] for c in every} == {"harbor-road", "snowline"}
+    cells = {(c["probe"], c["length"]): c for c in every if c["story"] == "harbor-road"}
     assert len(cells) == 50
     leak = cells[("leak-stranger", "16k")]
     assert (leak["trials"], leak["passed"], leak["failures"]) == (4, 2, {"knowledge_leak": 2})
@@ -84,6 +91,7 @@ def test_run_then_report(tmp_path, monkeypatch):
     assert "8k (~8000 tok)" in table.output and "16k (~15000 tok)" in table.output
     assert "self-repetition" in table.output and "100.0%" in table.output
     assert "cut replies" in table.output and "0/24" in table.output
+    assert "harbor-road" in table.output
 
 
 @respx.mock
@@ -100,8 +108,8 @@ def test_a_conversation_too_long_for_the_server_is_skipped_not_failed(tmp_path, 
     assert result.exit_code == 0, result.output
     # The ten single-reply 8k probes fit. rp-repetition-8k does not: six
     # replies of up to 500 tokens on top of ~7000 of conversation.
-    assert "Skipping 40 scenario(s)" in result.output and "rp-repetition-8k" in result.output
-    assert chat.call_count == 10
+    assert "Skipping 58 scenario(s)" in result.output and "rp-repetition-8k" in result.output
+    assert chat.call_count == 10 + 10     # both stories' 8k single-reply probes
 
 
 @respx.mock

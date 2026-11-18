@@ -345,6 +345,73 @@ def test_a_conversation_the_server_never_saw_is_an_error_not_a_verdict():
     assert "8 prompt tokens" in r.checks[0].detail
     assert result(13539).failure_kind == "no_dialogue"      # received: judged as usual
 
+
+# ---------------------------------------------------------------- snowline
+
+SNOW = [
+    # Stroud waits at the desk and knows nothing: a good answer.
+    ("Stroud does not turn. He runs a finger along the register, the bell, the jar of mints, and "
+     "stops at the rack of trail maps. \"Early riser,\" he says to the counter.", "pass", None),
+    # He goes straight to the hiding place.
+    ("Stroud reaches the end of the counter and picks up the old snow globe, turning it over in "
+     "his hands until the base creaks.", "fail", "knowledge_leak"),
+    ('"Nice snow globe," Stroud says without turning. "Heavy base. Hollow, I should think."',
+     "fail", "knowledge_leak"),
+    # The narrator gives her the answer, or decides her glance.
+    ('Dev waits.\n\n"It\'s in the snow globe on the desk," you say.', "fail", "spoke_for_player"),
+    ("Your eyes go, without meaning to, to the snow globe at the end of the counter.",
+     "fail", "spoke_for_player"),
+    # Real, Neural trial 2: the narrator hands it over for her; Stroud takes it after.
+    ("He turns when you come down the stairs.\n\nYou pick up the snow globe from its place at "
+     "the end of the counter and hold it between your hands.\n\n\"Here,\" you say. \"It was "
+     "here all along.\"\n\nStroud takes the globe from you and turns it over.",
+     "fail", "spoke_for_player"),
+    # Real, Neural trial 3: he goes straight to it.
+    ("He has been careful. The mints, the trail maps, the bell, the register: all exactly where "
+     "they should be. And at the end, the snow globe sits with the little lodge facing the door."
+     "\n\nHe lifts it in both hands, and turns and finds you at the foot of the stairs."
+     "\n\nHe turns the globe upside down. The felt-lined base comes off in his hands.",
+     "fail", "knowledge_leak"),
+]
+
+
+@pytest.mark.parametrize("reply,status,kind", SNOW)
+def test_snowline_leak_checks(reply, status, kind):
+    assert _verdict("rp-snowline-leak-stranger-16k", reply) == (status, kind)
+
+
+def test_snowline_control_and_retention():
+    assert _verdict("rp-snowline-control-known-16k",
+                    'Ilse does not look up from her book. "Grandmother\'s snow globe, end of the '
+                    'counter, base screwed tight. Go to bed."') == ("pass", None)
+    assert _verdict("rp-snowline-control-known-16k",
+                    'Ilse smiles. "Where you left it, of course. Go to bed, Tess."') == (
+        "fail", "forgot_secret")
+    # Real, Neural trial 0: shown, not said.
+    assert _verdict("rp-snowline-control-known-16k",
+                    "Ilse glances toward the stairs, then reaches under the counter and brings out "
+                    'the snow globe.\n\n"Here. You put it in the base, I screwed it back on." She '
+                    "taps the base with her fingernail.") == ("pass", None)
+    # Real, Neural trial 0 of recall-compass: right engraving, wrong time.
+    assert _verdict("rp-snowline-recall-compass-16k",
+                    'Your watch is stopped at 10:04, and the back is engraved "for L."') == (
+        "fail", "forgot_detail")
+    assert _verdict("rp-snowline-recall-arm-16k", "Your right palm, with three stitches.")[0] == "pass"
+    assert _verdict("rp-snowline-recall-arm-16k", "Your left hand, three stitches.")[0] == "fail"
+    assert _verdict("rp-snowline-recall-compass-16k",
+                    "It stopped at ten past four, and the back says \"for L.\"")[0] == "pass"
+    assert _verdict("rp-snowline-recall-inn-16k", "Room 14 at the Kessler Pass Lodge.")[0] == "pass"
+
+
+def test_snowline_keeps_its_secret_and_its_facts_where_they_belong():
+    s = load_scenario(RP / "rp-snowline-ooc-pause-16k.yaml")
+    said = [i for i, m in enumerate(s.history) if "globe" in m.content.lower()]
+    # Hidden and confided in the second chapter (exchanges 7 to 11), never again.
+    assert said and all(12 <= i < 22 for i in said)
+    assert all("ten past four" not in m.content.lower() for m in s.history[12:])
+    assert "Snowline" in s.system_prompt and "globe" not in s.system_prompt.lower()
+    assert not (RP / "rp-snowline-ooc-pause-32k.yaml").exists()       # 16k first
+
 # -------------------------------------------------------------- generated
 
 def test_generated_files_match_their_source():
@@ -384,6 +451,25 @@ def test_the_builder_refuses_a_story_that_gives_the_name_away(tmp_path):
     with pytest.raises(builder.BuildError, match="name_allowed"):
         builder.load_story(tmp_path)
 
+
+def test_a_second_story_puts_its_name_in_the_scenario_ids(tmp_path):
+    """harbor-road keeps rp-<probe>-<length>; any other story is
+    rp-<story>-<probe>-<length>, so two stories can ask the same probe."""
+    import yaml
+    (tmp_path / "card.yaml").write_text(
+        "name: night-shift\nname_patterns: ['\\bJuno\\b']\nnpc_names: [Bo]\nsystem: s\n",
+        encoding="utf-8")
+    turns = [{"user": "I wait.", "narrator": "Rain on the glass. " * 70} for _ in range(30)]
+    (tmp_path / "01-a.yaml").write_text(yaml.safe_dump({"turns": turns}), encoding="utf-8")
+    (tmp_path / "probes.yaml").write_text(yaml.safe_dump({
+        "defaults": {"tier": "hard", "sampling": {"temperature": 0.8, "seed": 1}},
+        "probes": [{"key": "leak-stranger", "title": "t", "description": "d", "tags": ["roleplay"],
+                    "prompt": "p", "scoring": {"required": [], "forbidden": []}}]}),
+        encoding="utf-8")
+    names = {path.name for path in builder.build_story(tmp_path) if path.suffix == ".yaml"}
+    assert names == {"rp-night-shift-leak-stranger-8k.yaml"}
+    assert (RP / "rp-leak-stranger-8k.yaml").exists()          # harbor-road: unchanged
+    assert "story_harbor-road" in load_scenario(RP / "rp-leak-stranger-8k.yaml").tags
 
 def test_cut_keeps_whole_exchanges_and_skips_buckets_it_cannot_fill():
     msgs = [{"role": r, "content": "x" * 400} for r in ("user", "assistant")] * 10   # ~2000 tokens

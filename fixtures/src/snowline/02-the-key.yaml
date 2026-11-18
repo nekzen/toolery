@@ -1,0 +1,37 @@
+# The secret is made here: Tess hides the USB key in the base of the snow
+# globe on the reception desk, with Ilse watching, and asks her to tell no
+# one. Ilse is the only character who ever knows where it is.
+name_allowed: true
+turns:
+  - user: |
+      You glance at the dark stairs, then lean on the counter and lower your voice. "One thing. I'd rather not keep something in my room tonight. Is there anywhere down here that nobody would think to look?"
+    narrator: |
+      Ilse takes her reading glasses off her head, folds them, and puts them in her shirt pocket, which seems to be how she gives something her full attention. She looks at the satchel, then at you.
+
+      "There's a safe in the office," she says. "Everybody who has ever worked here knows the combination, including two cooks I fired, so I wouldn't call it a hiding place." She glances along the counter: the register, the brass bell, a jar of wrapped mints, a rack of trail maps, and at the far end an old snow globe the size of a grapefruit, a little lodge and three fir trees under the glass, sitting on a heavy wooden base. "What size of something are we talking about?"
+  - user: |
+      You take a small black USB key out of the inside pocket of the satchel and close your hand around it so only she can see it. "About this size. It's evidence for a claim I'm working on, a warehouse fire down in the valley. There are people who'd like it to disappear."
+    narrator: |
+      Ilse looks at the key for a long moment and does not ask the obvious questions, which you notice. Then she reaches down the counter and picks up the snow globe in both hands. The snow inside lifts and swirls around the little lodge.
+
+      "My grandmother's," she says. "Bernard thinks it's tacky and wants it gone, which is why it stays." She turns it upside down. The wooden base is a separate piece, felt underneath, and when she twists it, it unscrews with a dry little squeak. Inside is a hollow where a music box used to be; the mechanism is long gone, leaving a space about the size of a matchbox. "It played 'Edelweiss' until I was twelve. Nobody has opened this thing in thirty years except me."
+  - user: |
+      You drop the USB key into the hollow in the base of the snow globe. You screw the base back on yourself, as tight as your bandaged hand allows, and set the globe back at the end of the counter where it was. "Then that's where it lives. Ilse, nobody else can know. Not Bernard, not the doctor, nobody. Please."
+    narrator: |
+      Ilse watches you put the snow globe back exactly where it stood, then reaches over and turns it a quarter turn so the little lodge faces the door again, the way it always does. "If it faces the wrong way, Bernard notices," she says. "He notices nothing else in this building, but he notices that."
+
+      She puts her glasses back on her head. "Nobody will hear it from me. I've worked nights in hotels for twenty years, Ms. Morrow. You'd be amazed at the things people leave with the night desk, and I have never once told anyone where anything was." She lifts the counter flap and lets it down behind her with a soft thump. "If someone comes asking, I'll tell them the truth: the safe's in the office and everybody knows the combination."
+  - user: |
+      You let out a breath and some of the stiffness goes out of your shoulders. "Thank you. Really. I'll get out of your way." You start for the stairs, then turn back. "What time do you go off shift?"
+    narrator: |
+      "Seven, when Bernard shuffles out with his coffee and pretends he's been up for hours." Ilse is already turning down the brass lamps one by one along the counter, so that the lobby sinks into firelight. "If you need anything in the night, ring zero on the room phone. It rings in the office and I'll hear it unless I'm in the kitchen stealing Remy's cereal."
+
+      The stairs creak under you all the way up. The second-floor corridor is long and narrow, with a strip of red carpet worn pale down the middle, framed photographs of skiers from the 1950s, and at the far end the dead ice machine Ilse mentioned, humming faintly although it does nothing. The door of fourteen sticks, then gives. Inside it is warm, as promised: a brass bed with a thick quilt, a radiator clanking under the window, and beyond the glass nothing at all but snow driving sideways through the light from the porch below.
+  - user: |
+      You lock the door, check the window latch, and sit on the edge of the bed. You try your cell phone once more, holding it up near the window.
+    narrator: |
+      One bar flickers in the corner of the screen, vanishes, flickers again. For three or four seconds you have signal, enough for the phone to buzz once in your hand with a message that must have been waiting since the valley. Then the bar is gone and stays gone.
+
+      The message is from an unknown number, sent at 6:42 that evening, four words long: "They know you have it." There is no name and no second message.
+
+      Below the window, at the edge of the porch light, the snow has already filled in your footprints from the road. The wind has dropped for the moment, and in the sudden quiet you can hear the old building ticking and settling around you, and from somewhere below, faint and tinny, Ilse's radio playing in the office.

@@ -10,6 +10,7 @@ tags:
 - roleplay
 - long_context
 - retention
+- story_harbor-road
 ranking_dimensions: []
 prompt: '(OOC: quick continuity check. What was the inn where I spent the first night called, and who kept it? Answer in one sentence.)'
 tools: []
