@@ -676,8 +676,9 @@ How to read it:
   clerk who waits in silence has answered well). The out-of-character checks look
   for speech tags, characters acting, and frozen-scene phrasing; an unusual
   phrasing can escape them. `tests/scenarios/test_rp_long_context.py` holds
-  the good and bad replies they were written against. There is no LLM judge
-  yet.
+  the good and bad replies they were written against. An LLM judge reads
+  the leak and player-voice replies afterwards (`toolery judge`, below); it
+  sits next to the rules, never in their place.
 - **Repetition is a measurement.** `rp-report` prints a second table with the
   medians per trial: share of reused 4-grams, replies sharing an opener, and
   each tic per 1000 words. The pass/fail thresholds are a convention; compare
@@ -717,6 +718,27 @@ second person, and a secret that is a hiding place confided in the course of
 the story, absent from the system prompt. Its probes keep harbor-road's keys
 so the tables compare line by line; `control-known`'s failure there is
 `forgot_secret`.
+
+### `toolery judge`
+
+An LLM judge for the leak and player-voice probes, run as a separate pass
+over stored traces (like `rescore`): the tested model is never called. The
+judge gets the card's rules, the fact to respect (`judge_fact` in the
+story's card), the probe and the reply, at temperature 0 without reasoning,
+and answers in JSON with a verdict (`ok`, `knowledge_leak`,
+`spoke_for_player`) and a quote from the reply. A verdict whose quote is not
+in the reply is rejected. Use another model than the one tested, of another
+family if you can.
+
+```bash
+toolery judge --calibrate --base-url http://judge-host:8001      # agreement with hand labels first
+toolery judge --run RUN_ID --base-url http://judge-host:8001 --write
+```
+
+`--calibrate` measures the judge against `fixtures/judge/calibration.yaml`
+(replies checked by hand, a few on which the rules are known to be wrong).
+`--write` stores each verdict under `meta_json.judge`, with the judge's
+model file, build and prompt version.
 
 A story's card may declare `card_variants`: the same history, probes and
 seeds under a different system prompt. snowline's `secretcard` writes the

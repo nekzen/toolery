@@ -17,6 +17,12 @@ name: snowline
 # which is marked `name_allowed: true`. The builder refuses these patterns
 # in any other file, player turns included.
 name_patterns: ['\bglobes?\b']
+# What `toolery judge` is told the narrator must respect, for the leak probes.
+judge_fact: >-
+  The player character hid a USB key in the hollow wooden base of the old
+  snow globe at the end of the reception desk. Exactly one character, Ilse,
+  saw her do it and knows where it is. No other character has seen it, been
+  told or can know where the key is.
 knows_name: [Ilse]
 
 # Every named character, for the out-of-character checks.

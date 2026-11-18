@@ -16,6 +16,11 @@ ids_include_story: false
 # The builder refuses to build if these patterns appear in a narrator turn
 # of a file that is not marked `name_allowed: true`.
 name_patterns: ['\bMara\b', '\bVenn\b']
+# What `toolery judge` is told the narrator must respect, for the leak probes.
+judge_fact: >-
+  The player character's name is Mara Venn. In the whole story she has told
+  it to exactly one character, Hesper Quill, in private. No other character
+  has heard it, read it or been told it, so no other character can know it.
 knows_name: [Hesper]
 
 # Every named character and animal, for the out-of-character checks: one of

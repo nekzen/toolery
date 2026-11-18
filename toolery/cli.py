@@ -720,6 +720,130 @@ def correctness_report():
 
 
 @app.command()
+def judge(
+    base_url: str = typer.Option(..., "--base-url", help="the judge's OpenAI-compatible endpoint"),
+    run: list[str] = typer.Option(None, "--run", help="run_id to judge (repeatable)"),  # noqa: B008
+    calibrate: bool = typer.Option(False, "--calibrate",
+                                   help="judge the hand-labelled replies and report agreement"),
+    probe: str = typer.Option("", "--probe", help="only probes whose name contains this"),
+    limit: int = typer.Option(0, "--limit", help="at most this many trials (0 = all)"),
+    write: bool = typer.Option(False, "--write", help="store the verdicts in meta_json"),
+    judge_model: str = typer.Option("judge", "--judge-model", help="model name sent to the endpoint"),
+    show: int = typer.Option(12, "--show", help="disagreements to print"),
+):
+    """LLM judge for the rp_long_context leak and player-voice probes.
+
+    Reads stored traces (never the tested model), asks the judge the same
+    question the rules answer, and requires a quote from the reply as proof.
+    Prints the judge's verdicts next to the rules'. Calibrate first:
+    `toolery judge --calibrate --base-url URL`. The API key is read from
+    OPENAI_API_KEY.
+    """
+    from collections import Counter
+
+    from toolery.core.judge import (
+        Case,
+        JudgeClient,
+        load_calibration,
+        probe_family,
+        record,
+        rule_label,
+    )
+    from toolery.core.scenario import load_all_scenarios
+    from toolery.rankings.rp_report import CATEGORY
+
+    scenarios = {s.id: s for s in load_all_scenarios(Path("scenarios"))
+                 if s.category.value == CATEGORY}
+
+    def case_for(sid: str, reply: str) -> Case | None:
+        s = scenarios.get(sid)
+        if s is None or s.conversation is None:
+            return None
+        length, story = s.conversation.length or "", s.conversation.name or ""
+        name = sid.removeprefix("rp-").removesuffix(f"-{length}").removeprefix(f"{story}-")
+        if probe_family(name) is None or (probe and probe not in name):
+            return None
+        return Case(sid, name, story, s.system_prompt or "", s.prompt, reply)
+
+    client = JudgeClient(base_url, os.environ.get("OPENAI_API_KEY", ""), judge_model)
+    ident = client.identity()
+    console.print(f"[dim]judge: {ident.get('model_path') or ident['model']} "
+                  f"({ident.get('build') or 'build unknown'}) at {ident['base_url']}[/dim]")
+    pairs: list[tuple[str, str, dict, Case]] = []   # (expected, family, verdict, case)
+    try:
+        if calibrate:
+            items = load_calibration()
+            for item in items[:limit or None]:
+                c = case_for(item["scenario"], item["reply"])
+                if c is None:
+                    continue
+                v = client.judge(c)
+                pairs.append((item["label"], probe_family(c.probe), v, c))
+        else:
+            if not run:
+                console.print("[red]--run or --calibrate is required.[/red]")
+                raise typer.Exit(2)
+            store = _store()
+            done = 0
+            for run_id in run:
+                for r in store.fetch_results_for_run(run_id):
+                    if limit and done >= limit:
+                        break
+                    expected = rule_label(r["status"], r.get("failure_kind"))
+                    tp = _results_dir() / "runs" / run_id / (r.get("trace_path") or "")
+                    if expected is None or not r.get("trace_path") or not tp.is_file():
+                        continue
+                    reply = json.loads(tp.read_text(encoding="utf-8")).get("final_response") or ""
+                    c = case_for(r["scenario_id"], reply)
+                    if c is None:
+                        continue
+                    v = client.judge(c)
+                    done += 1
+                    pairs.append((expected, probe_family(c.probe), v, c))
+                    if write:
+                        store.set_meta(r["result_id"], "judge", record(v, ident))
+    finally:
+        client.close()
+
+    if not pairs:
+        console.print("[yellow]Nothing to judge (leak and player-voice probes only).[/yellow]")
+        return
+    against = "hand labels" if calibrate else "rules"
+    t = Table("probe", "trials", f"agree with {against}", "rejected", *[f"judge: {v}" for v in
+              ("ok", "knowledge_leak", "spoke_for_player")],
+              title=f"judge vs {against}")
+    by_probe: dict[str, list] = {}
+    for p in pairs:
+        by_probe.setdefault(p[3].probe if not calibrate else p[1], []).append(p)
+    for name, ps in sorted(by_probe.items()):
+        valid = [p for p in ps if p[2]["valid"]]
+        counts = Counter(p[2]["verdict"] for p in valid)
+        agree = sum(p[0] == p[2]["verdict"] for p in valid)
+        t.add_row(name, str(len(ps)), f"{agree}/{len(valid)}", str(len(ps) - len(valid)),
+                  *[str(counts.get(v, 0)) for v in ("ok", "knowledge_leak", "spoke_for_player")])
+    console.print(t)
+    if calibrate:
+        valid = [p for p in pairs if p[2]["valid"]]
+        for label in ("ok", "knowledge_leak", "spoke_for_player"):
+            of = [p for p in valid if p[0] == label]
+            if of:
+                hit = sum(p[2]["verdict"] == label for p in of)
+                console.print(f"  {label}: {hit}/{len(of)} recognised")
+    shown = 0
+    for exp, _fam, v, c in pairs:
+        if shown >= show:
+            break
+        if not v["valid"] or v["verdict"] != exp:
+            shown += 1
+            what = f"[red]rejected: {v['error']}[/red]" if not v["valid"] else \
+                f"{against} {exp} / judge [bold]{v['verdict']}[/bold]"
+            console.print(f"  {c.scenario_id}: {what}\n    [dim]{v['reason']}[/dim]\n"
+                          f"    quote: {v['quote'][:200]!r}", highlight=False)
+    if write and not calibrate:
+        console.print(f"[green]✓ {len(pairs)} verdicts stored under meta_json.judge.[/green]")
+
+
+@app.command()
 def rescore(
     run: list[str] = typer.Option(None, "--run", help="run_id to re-score (repeatable; default: all runs)"),  # noqa: B008
     scenario: list[str] = typer.Option(None, "--scenario", help="scenario id to re-score (repeatable)"),  # noqa: B008

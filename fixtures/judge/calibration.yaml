@@ -1,0 +1,370 @@
+# Hand-labelled replies for `toolery judge --calibrate`: the judge's
+# agreement with these is measured before any of its verdicts is trusted.
+# Taken from tests/scenarios/test_rp_long_context.py, where every one was
+# checked by reading it; "real" ones were written by a tested model.
+# label: ok | knowledge_leak | spoke_for_player (the first thing that happens).
+cases:
+- scenario: rp-leak-stranger-8k
+  label: ok
+  source: invented
+  reply: |-
+    The man is broad and sunburnt, with a pedlar's pack on his shoulders. He stops a few paces off and looks you over.
+
+    "Long way from anywhere to be sitting alone," he says. "What do they call you, traveller?"
+- scenario: rp-leak-stranger-8k
+  label: ok
+  source: invented
+  reply: '"Name?"'
+- scenario: rp-leak-stranger-8k
+  label: ok
+  source: invented
+  reply: |-
+    The man studies you. Mara is a stranger to him, and it shows in his face.
+
+    "Lost, are you?" he asks, leaning on his staff.
+- scenario: rp-leak-stranger-8k
+  label: knowledge_leak
+  source: invented
+  reply: |-
+    The man stops and smiles as though he had expected to find you here.
+
+    "Mara Venn, isn't it?" he says. "I've been looking for you."
+- scenario: rp-leak-stranger-8k
+  label: knowledge_leak
+  source: invented
+  reply: He tips his hat. “You must be Mara,” he says warmly. “The road has been talking about you.”
+- scenario: rp-leak-stranger-8k
+  label: knowledge_leak
+  source: invented
+  reply: |-
+    He stops in the road and squints against the sun, one hand on the strap of his pack.
+
+    "Well now," he says. "If it isn't Mara Venn, the mapmaker every
+- scenario: rp-leak-stranger-8k
+  label: knowledge_leak
+  source: invented
+  reply: He dips the pen and writes Mara Venn in a neat clerk's hand before you have said a word. "Two
+    pence," he says.
+- scenario: rp-leak-stranger-8k
+  label: spoke_for_player
+  source: invented
+  reply: |-
+    The clerk dips his pen and looks up. "Name?"
+
+    "Mara Venn," you say, and he writes it down in a careful hand.
+- scenario: rp-leak-stranger-8k
+  label: spoke_for_player
+  source: invented
+  reply: |-
+    "Name?" he asks.
+
+    You answer, "Mara Venn." He nods and writes.
+- scenario: rp-leak-stranger-8k
+  label: knowledge_leak
+  source: invented
+  reply: '"Name?" he asks, then answers himself. "No matter. Mara Venn, the mapmaker."'
+- scenario: rp-leak-ledger-8k
+  label: spoke_for_player
+  source: real
+  reply: |-
+    "Name?"
+
+    "Mara Venn," you say.
+
+    The clerk nods as if the name is familiar. "And where is it you're bound, Mistress Venn?"
+
+    "Nowhere. I'm on my way back to Greywater."
+- scenario: rp-leak-ledger-8k
+  label: spoke_for_player
+  source: real
+  reply: |-
+    "Name?"
+
+    "Mara Venn."
+
+    "Destination?"
+
+    "Greywater, at the coast. I'm a cartographer."
+
+    The clerk's pen stops. He looks at your face. "I know that name. You were the one they were asking after at the Wick crossing."
+- scenario: rp-leak-ledger-8k
+  label: spoke_for_player
+  source: real
+  reply: |-
+    "What name shall I write, ma'am?"
+
+    I pause. The name I have been using has served me well enough.
+
+    "Venn," I say. "Mara Venn."
+
+    The clerk writes it.
+- scenario: rp-leak-ledger-8k
+  label: spoke_for_player
+  source: real
+  reply: |-
+    "Name?"
+
+    The question has been asked in every town between here and the coast.
+
+    "The name is Venn," you say. "Mara Venn." It sounds different, spoken aloud like this.
+- scenario: rp-leak-ledger-8k
+  label: spoke_for_player
+  source: real
+  reply: |-
+    "Name?"
+
+    "I'm Mara Venn, a cartographer, and I'm bound for Greywater on Guild business." I look at him steadily. "The Pilots' Guild."
+
+    The clerk does not write my name.
+- scenario: rp-leak-ledger-8k
+  label: spoke_for_player
+  source: real
+  reply: |-
+    The clerk dips his pen. "Name and destination, if you please."
+
+    "Mara Venn. Bound for Greywater."
+
+    He writes both down.
+- scenario: rp-leak-ledger-8k
+  label: spoke_for_player
+  source: real
+  reply: |-
+    "Name and destination, if you please." He has a thin face and eyes the colour of slate.
+
+    "Mara Venn. Bound for Greywater."
+
+    The clerk writes both names. "Mara Venn. That name was mentioned here two months ago."
+- scenario: rp-leak-ledger-8k
+  label: spoke_for_player
+  source: real
+  reply: |-
+    "The name, please?"
+
+    I push the coin across the desk.
+
+    "Mara Venn. Going north, to the river road."
+
+    The clerk writes it in. "Mara Venn. River road."
+- scenario: rp-leak-ledger-8k
+  label: spoke_for_player
+  source: real
+  reply: |-
+    "Name?"
+
+    "Mara Venn." I spell it for him and wait while he writes. The sun is high in a clear sky.
+- scenario: rp-leak-ledger-8k
+  label: spoke_for_player
+  source: real
+  reply: |-
+    "Name, please."
+
+    "Mara Venn." I watch him write it down. "That's a good pen."
+- scenario: rp-leak-ledger-8k
+  label: knowledge_leak
+  source: real
+  reply: |-
+    "Name, destination, and the purpose of your journey, if you please, madam."
+
+    I take the pen from his hand and write three letters at the top of the page.
+
+    M.V.
+
+    He squints at it. "Mara Venn," he repeats. "For the town of Thornby, and the purpose?"
+- scenario: rp-leak-ledger-8k
+  label: knowledge_leak
+  source: real
+  reply: |-
+    A rider reins in beside the milestone.
+
+    "I'm looking for a mapmaker called Mara Venn," he says. "Have you seen her?"
+- scenario: rp-leak-ledger-8k
+  label: knowledge_leak
+  source: real
+  reply: He stops. "I am looking for a surveyor named Mara Venn. I was told she passed this way."
+- scenario: rp-leak-ledger-8k
+  label: knowledge_leak
+  source: real
+  reply: |-
+    The man is perhaps sixty, with a seaman's beard. He looks you up and down.
+
+    "Mara Venn," he says, and waits.
+
+    The road is empty in both directions.
+- scenario: rp-leak-ledger-8k
+  label: knowledge_leak
+  source: real
+  reply: |-
+    The milestone reads "Seven miles to Stonyford", and you have been following it for hours.
+
+    "Mara Venn," he says. "The cartographer." It is not a question.
+- scenario: rp-leak-stranger-16k
+  label: knowledge_leak
+  source: real
+  reply: The man takes off his hat. "My name is Gair Venn," he says. "We share a name, you and I."
+- scenario: rp-leak-stranger-16k
+  label: knowledge_leak
+  source: real
+  reply: '"I know, because I''ve been watching the road for two days. I''m Edrin Venn. I believe you have
+    something of mine."'
+- scenario: rp-leak-stranger-16k
+  label: knowledge_leak
+  source: real
+  reply: He stops. "My name is Joss. I've been looking for a surveyor named Mara Venn, and I was told
+    to look for a woman with a scarred arm."
+- scenario: rp-leak-stranger-16k
+  label: spoke_for_player
+  source: real
+  reply: |-
+    "Who are you?" he asks.
+
+    "My name is Mara Venn," and you hold out your hand.
+- scenario: rp-leak-ledger-16k
+  label: ok
+  source: real
+  reply: |-
+    The clerk looks at the coin, then at you. The ledger is open on the desk, and his pen is poised above it, waiting for a name.
+
+    He is a man of forty or so, with ink stains on his fingers and a sharp look that has probably seen through most of the stories told at this gate.
+
+    You have no name here, no past, nothing to be called. The clerk raises his eyebrows and waits, the pen still poised. The coin lies between you.
+- scenario: rp-player-voice-8k
+  label: ok
+  source: invented
+  reply: The pie woman waits, peel in hand, while the crowd pushes past her stall. "Take your time, love,
+    the pies won't," she says, and turns to serve a drover.
+- scenario: rp-player-voice-8k
+  label: ok
+  source: invented
+  reply: The old man leans on his broom and waits a while longer. "I'm Pask, the verger here," he says
+    at last. "Take your time."
+- scenario: rp-player-voice-8k
+  label: ok
+  source: invented
+  reply: If you say nothing, she will serve the next customer; the queue behind you is growing and the
+    oven is hot.
+- scenario: rp-player-voice-8k
+  label: spoke_for_player
+  source: invented
+  reply: The square roars around you. "Mutton, please," you say, counting a penny into her palm.
+- scenario: rp-player-voice-8k
+  label: spoke_for_player
+  source: invented
+  reply: You say, "I'll take the mutton," and she wraps it in a dock leaf before you can change your mind.
+- scenario: rp-player-voice-8k
+  label: spoke_for_player
+  source: invented
+  reply: She waits. "Venn," I say. "Mara Venn."
+- scenario: rp-player-voice-8k
+  label: spoke_for_player
+  source: invented
+  reply: |-
+    The pie woman waits.
+
+    I pause. The name I have been using has served me well enough, but it is not mine, and the market is very loud around me.
+- scenario: rp-player-voice-8k
+  label: spoke_for_player
+  source: invented
+  reply: |-
+    "Well, love?" she says.
+
+    "I'm Mara Venn, a cartographer, and I would like the mutton."
+- scenario: rp-player-voice-8k
+  label: spoke_for_player
+  source: invented
+  reply: You decide to trust her, and before long she has heard the whole story of the Guild and the estuary
+    chart.
+- scenario: rp-snowline-leak-stranger-16k
+  label: ok
+  source: invented
+  reply: Stroud does not turn. He runs a finger along the register, the bell, the jar of mints, and stops
+    at the rack of trail maps. "Early riser," he says to the counter.
+- scenario: rp-snowline-leak-stranger-16k
+  label: knowledge_leak
+  source: invented
+  reply: Stroud reaches the end of the counter and picks up the old snow globe, turning it over in his
+    hands until the base creaks.
+- scenario: rp-snowline-leak-stranger-16k
+  label: knowledge_leak
+  source: invented
+  reply: '"Nice snow globe," Stroud says without turning. "Heavy base. Hollow, I should think."'
+- scenario: rp-snowline-leak-stranger-16k
+  label: spoke_for_player
+  source: invented
+  reply: |-
+    Dev waits.
+
+    "It's in the snow globe on the desk," you say.
+- scenario: rp-snowline-leak-stranger-16k
+  label: spoke_for_player
+  source: invented
+  reply: Your eyes go, without meaning to, to the snow globe at the end of the counter.
+- scenario: rp-snowline-leak-stranger-16k
+  label: spoke_for_player
+  source: invented
+  reply: |-
+    He turns when you come down the stairs.
+
+    You pick up the snow globe from its place at the end of the counter and hold it between your hands.
+
+    "Here," you say. "It was here all along."
+
+    Stroud takes the globe from you and turns it over.
+- scenario: rp-snowline-leak-stranger-16k
+  label: knowledge_leak
+  source: invented
+  reply: |-
+    He has been careful. The mints, the trail maps, the bell, the register: all exactly where they should be. And at the end, the snow globe sits with the little lodge facing the door.
+
+    He lifts it in both hands, and turns and finds you at the foot of the stairs.
+
+    He turns the globe upside down. The felt-lined base comes off in his hands.
+# Added to balance the labels: replies that do nothing wrong.
+- scenario: rp-leak-ledger-8k
+  label: ok
+  source: invented
+  reply: |-
+    The clerk is a thin, tired man with ink on his cuffs. He takes the coin, bites it out of habit, and drops it into a tin box.
+
+    "Name and destination," he says, pen raised. "For the book."
+- scenario: rp-leak-stranger-16k
+  label: ok
+  source: invented
+  reply: |-
+    He is a drover by the look of him, with a crook and a coat gone green at the seams. He nods at the milestone.
+
+    "You'll be wanting Thornby, I expect. Everybody on this road wants Thornby." He squints at your brass case. "Surveyor, are you? We had one through here years back."
+- scenario: rp-leak-ledger-16k
+  label: ok
+  source: invented
+  reply: |-
+    The clerk waits. When nothing comes, he taps the page with the end of his pen. "I can't write 'nobody', mistress. The toll-master checks."
+- scenario: rp-player-voice-16k
+  label: ok
+  source: invented
+  reply: |-
+    Dallow lets the silence sit. He folds the paper in half, then in half again, and turns to look out at the harbour while you think.
+
+    "Take the night," he says at last. "The offer will keep till morning. I'm not sure I will."
+- scenario: rp-player-voice-8k
+  label: ok
+  source: invented
+  reply: |-
+    The pie woman shrugs and turns to the next customer, a boy with a fistful of farthings. Behind you a cart has stuck in the crowd, and the carter is swearing at his horse. The smell of hot mutton fat drifts over everything.
+- scenario: rp-snowline-leak-stranger-16k
+  label: ok
+  source: invented
+  reply: |-
+    Stroud stirs two sugars into his coffee and taps the spoon on the rim. "I've searched your car, your room and the office," he says pleasantly. "So it's on you, or it's somewhere I haven't thought of yet. Either way, we're going to be here till Thursday." He sips. "Toast?"
+- scenario: rp-snowline-leak-ledger-16k
+  label: ok
+  source: invented
+  reply: |-
+    Dev chips at the ice on the blade and doesn't look at you. "Don't tell me," he says. "Seriously. If he asks me, I want to be able to say I don't know, and mean it." He swings the bar again and a sheet of ice cracks off.
+- scenario: rp-snowline-player-voice-16k
+  label: ok
+  source: invented
+  # The rules see "you decide" and call it a decision made for her; it is
+  # only the wait. A case for the judge.
+  rules: spoke_for_player
+  reply: |-
+    Stroud waits. The fire pops. On the landing, Pia shifts on the stair and the board creaks under her. Ilse has stopped pretending to read. Nobody in the room moves while you decide.

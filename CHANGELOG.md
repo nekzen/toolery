@@ -34,6 +34,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Second `rp_long_context` story, `snowline` (28 scenarios at 8k and 16k):
   a mountain lodge cut off by an avalanche, player turns in the second
   person, a hidden USB key told to one character as the secret.
+- `toolery judge`: an LLM judge over stored rp_long_context traces (leak
+  and player-voice probes), quote required as proof, `--calibrate` against
+  hand-labelled replies, `--write` to keep the verdicts in `meta_json`.
 - `toolery run --text-tool-calls`, measurement only: the raw adapter also
   accepts tool calls written as JSON in the reply text (Neural-v1-24B writes
   them in a markdown block and never emits `[TOOL_CALLS]`). Results are

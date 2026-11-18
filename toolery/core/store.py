@@ -287,6 +287,17 @@ class Store:
             ).fetchall()
         return [dict(r) for r in rows]
 
+    def set_meta(self, result_id: int, key: str, value) -> None:
+        """Set one key of a result's meta_json, keeping the others (the
+        judge's verdict goes under "judge")."""
+        with self.conn() as c:
+            row = c.execute("SELECT meta_json FROM scenario_results WHERE result_id=?",
+                            (result_id,)).fetchone()
+            meta = json.loads(row["meta_json"] or "{}") if row else {}
+            meta[key] = value
+            c.execute("UPDATE scenario_results SET meta_json=? WHERE result_id=?",
+                      (json.dumps(meta), result_id))
+
     def fetch_run_token_totals(self, run_id: str) -> tuple[int, int]:
         """(total_completion_tokens, total_gen_ms) across the run's scenario
         results. Feeds the token-weighted effective tokens/s shown when
