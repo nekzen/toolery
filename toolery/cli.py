@@ -179,6 +179,12 @@ def run(
              "limits up to limit × SLACK (e.g. 2.0). Strict scores are "
              "unchanged; correctness_score reflects the finished run. "
              "1.0 = off. Pair with a generous --timeout-scale."),
+    text_tool_calls: bool = typer.Option(
+        False, "--text-tool-calls",
+        help="raw adapter, MEASUREMENT ONLY: also accept tool calls the model "
+             "writes as JSON in its reply text instead of its native format. "
+             "Results are stored under the adapter name 'raw-text', apart from "
+             "raw runs; give the run its own --model name too."),
     no_tui: bool = typer.Option(True, "--no-tui/--tui", help="MVP: --no-tui only"),
     with_perf: bool = typer.Option(False, "--with-perf"),
     perf_only: bool = typer.Option(False, "--perf-only",
@@ -239,6 +245,7 @@ def run(
         concurrency = int(_rcfg.get("concurrency", concurrency) or concurrency)
         timeout_scale = float(_rcfg.get("timeout_scale", timeout_scale) or timeout_scale)
         budget_slack = float(_rcfg.get("budget_slack", budget_slack) or budget_slack)
+        text_tool_calls = bool(_rcfg.get("text_tool_calls", text_tool_calls))
         with_perf = bool(_rcfg.get("with_perf", with_perf))
         perf_only = bool(_rcfg.get("perf_only", perf_only))
         cluster = _rcfg.get("cluster", cluster)
@@ -254,8 +261,12 @@ def run(
     adapters: dict[str, Adapter] = {}
     for a in adapter.split(","):
         a = a.strip()
-        if a == "raw":
-            adapters[a] = OpenAIRawAdapter(base_url=base_url, api_key=local_key)
+        if a in ("raw", "raw-text"):
+            # The adapter's key is the name results are stored under; a
+            # resumed --text-tool-calls run lists "raw-text" in its config.
+            text_mode = text_tool_calls or a == "raw-text"
+            adapters["raw-text" if text_mode else "raw"] = OpenAIRawAdapter(
+                base_url=base_url, api_key=local_key, text_tool_calls=text_mode)
         elif a == "cloud":
             from toolery.adapters.cloud import CloudAdapter
             adapters[a] = CloudAdapter(base_url=base_url, api_key=local_key)
@@ -343,7 +354,7 @@ def run(
     # skipped (and listed), not run and scored as a failure.
     server_info: dict = {}
     skipped_context: list[str] = []
-    if not perf_only and not resuming and any(a in adapters for a in ("raw", "cloud")):
+    if not perf_only and not resuming and any(a in adapters for a in ("raw", "raw-text", "cloud")):
         from toolery.core.server_info import approx_tokens, count_tokens, fetch_server_info
         server_info = fetch_server_info(base_url, local_key)
         if server_info.get("auth_error"):
@@ -414,7 +425,7 @@ def run(
     cfg = {"model": model, "served_model": api_model, "adapter": list(adapters),
            "tier": tier, "category": category, "trials": trials, "base_url": base_url,
            "concurrency": concurrency, "timeout_scale": timeout_scale,
-           "budget_slack": budget_slack,
+           "budget_slack": budget_slack, "text_tool_calls": text_tool_calls,
            "server": server_info, "skipped_context": skipped_context,
            "total_units": total_units,
            "scenarios_count": 0 if perf_only else len(xs),

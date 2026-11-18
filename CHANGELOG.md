@@ -34,6 +34,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Second `rp_long_context` story, `snowline` (28 scenarios at 8k and 16k):
   a mountain lodge cut off by an avalanche, player turns in the second
   person, a hidden USB key told to one character as the secret.
+- `toolery run --text-tool-calls`, measurement only: the raw adapter also
+  accepts tool calls written as JSON in the reply text (Neural-v1-24B writes
+  them in a markdown block and never emits `[TOOL_CALLS]`). Results are
+  stored under the adapter name `raw-text`.
 - Check `dialogue_contains`: regexes matched only inside spoken dialogue.
 - Any check may declare `failure_kind`, the label recorded when it is the
   one that fails the trial. A wrong final answer is now `wrong_answer`

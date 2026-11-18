@@ -249,3 +249,68 @@ async def test_gives_up_after_max_retries(captured_sleeps):
     assert trace.error is not None and "429" in trace.error
     assert route.call_count == 3  # initial + 2 retries
     assert len(captured_sleeps) == 2
+
+
+# ------------------------------------------------- --text-tool-calls
+
+NEURAL_REPLY = (
+    "To review the `src/config.py` file for security issues, I'll need to read its contents "
+    "first. Let me access the file and analyze it.\n\n```python\n{\n  \"name\": \"read_file\",\n"
+    "  \"arguments\": \"{\\n  \\\"path\\\": \\\"src/config.py\\\"\\n}\"\n}\n```")
+
+
+def test_parse_text_tool_calls_reads_what_neural_writes():
+    """Neural-v1-24B, code-review-medium-01: a JSON call in a ```python
+    block, its arguments a JSON string."""
+    from toolery.adapters.openai_raw import parse_text_tool_calls
+    assert parse_text_tool_calls(NEURAL_REPLY, {"read_file"}) == [
+        ("read_file", {"path": "src/config.py"})]
+    # A tool the scenario does not expose is not a call.
+    assert parse_text_tool_calls(NEURAL_REPLY, {"write_file"}) == []
+
+
+def test_parse_text_tool_calls_other_shapes():
+    from toolery.adapters.openai_raw import parse_text_tool_calls
+    allowed = {"get_weather", "search"}
+    assert parse_text_tool_calls(
+        'Sure. [{"name": "get_weather", "arguments": {"location": "Warsaw"}}, '
+        '{"name": "search", "parameters": {"q": "x"}}]', allowed) == [
+        ("get_weather", {"location": "Warsaw"}), ("search", {"q": "x"})]
+    assert parse_text_tool_calls(
+        '{"tool_call": {"name": "search", "arguments": {"q": "y"}}}', allowed) == [
+        ("search", {"q": "y"})]
+    assert parse_text_tool_calls('The answer is {"temp_c": 7}. No call.', allowed) == []
+    assert parse_text_tool_calls(None, allowed) == []
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_text_tool_calls_mode_runs_the_call_and_names_the_adapter():
+    first = {"choices": [{"message": {"role": "assistant", "content":
+             'Let me check.\n```json\n{"name": "get_weather", "arguments": {"location": "Warsaw"}}\n```'}}]}
+    second = {"choices": [{"message": {"role": "assistant", "content": "7°C, cloudy."}}]}
+    route = respx.post("http://localhost:8000/v1/chat/completions").mock(
+        side_effect=[httpx.Response(200, json=first), httpx.Response(200, json=second)])
+    adapter = OpenAIRawAdapter(base_url="http://localhost:8000", api_key="x", text_tool_calls=True)
+    trace = await adapter.run_scenario(_scenario(), model="m", timeout=10)
+    assert adapter.name == "raw-text"
+    assert [c.name for c in trace.tool_calls] == ["get_weather"]
+    assert trace.tool_calls[0].args == {"location": "Warsaw"}
+    assert trace.final_response == "7°C, cloudy."
+    assert trace.adapter_metadata["text_tool_calls"] == 1
+    # The second request carries the call as a native tool call and its result.
+    sent = json.loads(route.calls[1].request.content)["messages"]
+    assert sent[-2]["tool_calls"][0]["function"]["name"] == "get_weather"
+    assert sent[-1]["role"] == "tool"
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_without_the_option_a_text_call_stays_text():
+    reply = {"choices": [{"message": {"role": "assistant", "content":
+             '{"name": "get_weather", "arguments": {"location": "Warsaw"}}'}}]}
+    respx.post("http://localhost:8000/v1/chat/completions").mock(
+        return_value=httpx.Response(200, json=reply))
+    trace = await OpenAIRawAdapter(base_url="http://localhost:8000", api_key="x").run_scenario(
+        _scenario(), model="m", timeout=10)
+    assert trace.tool_calls == [] and "text_tool_calls" not in trace.adapter_metadata

@@ -183,6 +183,7 @@ uv run toolery tui                           # Profiles tab: role viability boar
 | Many `budget_violated`, correctness well above score | Capable but inefficient — a real finding, reported separately | Weigh it against your use: efficiency matters more for agents than for one-off questions |
 | Correctness ≈ score | The budget is not what limits this model | — |
 | Several models stuck at the same score in a dimension | A scenario nobody can pass — suspect the scenario, not the models | Check it with `scripts/golden_probe.py` |
+| Many `wrong_tool`, and the replies contain JSON like `{"name": ..., "arguments": ...}` | The model writes its tool calls as text instead of its native format, so the server never parses them | Check the chat template first. To measure the model's tool use with the format forgiven: `--text-tool-calls` (stored as adapter `raw-text`, apart; give the run its own `--model` name) |
 
 **5. Compare like with like.** Keep the backend, its flags,
 `--timeout-scale` and `--budget-slack` identical across the models you

@@ -66,6 +66,58 @@ def _normalise_base_url(base_url: str) -> str:
     return url + "/v1"
 
 
+_DECODER = json.JSONDecoder()
+
+
+def _as_call(obj: object, allowed: set[str]) -> tuple[str, dict] | None:
+    """(name, arguments) when `obj` is a tool call written as JSON:
+    {"name", "arguments"|"parameters"}, possibly wrapped in "function" or
+    "tool_call". Only names of tools the scenario exposes count."""
+    if not isinstance(obj, dict):
+        return None
+    for key in ("tool_call", "function"):
+        if isinstance(obj.get(key), dict) and "name" in obj[key]:
+            obj = obj[key]
+    name = obj.get("name")
+    if not isinstance(name, str) or name not in allowed:
+        return None
+    args = obj.get("arguments", obj.get("parameters", {}))
+    if isinstance(args, str):
+        try:
+            args = json.loads(args) if args.strip() else {}
+        except json.JSONDecodeError:
+            args = {"_raw": args}
+    return name, args if isinstance(args, dict) else {"_raw": args}
+
+
+def parse_text_tool_calls(text: str | None, allowed: set[str]) -> list[tuple[str, dict]]:
+    """Tool calls a model wrote as JSON inside its reply, instead of in its
+    native format. Neural-v1-24B (a Mistral Small 3.2 merge) answers
+    ```python {"name": "read_file", "arguments": "{\"path\": ...}"} ``` and
+    never emits [TOOL_CALLS], so llama-server returns plain text. Every
+    JSON object or array in the text is tried, in order; nested objects of a
+    call are not counted twice."""
+    calls: list[tuple[str, dict]] = []
+    i, text = 0, text or ""
+    while i < len(text):
+        if text[i] not in "{[":
+            i += 1
+            continue
+        try:
+            obj, end = _DECODER.raw_decode(text, i)
+        except json.JSONDecodeError:
+            i += 1
+            continue
+        found = [call for item in (obj if isinstance(obj, list) else [obj])
+                 if (call := _as_call(item, allowed))]
+        if found:
+            calls += found
+            i = end
+        else:
+            i += 1
+    return calls
+
+
 class OpenAIRawAdapter:
     name = "raw"
     version = "0.2"
@@ -76,7 +128,13 @@ class OpenAIRawAdapter:
     supports_budget_slack = True
 
     def __init__(self, base_url: str, api_key: str = "", concurrency: int = 4,
-                 max_retries: int = 4) -> None:
+                 max_retries: int = 4, text_tool_calls: bool = False) -> None:
+        # Measurement only: also accept tool calls written as JSON in the
+        # reply's text. Results carry the adapter name "raw-text" so they
+        # never mix with a normal raw run.
+        self.text_tool_calls = text_tool_calls
+        if text_tool_calls:
+            self.name = "raw-text"
         self.base_url = _normalise_base_url(base_url)
         self.api_key = api_key
         self.max_retries = max_retries
@@ -139,6 +197,8 @@ class OpenAIRawAdapter:
                 if getattr(sampling, key) is not None:
                     sampling_sent[key] = getattr(sampling, key)
 
+        allowed_tools = {t["function"]["name"] for t in tools_schema}
+        text_calls_parsed = 0
         tool_calls_recorded: list[ToolCall] = []
         usage_records: list[TurnUsage] = []
         final_response: str | None = None
@@ -181,6 +241,14 @@ class OpenAIRawAdapter:
                 # correct answers and the model carries its own scratchpad into
                 # subsequent turn context.
                 msg["content"] = strip_reasoning_tags(msg.get("content"))
+                if self.text_tool_calls and tools_schema and not msg.get("tool_calls"):
+                    parsed = parse_text_tool_calls(msg.get("content"), allowed_tools)
+                    if parsed:
+                        text_calls_parsed += len(parsed)
+                        msg["tool_calls"] = [
+                            {"id": f"t{turn_idx:02d}{k:06d}", "type": "function",
+                             "function": {"name": name, "arguments": json.dumps(args)}}
+                            for k, (name, args) in enumerate(parsed)]
                 messages.append(msg)
                 tool_calls = msg.get("tool_calls") or []
                 if not tool_calls:
@@ -224,6 +292,8 @@ class OpenAIRawAdapter:
 
         duration_ms = int((time.monotonic() - started) * 1000)
         metadata: dict = {"base_url": self.base_url, "model": model}
+        if self.text_tool_calls:
+            metadata["text_tool_calls"] = text_calls_parsed
         traced = [Message.model_validate(m) for m in messages]
         if scenario.sampling:
             metadata["sampling"] = sampling_sent
