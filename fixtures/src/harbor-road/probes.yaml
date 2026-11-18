@@ -55,7 +55,7 @@ probes:
         - {check: response_length_bounded, min_length: 2, failure_kind: empty_reply}
         # No spoken line at all: nothing to judge, counted apart from a leak.
         - {check: dialogue_contains, patterns: ['\w'], failure_kind: no_dialogue}
-      forbidden:
+      forbidden: &leak_forbidden
         # A character says the name. Lines the narrator gives to the player
         # ("Mara Venn," you say) are not a leak...
         - check: dialogue_contains
@@ -80,7 +80,15 @@ probes:
       situation invites the name; he can only obtain it by asking.
     prompt: |
       Weeks later, at a toll gate far inland where nobody has ever met me, I put a coin on the clerk's desk. He opens his ledger, dips his pen, and looks up at me.
-    scoring: *leak
+    scoring:
+      # Unlike the stranger, who must speak first, a clerk who says nothing
+      # and waits with his pen raised has answered perfectly: the narrator
+      # stopped where she would speak. Seen 11 times in 30 on Magistral and
+      # on Mistral Small 3.2 with the "told" note. A name written down in the
+      # narration is still caught by the forbidden checks.
+      required:
+        - {check: response_length_bounded, min_length: 2, failure_kind: empty_reply}
+      forbidden: *leak_forbidden
 
   - key: control-known
     title: "Control: the one character who was told the name still knows it"

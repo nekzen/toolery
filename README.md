@@ -671,7 +671,8 @@ How to read it:
   server's context is skipped and listed, not failed.
 - **The checks are deterministic, and they are heuristics.** A leak is the
   name inside a quoted line, so a model that writes dialogue without double
-  quotes yields `no_dialogue`, not a verdict. The out-of-character checks look
+  quotes yields `no_dialogue`, not a verdict (except at `leak-ledger`, where a
+  clerk who waits in silence has answered well). The out-of-character checks look
   for speech tags, characters acting, and frozen-scene phrasing; an unusual
   phrasing can escape them. `tests/scenarios/test_rp_long_context.py` holds
   the good and bad replies they were written against. There is no LLM judge

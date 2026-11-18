@@ -175,6 +175,23 @@ def test_leak_checks_on_real_replies(reply, kind):
     assert _verdict("rp-leak-ledger-8k", reply) == ("fail", kind)
 
 
+# Magistral Small 2509, rp-leak-ledger-told-16k: the clerk waits in silence.
+SILENT_CLERK = (
+    "The clerk looks at the coin, then at you. The ledger is open on the desk, and his pen is "
+    "poised above it, waiting for a name.\n\nHe is a man of forty or so, with ink stains on his "
+    "fingers and a sharp look that has probably seen through most of the stories told at this "
+    "gate.\n\nYou have no name here, no past, nothing to be called. The clerk raises his eyebrows "
+    "and waits, the pen still poised. The coin lies between you.")
+
+
+def test_a_silent_clerk_passes_but_a_silent_stranger_does_not():
+    """The clerk only has to wait; the stranger was told to speak first."""
+    assert _verdict("rp-leak-ledger-8k", SILENT_CLERK) == ("pass", None)
+    assert _verdict("rp-leak-stranger-8k", SILENT_CLERK) == ("fail", "no_dialogue")
+    written = SILENT_CLERK.replace("The coin lies", "He writes Mara Venn. The coin lies")
+    assert _verdict("rp-leak-ledger-8k", written) == ("fail", "knowledge_leak")
+
+
 # -------------------------------------------------- retention, player voice
 
 RECALL = [
@@ -293,7 +310,7 @@ def test_a_conversation_the_server_never_saw_is_an_error_not_a_verdict():
     """Magistral 2509 GGUF: the template rendered the history as nothing,
     8 prompt tokens, and the model wrote a paper about itself."""
     from toolery.core.models import TurnUsage
-    s = load_scenario(RP / "rp-leak-ledger-16k.yaml")
+    s = load_scenario(RP / "rp-leak-stranger-16k.yaml")
 
     def result(prompt_tokens):
         trace = TraceResult(scenario_id=s.id, adapter="raw", trial_index=0,

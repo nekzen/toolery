@@ -33,10 +33,6 @@ scoring:
   - check: response_length_bounded
     min_length: 2
     failure_kind: empty_reply
-  - check: dialogue_contains
-    patterns:
-    - \w
-    failure_kind: no_dialogue
   forbidden:
   - check: dialogue_contains
     patterns:
