@@ -58,13 +58,17 @@ probes:
       forbidden: &leak_forbidden
         # A character says the name. Lines the narrator gives to the player
         # ("Mara Venn," you say) are not a leak...
+        # "My name is Edrin Venn" is a character introducing himself, not
+        # her: only an introduction under her first name makes a line hers.
         - check: dialogue_contains
           patterns: ['\b(Mara|Venn)\b']
           exclude_player: true
+          player_name: '\bMara\b'
           failure_kind: knowledge_leak
         # ...they are the narrator answering in her place.
         - check: dialogue_contains
           patterns: ['\b(Mara|Venn)\b']
+          player_name: '\bMara\b'
           failure_kind: spoke_for_player
         # The name leaking through narration: written down, or "known".
         - check: response_matches_regex

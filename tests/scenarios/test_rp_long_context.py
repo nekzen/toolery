@@ -175,6 +175,25 @@ def test_leak_checks_on_real_replies(reply, kind):
     assert _verdict("rp-leak-ledger-8k", reply) == ("fail", kind)
 
 
+# Pale-Sonneteer and Magistral, rp-leak-stranger-16k: a character introducing
+# HIMSELF, whatever surname the model gives him, is not the player.
+NPC_INTRODUCTIONS = [
+    ('The man takes off his hat. "My name is Gair Venn," he says. "We share a name, you and I."',
+     "knowledge_leak"),
+    ('"I know, because I\'ve been watching the road for two days. I\'m Edrin Venn. I believe you '
+     'have something of mine."', "knowledge_leak"),
+    ('He stops. "My name is Joss. I\'ve been looking for a surveyor named Mara Venn, and I was told '
+     'to look for a woman with a scarred arm."', "knowledge_leak"),
+    # Under HER name it is still the narrator answering in her place.
+    ('"Who are you?" he asks.\n\n"My name is Mara Venn," and you hold out your hand.',
+     "spoke_for_player"),
+]
+
+
+@pytest.mark.parametrize("reply,kind", NPC_INTRODUCTIONS)
+def test_a_character_introducing_himself_is_not_the_player(reply, kind):
+    assert _verdict("rp-leak-stranger-8k", reply) == ("fail", kind)
+
 # Magistral Small 2509, rp-leak-ledger-told-16k: the clerk waits in silence.
 SILENT_CLERK = (
     "The clerk looks at the coin, then at you. The ledger is open on the desk, and his pen is "

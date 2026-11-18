@@ -38,10 +38,12 @@ scoring:
     patterns:
     - \b(Mara|Venn)\b
     exclude_player: true
+    player_name: \bMara\b
     failure_kind: knowledge_leak
   - check: dialogue_contains
     patterns:
     - \b(Mara|Venn)\b
+    player_name: \bMara\b
     failure_kind: spoke_for_player
   - check: response_matches_regex
     all_of:
