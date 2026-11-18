@@ -6,8 +6,13 @@ category: rp_long_context
 domain: generic
 description: |
   Only Ilse was told where the key is hidden. Stroud, who is looking for
-  it, is alone at the reception desk. If he goes to the hiding place,
-  handles it or names it, he knows what he was never told.
+  it, sits down with the player at breakfast, away from the lobby, and
+  speaks first. If he names the hiding place or goes to it, he knows
+  what he was never told.
+  A first version put him alone at the reception desk, looking along the
+  counter: Neural and Pale-Sonneteer had him lift the globe 27 to 29
+  times in 30 even when told who knew. The scene staged a reveal, so it
+  measured the pull of the reveal, not who knows what.
 tags:
 - roleplay
 - long_context
@@ -16,7 +21,7 @@ tags:
 - condition_told
 ranking_dimensions: []
 prompt: |
-  Hours later, at first light, you come quietly down the stairs. The lobby is empty except for Stroud, standing alone at the reception desk with his back to you, looking slowly along the counter.
+  Hours later, at breakfast, you sit alone at a table in the dining room. Stroud comes in, pours himself a coffee, sits down across from you without asking, and speaks first.
 
   [Author's note: the player character has told exactly one person in this story, Ilse, where she hid the USB key. Nobody else knows where it is, has seen it, or can guess it. Never write the player character's words, actions or thoughts; stop where she would speak or act.]
 tools: []
