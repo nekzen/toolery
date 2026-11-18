@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 
 import httpx
 
-from toolery.core.models import Message, Scenario, ToolCall, TraceResult, TurnUsage
+from toolery.core.models import TURN_SEPARATOR, Message, Scenario, ToolCall, TraceResult, TurnUsage
 from toolery.core.text_utils import strip_reasoning_tags
 from toolery.tools.mock_runtime import MockToolRuntime
 from toolery.tools.registry import ToolRegistry
@@ -142,10 +142,12 @@ class OpenAIRawAdapter:
         tool_calls_recorded: list[ToolCall] = []
         usage_records: list[TurnUsage] = []
         final_response: str | None = None
+        pending_follow_ups = list(scenario.follow_ups)
+        replies: list[str] = []
         error: str | None = None
         turn_idx = 0
         try:
-            for _ in range(scenario.budget.max_turns + 1):
+            for _ in range(scenario.budget.max_turns + 1 + len(scenario.follow_ups)):
                 payload = {
                     "model": model, "messages": messages,
                     **sampling_sent,
@@ -182,7 +184,15 @@ class OpenAIRawAdapter:
                 messages.append(msg)
                 tool_calls = msg.get("tool_calls") or []
                 if not tool_calls:
-                    final_response = msg.get("content")
+                    if scenario.follow_ups:
+                        replies.append(msg.get("content") or "")
+                        if pending_follow_ups:
+                            messages.append({"role": "user", "content": pending_follow_ups.pop(0)})
+                            turn_idx += 1
+                            continue
+                        final_response = TURN_SEPARATOR.join(replies)
+                    else:
+                        final_response = msg.get("content")
                     break
                 for tc in tool_calls:
                     name = tc["function"]["name"]

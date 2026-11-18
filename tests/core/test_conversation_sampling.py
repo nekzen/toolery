@@ -150,3 +150,20 @@ def test_a_wrong_answer_is_no_longer_labelled_wrong_tool(tmp_path):
     plain_forbidden = {"required": [{"check": "response_contains", "patterns": ["nothing"]}],
                        "forbidden": [{"check": "response_contains", "patterns": ["useful"]}]}
     assert _eval(tmp_path, plain_forbidden).failure_kind == "forbidden_action"
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_follow_ups_are_sent_one_by_one_and_replies_joined(tmp_path):
+    from toolery.core.models import TURN_SEPARATOR
+    answers = iter(["first", "second", "third"])
+    route = respx.post(URL).mock(side_effect=lambda req: _answer(next(answers)))
+    s = _write(tmp_path).model_copy(update={"follow_ups": ["and then?", "and after?"]})
+    trace = await OpenAIRawAdapter(base_url="http://localhost:8000").run_scenario(s, "m", 30)
+    assert route.call_count == 3
+    last = json.loads(route.calls.last.request.content)["messages"]
+    # The third request carries the model's own two earlier replies.
+    assert [m["content"] for m in last[-5:]] == [
+        "I greet the stranger.", "first", "and then?", "second", "and after?"]
+    assert trace.final_response == TURN_SEPARATOR.join(["first", "second", "third"])
+    assert trace.error is None

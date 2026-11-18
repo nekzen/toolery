@@ -7,7 +7,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
-- Category `rp_long_context` (40 scenarios): roleplay probes at the end of a
+- Category `rp_long_context` (50 scenarios): roleplay probes at the end of a
   frozen conversation, at 8k, 16k, 32k and 64k of context. Knowledge leak (a character
   says a name only another character was told), its control, three
   out-of-character instructions that must not be absorbed by the story,
@@ -19,6 +19,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   continues) and `sampling` (temperature, min_p, seed, max_tokens). Sampling
   settings and the conversation's identity are stored with each result in
   `scenario_results.meta_json`.
+- Conditions `-reminder` and `-told` for three `rp_long_context` probes at
+  16k: the same probe with an author's note before the answer, to tell a
+  trainable default from a limit of the model.
+- Scenario field `follow_ups`: more user turns sent one by one, so the model
+  writes several replies in a row. Check `repetition_bounded` measures how
+  much those replies repeat one another (probe `rp-repetition`), and
+  `rp-report` prints the figures, with the replies cut at `max_tokens`
+  (counted from the token usage kept in the trace, so a rescore fills it in
+  for older runs).
 - Check `dialogue_contains`: regexes matched only inside spoken dialogue.
 - Any check may declare `failure_kind`, the label recorded when it is the
   one that fails the trial. A wrong final answer is now `wrong_answer`

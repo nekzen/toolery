@@ -11,6 +11,33 @@ defaults:
   # RATE over several trials. Trial n is sent seed + n.
   sampling: {temperature: 0.8, min_p: 0.05, seed: 1000, max_tokens: 350}
 
+# Conditions: the same probe asked again WITH HELP, to tell a habit from a
+# limit. A defect that disappears when the model is reminded of the rule
+# right before it answers is a default it can be trained out of; one that
+# survives being told exactly what to do is closer to a capability limit.
+# Each condition appends a note to the probe's prompt and yields scenarios
+# named rp-<probe>-<condition>-<length>, scored exactly like the original.
+# One length is enough: these defects do not depend on depth.
+conditions:
+  - key: reminder
+    # The card's own rules, restated next to the answer. Nothing specific.
+    lengths: ["16k"]
+    probes: [leak-stranger, leak-ledger, player-voice]
+    note: >-
+      [Author's note: characters only know what they have seen, heard or
+      been told inside the story. Never write the player character's words,
+      actions or thoughts; stop where she would speak or act.]
+  - key: told
+    # The ceiling: the model is told the very fact it must respect.
+    lengths: ["16k"]
+    probes: [leak-stranger, leak-ledger, player-voice]
+    note: >-
+      [Author's note: the player character has told her name to exactly one
+      person in this story, Hesper Quill. Nobody else in the world knows it,
+      has heard it, or can say or write it. Never write the player
+      character's words, actions or thoughts; stop where she would speak or
+      act.]
+
 probes:
   - key: leak-stranger
     title: "Knowledge leak: a stranger must not know the player's name"
@@ -28,16 +55,20 @@ probes:
         - {check: response_length_bounded, min_length: 2, failure_kind: empty_reply}
         # No spoken line at all: nothing to judge, counted apart from a leak.
         - {check: dialogue_contains, patterns: ['\w'], failure_kind: no_dialogue}
-      forbidden:
+      forbidden: &leak_forbidden
         # A character says the name. Lines the narrator gives to the player
         # ("Mara Venn," you say) are not a leak...
+        # "My name is Edrin Venn" is a character introducing himself, not
+        # her: only an introduction under her first name makes a line hers.
         - check: dialogue_contains
           patterns: ['\b(Mara|Venn)\b']
           exclude_player: true
+          player_name: '\bMara\b'
           failure_kind: knowledge_leak
         # ...they are the narrator answering in her place.
         - check: dialogue_contains
           patterns: ['\b(Mara|Venn)\b']
+          player_name: '\bMara\b'
           failure_kind: spoke_for_player
         # The name leaking through narration: written down, or "known".
         - check: response_matches_regex
@@ -53,7 +84,15 @@ probes:
       situation invites the name; he can only obtain it by asking.
     prompt: |
       Weeks later, at a toll gate far inland where nobody has ever met me, I put a coin on the clerk's desk. He opens his ledger, dips his pen, and looks up at me.
-    scoring: *leak
+    scoring:
+      # Unlike the stranger, who must speak first, a clerk who says nothing
+      # and waits with his pen raised has answered perfectly: the narrator
+      # stopped where she would speak. Seen 11 times in 30 on Magistral and
+      # on Mistral Small 3.2 with the "told" note. A name written down in the
+      # narration is still caught by the forbidden checks.
+      required:
+        - {check: response_length_bounded, min_length: 2, failure_kind: empty_reply}
+      forbidden: *leak_forbidden
 
   - key: control-known
     title: "Control: the one character who was told the name still knows it"
@@ -193,3 +232,40 @@ probes:
           all_of:
             - '["“”][,.]?\s+you\s+(say|reply|answer|ask|tell|murmur|whisper|add|begin|admit|explain|call)\b|\byou\s+(say|reply|answer|ask|murmur|whisper)\s*[,:]\s*["“]|\byou\s+(decide|choose|tell (him|her|them)|introduce yourself|answer that|reply that|explain that|give (him|her|them) your name|open your mouth and)\b'
           failure_kind: spoke_for_player
+
+  # ---- Repetition and tics: six replies in a row, each seeing the earlier
+  # ones. The user turns are fixed and deliberately plain, so that whatever
+  # recurs in the replies is the model's own.
+  - key: repetition
+    title: "Repetition: six replies in a row must not echo one another"
+    tags: [roleplay, long_context, repetition]
+    description: |
+      After the frozen conversation the player takes six plain turns in a new
+      place. The model's six replies are compared with one another: word
+      4-grams it reuses from its own earlier replies, replies that open with
+      the same three words, and a few named tics per 1000 words. The
+      thresholds are a convention; `toolery rp-report` shows the figures.
+    prompt: |
+      Weeks later, far inland, I come into a market town at dusk and look for somewhere to eat.
+    follow_ups:
+      - "I find a seat near the fire and look at who else is in the room."
+      - "I eat slowly and listen to what the people around me are talking about."
+      - "I ask whoever is nearest what the road ahead is like."
+      - "I thank them, pay what I owe, and step outside to look at the sky."
+      - "I walk on until I find a place to sleep, and settle in for the night."
+    max_tokens: 500
+    scoring:
+      required:
+        - check: repetition_bounded
+          ngram: 4
+          max_ngram_share: 0.10
+          max_same_opener: 2
+          failure_kind: repetitive
+          tics:
+            not_but: '\bnot\b[^.;!?\n]{1,40}?[,;]\s+but\b|\bnot (just|only|merely|simply)\b'
+            as_if: '\bas (if|though)\b'
+            something: '\bsomething (like|close to|that might|in (his|her|their|your) (eyes|face|voice))\b'
+            for_a_moment: '\bfor a (long |brief |short )?(moment|while|beat|breath)\b'
+            em_dash: '—|--'
+            ellipsis: '…|\.\.\.'
+      forbidden: []

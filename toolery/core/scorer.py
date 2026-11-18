@@ -12,7 +12,7 @@ from collections.abc import Callable
 import jsonschema
 import yaml
 
-from toolery.core.models import CheckResult, ScoringCheck, ToolCall
+from toolery.core.models import TURN_SEPARATOR, CheckResult, ScoringCheck, ToolCall
 from toolery.core.text_utils import unwrap_structured_payload
 
 
@@ -697,7 +697,18 @@ _PLAYER_BEAT = re.compile(r"\s*(?:I|You)\s")
 _REQUEST = re.compile(r"\bplease\b|^\s*(?:your\s+)?name\b", re.IGNORECASE)
 
 
-def _dialogue(text: str, self_introduction: bool = True) -> list[tuple[str, bool]]:
+def _introduces_player(line: str, player_name: re.Pattern | None) -> bool:
+    """A self-introduction marks the player's line. With `player_name`, only
+    when the name introduced is hers: "My name is Gair Venn", "I'm Edrin
+    Venn" are characters presenting themselves (Pale-Sonneteer, Magistral)."""
+    for m in _SELF_INTRODUCTION.finditer(line):
+        if player_name is None or player_name.search(line[m.end() - 1:m.end() + 30]):
+            return True
+    return False
+
+
+def _dialogue(text: str, self_introduction: bool = True,
+              player_name: re.Pattern | None = None) -> list[tuple[str, bool]]:
     """(spoken line, is it the player's?) for every quoted span.
 
     A line is the player's when it carries a you/I speech tag, when it is a
@@ -725,7 +736,7 @@ def _dialogue(text: str, self_introduction: bool = True) -> list[tuple[str, bool
             player = bool(
                 _PLAYER_TAG_AFTER.search(paragraph[m.end():m.end() + 40])
                 or _PLAYER_TAG_BEFORE.search(paragraph[max(0, m.start() - 60):m.start()])
-                or (self_introduction and _SELF_INTRODUCTION.search(line)))
+                or (self_introduction and _introduces_player(line, player_name)))
             if bare and not player and prev is not None and (prev[1] or prev[2]):
                 player = not prev[0]
             # An answer followed by the player's own action, with no speech
@@ -756,8 +767,9 @@ def check_dialogue_contains(calls, chk, response):
     `case_sensitive: true`. With `exclude_player: true` the lines the narrator
     gives to the player ("...," you say) do not count, nor does anything said
     after the player has said it herself. `only_player: true` is the reverse:
-    only the lines given to the player count. The detail quotes the line as
-    proof."""
+    only the lines given to the player count. `player_name` (a regex) limits
+    the self-introduction rule to lines introducing HER name. The detail
+    quotes the line as proof."""
     if response is None:
         return _bad("dialogue_contains", "no response")
     d = chk.model_dump()
@@ -766,7 +778,9 @@ def check_dialogue_contains(calls, chk, response):
     only_player = bool(d.get("only_player", False))
     # "I'm X" marks the player when X is HER name (the leak probes look for
     # it); on its own it is just as often a character introducing himself.
-    lines = _dialogue(response, self_introduction=not only_player)
+    name = d.get("player_name")
+    lines = _dialogue(response, self_introduction=not only_player,
+                      player_name=re.compile(str(name), re.IGNORECASE) if name else None)
     if only_player:
         lines = [(s, p) for s, p in lines if p]
     proof: list[str] = []
@@ -780,6 +794,81 @@ def check_dialogue_contains(calls, chk, response):
             return _bad("dialogue_contains", f"no spoken line matches {pattern!r} ({why})")
         proof.append(first[0])
     return _ok("dialogue_contains", "spoken: " + " | ".join(f'"{p[:160]}"' for p in proof))
+
+
+_WORD_RE = re.compile(r"[a-z']+")
+
+
+def repetition_metrics(replies: list[str], n: int = 4,
+                       tics: dict[str, str] | None = None) -> dict:
+    """How much a model repeats ITSELF over consecutive replies.
+
+    - ngram_share: share of the word n-grams of replies 2..N that already
+      occurred in an earlier reply of the same run.
+    - same_opener: how many replies start with the same three words (the
+      largest such group).
+    - tics_per_1000: occurrences of each named pattern per 1000 words.
+    """
+    tokens = [_WORD_RE.findall(r.translate(_MATCH_CHAR_TRANS).lower()) for r in replies]
+    seen: set[tuple[str, ...]] = set()
+    repeated = total = 0
+    for i, toks in enumerate(tokens):
+        grams = [tuple(toks[j:j + n]) for j in range(len(toks) - n + 1)]
+        if i > 0:
+            total += len(grams)
+            repeated += sum(g in seen for g in grams)
+        seen.update(grams)
+    openers: dict[str, int] = {}
+    for toks in tokens:
+        if len(toks) >= 3:
+            key = " ".join(toks[:3])
+            openers[key] = openers.get(key, 0) + 1
+    words = sum(len(t) for t in tokens)
+    text = "\n\n".join(replies)      # raw: a tic may be a typographic habit
+    rates = {name: round(1000 * len(re.findall(rx, text, re.IGNORECASE)) / words, 2) if words else 0.0
+             for name, rx in (tics or {}).items()}
+    return {"replies": len(replies), "words": words,
+            "ngram_share": round(repeated / total, 4) if total else 0.0,
+            "same_opener": max(openers.values(), default=0),
+            "tics_per_1000": rates}
+
+
+def _cut_replies(trace, scenario) -> int | None:
+    """Replies that stopped at the max_tokens cap, from the per-request usage
+    the trace keeps (one request per reply in a follow_ups scenario). None
+    when there is no cap or the server reported no usage. A reply that ends
+    naturally on the very last allowed token is counted too: rare enough."""
+    cap = scenario.sampling.max_tokens if scenario is not None and scenario.sampling else None
+    usage = trace.usage if trace is not None else []
+    if not cap or not usage or not any(u.completion_tokens for u in usage):
+        return None
+    return sum(u.completion_tokens >= cap for u in usage)
+
+
+def check_repetition_bounded(calls, chk, response, *, trace=None, scenario=None):
+    """Self-repetition over the replies of a multi-turn scenario
+    (`follow_ups`). Fails above `max_ngram_share` (default 0.10, n-grams of
+    `ngram` words, default 4) or when more than `max_same_opener` replies
+    (default 2) open with the same three words. `tics` (name -> regex) are
+    counted and reported, never judged. The detail carries every figure as
+    JSON after "repetition: ", which is what reports read: the thresholds
+    are a convention, the figures are the result."""
+    if response is None:
+        return _bad("repetition_bounded", "no response")
+    d = chk.model_dump()
+    replies = [r for r in response.split(TURN_SEPARATOR) if r.strip()]
+    metrics = repetition_metrics(replies, n=int(d.get("ngram", 4)), tics=d.get("tics") or {})
+    # Counted, not judged: a cut reply is shorter than the model meant, which
+    # lowers the word count and moves every rate per 1000 words.
+    metrics["truncated"] = _cut_replies(trace, scenario)
+    detail = "repetition: " + json.dumps(metrics, sort_keys=True)
+    if len(replies) < 2:
+        return _bad("repetition_bounded", f"needs several replies, got {len(replies)} | {detail}")
+    if metrics["ngram_share"] > float(d.get("max_ngram_share", 0.10)):
+        return _bad("repetition_bounded", detail)
+    if metrics["same_opener"] > int(d.get("max_same_opener", 2)):
+        return _bad("repetition_bounded", detail)
+    return _ok("repetition_bounded", detail)
 
 
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
@@ -901,6 +990,7 @@ REGISTRY.update({
     "response_diff": check_response_diff,
     "response_length_bounded": check_response_length_bounded,
     "dialogue_contains": check_dialogue_contains,
+    "repetition_bounded": check_repetition_bounded,
     "unique_tools_called": check_unique_tools_called,
     "no_hallucinated_tool": check_no_hallucinated_tool,
     "budget_respected": check_budget_respected,
@@ -908,6 +998,8 @@ REGISTRY.update({
     "error_surfaced": check_error_surfaced,
     "final_state_equals": check_final_state_equals,
 })
+# Checks that also read the trace and scenario (keyword arguments).
+_WANTS_TRACE = {check_repetition_bounded}
 
 
 from toolery.core.models import Scenario, ScenarioResult, TraceResult  # noqa: E402
@@ -995,10 +1087,38 @@ def _correctness_score(scenario, required, forbidden_clean: bool, hallucinated: 
     return weights["fail"]
 
 
+def _context_dropped(scenario: Scenario, trace: TraceResult) -> str | None:
+    """A frozen conversation the server did not receive. Seen with a GGUF
+    whose chat template renders string contents as nothing: ~13,500 tokens
+    of history sent, 8 prompt tokens counted, and a reply about something
+    else entirely. Half the approximate size is far below any tokenizer's
+    disagreement with chars/4."""
+    conv = scenario.conversation
+    first = trace.usage[0].prompt_tokens if trace.usage else 0
+    if not conv or not conv.approx_tokens or not first or first >= conv.approx_tokens / 2:
+        return None
+    return (f"the server counted {first} prompt tokens for a conversation of "
+            f"~{conv.approx_tokens}: the chat template dropped it")
+
+
 def evaluate(scenario: Scenario, trace: TraceResult) -> ScenarioResult:
     calls = trace.tool_calls
     response = trace.final_response
     pt, ct, gen_ms = trace.token_totals()
+
+    dropped = _context_dropped(scenario, trace)
+    if dropped:
+        # The reply answers a conversation the model never saw: nothing in it
+        # measures the model. An error, not a failure.
+        return ScenarioResult(
+            scenario_id=scenario.id, adapter=trace.adapter, trial_index=trace.trial_index,
+            status="error", score=0.0, call_count=len(calls),
+            budget_max=scenario.budget.max_tool_calls, latency_ms=trace.duration_ms,
+            failure_kind="context_dropped",
+            checks=[CheckResult(check="context_received", result="fail", detail=dropped)],
+            trace=trace, correctness_score=0.0,
+            prompt_tokens=pt, completion_tokens=ct, gen_ms=gen_ms,
+        )
 
     if trace.error:
         # A trial that errored (e.g. timed out) can still have carried out a
@@ -1024,6 +1144,8 @@ def evaluate(scenario: Scenario, trace: TraceResult) -> ScenarioResult:
         fn = REGISTRY.get(chk.check)
         if fn is None:
             return CheckResult(check=chk.check, result="fail", detail=f"unknown check {chk.check!r}")
+        if fn in _WANTS_TRACE:
+            return fn(calls, chk, response, trace=trace, scenario=scenario)
         return fn(calls, chk, response)
 
     required = [run(c) for c in scenario.scoring.required]

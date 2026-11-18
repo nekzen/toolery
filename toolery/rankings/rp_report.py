@@ -9,6 +9,7 @@ those rates out of runs.db; nothing here is a ranking.
 from __future__ import annotations
 
 import json
+import statistics
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 
@@ -34,6 +35,8 @@ class RpCell:
     conversation_sha256: str | None = None
     runs: list[str] = field(default_factory=list)
     examples: list[dict] = field(default_factory=list)       # failed trials
+    # Medians of the figures a measuring check reports (repetition_bounded).
+    metrics: dict = field(default_factory=dict)
 
     @property
     def judged(self) -> int:
@@ -62,6 +65,27 @@ def _proof(checks_json: str | None) -> str:
     return ""
 
 
+def _metrics(checks_json: str | None) -> dict | None:
+    """Figures reported by a measuring check: JSON after "repetition: "."""
+    try:
+        checks = json.loads(checks_json or "[]")
+    except ValueError:
+        return None
+    for c in checks if isinstance(checks, list) else []:
+        detail = str(c.get("detail", "")) if isinstance(c, dict) else ""
+        _, sep, payload = detail.partition("repetition: ")
+        if sep:
+            try:
+                return json.loads(payload)
+            except ValueError:
+                return None
+    return None
+
+
+def _median(values: list[float]) -> float:
+    return round(statistics.median(values), 4)
+
+
 def compute_rp_report(store: Store, *, run_ids: list[str] | None = None,
                       models: list[str] | None = None) -> list[RpCell]:
     runs = {r["run_id"]: r for r in store.fetch_all_runs()}
@@ -69,6 +93,7 @@ def compute_rp_report(store: Store, *, run_ids: list[str] | None = None,
     cells: dict[tuple[str, str, str, str], RpCell] = {}
     tokens: dict[tuple, list[int]] = defaultdict(list)
     kinds: dict[tuple, Counter] = defaultdict(Counter)
+    measured: dict[tuple, list[dict]] = defaultdict(list)
     for run_id in sorted(wanted):
         run = runs.get(run_id)
         if run is None or (models and run["model"] not in models):
@@ -89,6 +114,9 @@ def compute_rp_report(store: Store, *, run_ids: list[str] | None = None,
             cell.conversation_sha256 = conv.get("sha256")
             if r.get("prompt_tokens"):
                 tokens[key].append(r["prompt_tokens"])
+            m = _metrics(r.get("checks_json"))
+            if m:
+                measured[key].append(m)
             if r["status"] in ("error", "timeout"):
                 cell.errors += 1
                 kinds[key][r.get("failure_kind") or r["status"]] += 1
@@ -107,5 +135,21 @@ def compute_rp_report(store: Store, *, run_ids: list[str] | None = None,
         cell.failures = dict(kinds[key].most_common())
         if tokens[key]:
             cell.prompt_tokens = sum(tokens[key]) / len(tokens[key])
+        ms = measured[key]
+        if ms:
+            tic_names = sorted({name for m in ms for name in m.get("tics_per_1000", {})})
+            cell.metrics = {
+                "trials": len(ms),
+                "ngram_share": _median([m["ngram_share"] for m in ms]),
+                "same_opener": _median([m["same_opener"] for m in ms]),
+                "words": _median([m["words"] for m in ms]),
+                # Totals, not medians: cut replies over all replies of the cell.
+                # None when no trial reported it (runs scored before the count).
+                "truncated": (sum(m["truncated"] for m in ms if m.get("truncated") is not None)
+                              if any(m.get("truncated") is not None for m in ms) else None),
+                "replies": sum(m.get("replies", 0) for m in ms),
+                "tics_per_1000": {n: _median([m.get("tics_per_1000", {}).get(n, 0.0) for m in ms])
+                                  for n in tic_names},
+            }
     return sorted(cells.values(),
                   key=lambda c: (c.model, c.adapter, c.probe, length_key(c.length)))

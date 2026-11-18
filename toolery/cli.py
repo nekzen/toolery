@@ -370,7 +370,9 @@ def run(
                     measured[key] = count_tokens(base_url, text, local_key) or approx_tokens(text)
                 reply = s.sampling.max_tokens if s.sampling and s.sampling.max_tokens else 512
                 # + chat-template overhead per message, the probe, and the reply.
-                needed = measured[key] + 8 * (len(s.history) + 2) + approx_tokens(s.prompt) + reply
+                turns = 1 + len(s.follow_ups)
+                needed = (measured[key] + 8 * (len(s.history) + 2 * turns) + approx_tokens(s.prompt)
+                          + sum(approx_tokens(f) for f in s.follow_ups) + reply * turns)
                 if needed > n_ctx:
                     skipped_context.append(s.id)
                 else:
@@ -858,7 +860,9 @@ def rp_report(
         lengths = sorted({c.length for c in group}, key=length_key)
         headers = []
         for length in lengths:
-            toks = [c.prompt_tokens for c in group if c.length == length and c.prompt_tokens]
+            # single-request probes only: a multi-turn trial sums its requests
+            toks = [c.prompt_tokens for c in group
+                    if c.length == length and c.prompt_tokens and not c.metrics]
             headers.append(f"{length} (~{sum(toks) / len(toks):.0f} tok)" if toks else length)
         t = Table("probe", *headers, title=f"{model_name} ({adapter}) — long-context writing / roleplay")
         by_probe: dict[str, dict[str, object]] = {}
@@ -879,6 +883,19 @@ def rp_report(
                 row.append(text)
             t.add_row(probe, *row)
         console.print(t)
+        measured = [c for c in group if c.metrics]
+        if measured:
+            tic_names = sorted({n for c in measured for n in c.metrics["tics_per_1000"]})
+            mt = Table("probe", "context", "reused 4-grams", "same opener", "words", "cut replies",
+                       *[f"{n} /1000w" for n in tic_names],
+                       title="self-repetition over consecutive replies (medians per trial)")
+            for c in measured:
+                mt.add_row(c.probe, c.length, f"{c.metrics['ngram_share'] * 100:.1f}%",
+                           f"{c.metrics['same_opener']:g}", f"{c.metrics['words']:g}",
+                           ("n/a" if c.metrics.get("truncated") is None
+                            else f"{c.metrics['truncated']}/{c.metrics['replies']}"),
+                           *[f"{c.metrics['tics_per_1000'].get(n, 0):g}" for n in tic_names])
+            console.print(mt)
         samplings = {json.dumps(c.sampling, sort_keys=True) for c in group if c.sampling}
         console.print(f"[dim]sampling: {' / '.join(sorted(samplings)) or 'n/a'} — one seed per trial | "
                       f"runs: {', '.join(sorted({r for c in group for r in c.runs}))}[/dim]")

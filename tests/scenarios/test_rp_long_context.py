@@ -175,6 +175,42 @@ def test_leak_checks_on_real_replies(reply, kind):
     assert _verdict("rp-leak-ledger-8k", reply) == ("fail", kind)
 
 
+# Pale-Sonneteer and Magistral, rp-leak-stranger-16k: a character introducing
+# HIMSELF, whatever surname the model gives him, is not the player.
+NPC_INTRODUCTIONS = [
+    ('The man takes off his hat. "My name is Gair Venn," he says. "We share a name, you and I."',
+     "knowledge_leak"),
+    ('"I know, because I\'ve been watching the road for two days. I\'m Edrin Venn. I believe you '
+     'have something of mine."', "knowledge_leak"),
+    ('He stops. "My name is Joss. I\'ve been looking for a surveyor named Mara Venn, and I was told '
+     'to look for a woman with a scarred arm."', "knowledge_leak"),
+    # Under HER name it is still the narrator answering in her place.
+    ('"Who are you?" he asks.\n\n"My name is Mara Venn," and you hold out your hand.',
+     "spoke_for_player"),
+]
+
+
+@pytest.mark.parametrize("reply,kind", NPC_INTRODUCTIONS)
+def test_a_character_introducing_himself_is_not_the_player(reply, kind):
+    assert _verdict("rp-leak-stranger-8k", reply) == ("fail", kind)
+
+# Magistral Small 2509, rp-leak-ledger-told-16k: the clerk waits in silence.
+SILENT_CLERK = (
+    "The clerk looks at the coin, then at you. The ledger is open on the desk, and his pen is "
+    "poised above it, waiting for a name.\n\nHe is a man of forty or so, with ink stains on his "
+    "fingers and a sharp look that has probably seen through most of the stories told at this "
+    "gate.\n\nYou have no name here, no past, nothing to be called. The clerk raises his eyebrows "
+    "and waits, the pen still poised. The coin lies between you.")
+
+
+def test_a_silent_clerk_passes_but_a_silent_stranger_does_not():
+    """The clerk only has to wait; the stranger was told to speak first."""
+    assert _verdict("rp-leak-ledger-8k", SILENT_CLERK) == ("pass", None)
+    assert _verdict("rp-leak-stranger-8k", SILENT_CLERK) == ("fail", "no_dialogue")
+    written = SILENT_CLERK.replace("The coin lies", "He writes Mara Venn. The coin lies")
+    assert _verdict("rp-leak-ledger-8k", written) == ("fail", "knowledge_leak")
+
+
 # -------------------------------------------------- retention, player voice
 
 RECALL = [
@@ -224,11 +260,108 @@ def test_player_voice_checks(reply, status, kind):
     assert _verdict("rp-player-voice-8k", reply) == (status, kind)
 
 
+# ------------------------------------------------------------- repetition
+
+VARIED = [
+    "The town of Aldbury keeps its market under a long slate roof. A cookshop at the corner has a "
+    "kettle of barley and mutton on the hob, and the woman behind it waves you to a bench.",
+    "Four drovers have the table by the hearth, boots off, arguing about the price of wethers. A "
+    "tinker mends a pot in the corner and does not look up.",
+    "The talk is all of a bridge washed out at Stonyford and whether the reeve will pay to mend "
+    "it. Nobody mentions the coast.",
+]
+ECHOING = [
+    "The room is warm and smells of peat smoke and boiled barley. Three tables are taken by men "
+    "who glance up at you and go back to their dice. For a moment nobody speaks.",
+    "The room is warm and smells of peat smoke and boiled barley. A man glances up at you and "
+    "goes back to his dice. For a moment nobody speaks.",
+    "The room is warm and smells of peat smoke. The men glance up at you and go back to their "
+    "dice. For a moment nobody speaks — not a word.",
+]
+
+
+def test_repetition_metrics():
+    from toolery.core.scorer import repetition_metrics
+    tics = {"for_a_moment": r"\bfor a (long )?moment\b", "em_dash": "—"}
+    varied, echoing = repetition_metrics(VARIED, tics=tics), repetition_metrics(ECHOING, tics=tics)
+    assert varied["ngram_share"] == 0.0 and varied["same_opener"] == 1
+    assert echoing["ngram_share"] > 0.5 and echoing["same_opener"] == 3
+    assert echoing["tics_per_1000"]["for_a_moment"] > 20 and echoing["tics_per_1000"]["em_dash"] > 0
+    assert varied["tics_per_1000"] == {"for_a_moment": 0.0, "em_dash": 0.0}
+
+
+def test_repetition_probe_verdicts():
+    from toolery.core.models import TURN_SEPARATOR
+    assert _verdict("rp-repetition-8k", TURN_SEPARATOR.join(VARIED)) == ("pass", None)
+    assert _verdict("rp-repetition-8k", TURN_SEPARATOR.join(ECHOING)) == ("fail", "repetitive")
+    # A single reply cannot be compared with anything.
+    assert _verdict("rp-repetition-8k", VARIED[0]) == ("fail", "repetitive")
+
+
+
+def test_repetition_counts_the_replies_cut_at_max_tokens():
+    """The cap comes from the scenario, the token counts from the trace: a
+    rescore of an old run can count them without asking the model again."""
+    import json
+
+    from toolery.core.models import TURN_SEPARATOR, TurnUsage
+    s = load_scenario(RP / "rp-repetition-8k.yaml")
+    cap = s.sampling.max_tokens
+
+    def figures(usage):
+        trace = TraceResult(scenario_id=s.id, adapter="raw", trial_index=0,
+                            messages=[Message(role="user", content=s.prompt)], tool_calls=[],
+                            final_response=TURN_SEPARATOR.join(VARIED),
+                            started_at_iso="2026-11-17T00:00:00Z", duration_ms=1, usage=usage)
+        r = evaluate(s, trace)
+        detail = next(c.detail for c in r.checks if c.check == "repetition_bounded")
+        return r.status, json.loads(detail.partition("repetition: ")[2])
+
+    status, m = figures([TurnUsage(turn_index=i, completion_tokens=n)
+                         for i, n in enumerate([cap, 120, cap])])
+    assert status == "pass" and m["truncated"] == 2      # counted, never judged
+    # A server that reports no usage: unknown, not zero.
+    assert figures([])[1]["truncated"] is None
+
+
+
+def test_a_conversation_the_server_never_saw_is_an_error_not_a_verdict():
+    """Magistral 2509 GGUF: the template rendered the history as nothing,
+    8 prompt tokens, and the model wrote a paper about itself."""
+    from toolery.core.models import TurnUsage
+    s = load_scenario(RP / "rp-leak-stranger-16k.yaml")
+
+    def result(prompt_tokens):
+        trace = TraceResult(scenario_id=s.id, adapter="raw", trial_index=0,
+                            messages=[Message(role="user", content=s.prompt)], tool_calls=[],
+                            final_response="# Mistral v7: A Multi-Modal Language Model",
+                            started_at_iso="2026-11-17T00:00:00Z", duration_ms=1,
+                            usage=[TurnUsage(turn_index=0, prompt_tokens=prompt_tokens,
+                                             completion_tokens=350)])
+        return evaluate(s, trace)
+
+    r = result(8)
+    assert (r.status, r.failure_kind) == ("error", "context_dropped")
+    assert "8 prompt tokens" in r.checks[0].detail
+    assert result(13539).failure_kind == "no_dialogue"      # received: judged as usual
+
 # -------------------------------------------------------------- generated
 
 def test_generated_files_match_their_source():
     assert builder.stale(builder.build_all()) == [], \
         "run: uv run python scripts/build_rp_fixtures.py"
+
+
+def test_conditions_are_the_same_probe_with_a_note():
+    base = load_scenario(RP / "rp-leak-ledger-16k.yaml")
+    for cond in ("reminder", "told"):
+        s = load_scenario(RP / f"rp-leak-ledger-{cond}-16k.yaml")
+        assert s.prompt.startswith(base.prompt.rstrip()) and "[Author's note:" in s.prompt
+        assert s.scoring == base.scoring and s.history == base.history
+        assert s.sampling == base.sampling             # same seeds: trial n is comparable
+        assert "Mara" not in s.prompt and "Venn" not in s.prompt
+    assert "Hesper Quill" in load_scenario(RP / "rp-leak-ledger-told-16k.yaml").prompt
+    assert not (RP / "rp-leak-ledger-told-8k.yaml").exists()
 
 
 def test_every_length_shares_the_same_beginning():
