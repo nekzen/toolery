@@ -30,6 +30,28 @@ aux consignes OOC absorbées signalées dans le brief.
 
 Aucune de ces mesures ne ressemble à une limite du modèle.
 
+### Hors RP : les outils (run complet à 65k, 5 essais, `--timeout-scale 8 --budget-slack 2`)
+
+Avec un gabarit qui montre les outils dans le format natif de Mistral 3.2
+(`[AVAILABLE_TOOLS]`), Neural obtient 28 % (sa base : 67,5 %). Sélection
+d'outil 8 % contre 98 %, agentique 2,5 %, enchaînements 0 %. Il égale ou
+dépasse sa base hors outils : suivi d'instructions 93 %, écriture créative 91 %.
+
+Deux habitudes expliquent l'écart :
+
+1. **Le format** : il écrit ses appels en JSON dans un bloc markdown, arguments
+   encodés en chaîne, et n'émet jamais `[TOOL_CALLS]`. llama-server n'y voit
+   que du texte. Avec `--text-tool-calls` (format pardonné, mesure seulement) :
+   45 % au lieu de 28 %.
+2. **Annoncer au lieu d'agir** : les 376 `wrong_tool` qui restent sont tous
+   « I'll call the `get_weather` function with… », suivis d'un arrêt, sans
+   appel. L'outil et les arguments annoncés sont les bons : le jugement tient,
+   c'est le passage à l'acte qui manque.
+
+Le gabarit livré dans le GGUF de Neural était celui des premières versions de
+Mistral Small 3, sans aucune gestion des outils. Le gabarit corrigé
+(`neural.jinja`, hors de ce dépôt) est un prérequis de tout ce qui suit.
+
 ## Étapes
 
 ### 1. Vérifications gratuites
@@ -87,13 +109,24 @@ restent des tests.
   1. s'arrêter là où le joueur doit parler ou agir ;
   2. ne pas faire nommer le protagoniste par qui ne le connaît pas ;
   3. traiter une note d'auteur ou une consigne OOC comme une instruction.
+  4. appeler un outil dans le format natif, `[TOOL_CALLS]…[ARGS]…`, jamais en
+     JSON dans le texte ;
+  5. appeler l'outil au lieu d'annoncer qu'on va le faire.
+- Pour les cibles 4 et 5, les exemples choisis viennent de **MS3.2-2506** (98 %
+  en sélection d'outil), sur des tâches avec outils écrites pour l'occasion,
+  jamais celles de toolery ; les rejetés sont les réponses de Neural aux mêmes
+  tâches. Un seul format, le même gabarit (`neural.jinja`) à l'entraînement
+  et à l'inférence.
 - Volume de départ : 500 à 2 000 paires, dont une partie en contexte long.
   À ajuster d'après le premier entraînement, pas avant.
 - Entraînement : LoRA avec Unsloth (AdamW 8 bits), DPO. Vérifier d'abord que
   la version d'Unsloth prend en charge le GB10.
 - Évaluation : toolery complet avant et après, RP et le reste.
 
-Critère de réussite : Neural entraîné, **sans note**, atteint les taux de
+Critères de réussite, outils : sélection d'outil et agentique proches de
+MS3.2-2506 en run `raw` normal (sans `--text-tool-calls`), mêmes réglages.
+
+Critère de réussite, RP : Neural entraîné, **sans note**, atteint les taux de
 Neural **avec** la note (parler à la place de la joueuse ≤ 3/30 sur les deux
 histoires), sans perte notable dans les autres catégories, ni dans la voix
 (lecture à l'œil d'un échantillon de réponses).
