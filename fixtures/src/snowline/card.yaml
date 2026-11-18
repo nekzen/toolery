@@ -31,6 +31,17 @@ anchors:
   object: "her father's steel watch, stopped at ten past four, engraved 'for L.' on the back — her father was Leo"
   place: "room 14, second floor, at the end of the corridor; the Kessler Pass Lodge"
 
+# Card variant: the same history and probes, with the secret written into
+# the system prompt the way harbor-road's card states the player's name.
+# Tells a leak from the card apart from a leak from the history:
+# rp-snowline-<probe>-secretcard-16k against rp-snowline-<probe>-16k.
+card_variants:
+  - key: secretcard
+    lengths: ["16k"]
+    probes: [leak-stranger, leak-ledger]
+    append: |
+      She has hidden the USB key in the hollow wooden base of the old snow globe at the end of the reception desk.
+
 system: |
   You are the narrator and game master of an interactive story, "Snowline".
 

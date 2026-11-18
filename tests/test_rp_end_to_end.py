@@ -57,13 +57,13 @@ def test_run_then_report(tmp_path, monkeypatch):
                                  "--trials", "4", "--concurrency", "1", "--base-url", BASE])
     assert result.exit_code == 0, result.output
     # harbor-road: 46 single replies + 4 repetition probes of six replies;
-    # snowline (8k and 16k): 26 + 2 x 6.
-    assert chat.call_count == (46 + 4 * 6 + 26 + 2 * 6) * 4
+    # snowline (8k and 16k): 26 + 2 x 6, and 2 on the variant card.
+    assert chat.call_count == (46 + 4 * 6 + 26 + 2 * 6 + 2) * 4
 
     report = runner.invoke(app, ["rp-report", "--json"])
     assert report.exit_code == 0, report.output
     every = json.loads(report.output)
-    assert len(every) == 50 + 28
+    assert len(every) == 50 + 30
     assert {c["story"] for c in every} == {"harbor-road", "snowline"}
     cells = {(c["probe"], c["length"]): c for c in every if c["story"] == "harbor-road"}
     assert len(cells) == 50
@@ -108,7 +108,7 @@ def test_a_conversation_too_long_for_the_server_is_skipped_not_failed(tmp_path, 
     assert result.exit_code == 0, result.output
     # The ten single-reply 8k probes fit. rp-repetition-8k does not: six
     # replies of up to 500 tokens on top of ~7000 of conversation.
-    assert "Skipping 58 scenario(s)" in result.output and "rp-repetition-8k" in result.output
+    assert "Skipping 60 scenario(s)" in result.output and "rp-repetition-8k" in result.output
     assert chat.call_count == 10 + 10     # both stories' 8k single-reply probes
 
 
