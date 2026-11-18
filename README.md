@@ -179,6 +179,7 @@ uv run toolery tui                           # Profiles tab: role viability boar
 
 | What you see | What it usually means | Lever |
 |---|---|---|
+| A few trials take ten minutes and end in `timeout` | The model is stuck in a repetition loop (seen on Mistral Small 3.2 at temperature 0) | `--max-tokens` (default 8192) caps each request; check `usage` in the trace |
 | Many `timeout` failures | Serving speed, not capability | Raise `--timeout-scale`; check concurrency ([Serving backend notes](#serving-backend-notes)) |
 | Many `budget_violated`, correctness well above score | Capable but inefficient — a real finding, reported separately | Weigh it against your use: efficiency matters more for agents than for one-off questions |
 | Correctness ≈ score | The budget is not what limits this model | — |

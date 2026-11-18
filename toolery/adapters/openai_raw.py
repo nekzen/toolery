@@ -128,7 +128,14 @@ class OpenAIRawAdapter:
     supports_budget_slack = True
 
     def __init__(self, base_url: str, api_key: str = "", concurrency: int = 4,
-                 max_retries: int = 4, text_tool_calls: bool = False) -> None:
+                 max_retries: int = 4, text_tool_calls: bool = False,
+                 max_tokens: int = 0) -> None:
+        # Cap on the tokens generated per request when the scenario sets
+        # none (0 = no cap). Mistral Small 3.2 at temperature 0 can loop until
+        # the context is full: 64,600 tokens and ten minutes for one request
+        # on hard-03-async-polling. A loop fails either way; the cap only
+        # stops it sooner.
+        self.max_tokens = max_tokens
         # Measurement only: also accept tool calls written as JSON in the
         # reply's text. Results carry the adapter name "raw-text" so they
         # never mix with a normal raw run.
@@ -199,6 +206,8 @@ class OpenAIRawAdapter:
 
         allowed_tools = {t["function"]["name"] for t in tools_schema}
         text_calls_parsed = 0
+        if self.max_tokens and "max_tokens" not in sampling_sent:
+            sampling_sent["max_tokens"] = self.max_tokens
         tool_calls_recorded: list[ToolCall] = []
         usage_records: list[TurnUsage] = []
         final_response: str | None = None

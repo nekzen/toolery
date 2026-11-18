@@ -179,6 +179,11 @@ def run(
              "limits up to limit × SLACK (e.g. 2.0). Strict scores are "
              "unchanged; correctness_score reflects the finished run. "
              "1.0 = off. Pair with a generous --timeout-scale."),
+    max_tokens: int = typer.Option(
+        8192, "--max-tokens",
+        help="raw adapter: cap on the tokens generated per request when the "
+             "scenario sets none, so a model stuck in a repetition loop stops "
+             "instead of filling the context. 0 = no cap."),
     text_tool_calls: bool = typer.Option(
         False, "--text-tool-calls",
         help="raw adapter, MEASUREMENT ONLY: also accept tool calls the model "
@@ -246,6 +251,8 @@ def run(
         timeout_scale = float(_rcfg.get("timeout_scale", timeout_scale) or timeout_scale)
         budget_slack = float(_rcfg.get("budget_slack", budget_slack) or budget_slack)
         text_tool_calls = bool(_rcfg.get("text_tool_calls", text_tool_calls))
+        # Runs made before the option existed had no cap: resume them that way.
+        max_tokens = int(_rcfg.get("max_tokens", 0) or 0)
         with_perf = bool(_rcfg.get("with_perf", with_perf))
         perf_only = bool(_rcfg.get("perf_only", perf_only))
         cluster = _rcfg.get("cluster", cluster)
@@ -266,7 +273,8 @@ def run(
             # resumed --text-tool-calls run lists "raw-text" in its config.
             text_mode = text_tool_calls or a == "raw-text"
             adapters["raw-text" if text_mode else "raw"] = OpenAIRawAdapter(
-                base_url=base_url, api_key=local_key, text_tool_calls=text_mode)
+                base_url=base_url, api_key=local_key, text_tool_calls=text_mode,
+                max_tokens=max_tokens)
         elif a == "cloud":
             from toolery.adapters.cloud import CloudAdapter
             adapters[a] = CloudAdapter(base_url=base_url, api_key=local_key)
@@ -426,6 +434,7 @@ def run(
            "tier": tier, "category": category, "trials": trials, "base_url": base_url,
            "concurrency": concurrency, "timeout_scale": timeout_scale,
            "budget_slack": budget_slack, "text_tool_calls": text_tool_calls,
+           "max_tokens": max_tokens,
            "server": server_info, "skipped_context": skipped_context,
            "total_units": total_units,
            "scenarios_count": 0 if perf_only else len(xs),

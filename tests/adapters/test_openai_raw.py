@@ -314,3 +314,18 @@ async def test_without_the_option_a_text_call_stays_text():
     trace = await OpenAIRawAdapter(base_url="http://localhost:8000", api_key="x").run_scenario(
         _scenario(), model="m", timeout=10)
     assert trace.tool_calls == [] and "text_tool_calls" not in trace.adapter_metadata
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_max_tokens_caps_a_scenario_that_sets_none():
+    """MS3.2 at temperature 0 looped to 64,600 tokens in one request."""
+    reply = {"choices": [{"message": {"role": "assistant", "content": "7°C."}}]}
+    route = respx.post("http://localhost:8000/v1/chat/completions").mock(
+        return_value=httpx.Response(200, json=reply))
+    await OpenAIRawAdapter(base_url="http://localhost:8000", api_key="x", max_tokens=8192
+                           ).run_scenario(_scenario(), model="m", timeout=10)
+    assert json.loads(route.calls[0].request.content)["max_tokens"] == 8192
+    await OpenAIRawAdapter(base_url="http://localhost:8000", api_key="x"
+                           ).run_scenario(_scenario(), model="m", timeout=10)
+    assert "max_tokens" not in json.loads(route.calls[1].request.content)
