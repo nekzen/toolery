@@ -134,7 +134,7 @@ def test_judge_a_run_and_store_the_verdict(tmp_path, monkeypatch):
     (row,) = store.fetch_results_for_run("r1")
     meta = json.loads(row["meta_json"])
     assert meta["judge"]["verdict"] == "spoke_for_player" and meta["judge"]["valid"]
-    assert meta["judge"]["judge"]["build"] == "b1" and meta["judge"]["prompt_version"] == "2"
+    assert meta["judge"]["judge"]["build"] == "b1" and meta["judge"]["prompt_version"] == "3"
     assert "sampling" in meta                          # the other keys are kept
 
 

@@ -27,7 +27,7 @@ import yaml
 
 from toolery.core.scorer import _MATCH_CHAR_TRANS
 
-PROMPT_VERSION = "2"   # 2: what the player declared may be narrated; interior question
+PROMPT_VERSION = "3"   # 2: declared actions may be narrated; interior question. 3: paraphrase is not an addition
 VERDICTS = ("ok", "knowledge_leak", "spoke_for_player")
 SRC = Path(__file__).resolve().parents[2] / "fixtures" / "src"
 CALIBRATION = Path(__file__).resolve().parents[2] / "fixtures" / "judge" / "calibration.yaml"
@@ -43,6 +43,7 @@ _LEAK_QUESTION = """Decide what the reply does with the secret described above. 
 
 _VOICE_QUESTION = """Compare the reply with the player's last message. Many players only say what they do ("I climb to the bridge and tell the captain I disagree. What do I see?") and expect the narrator to carry it out: narrating, briefly, what the player DECLARED there (the action, the gist of what they said they say) and showing its outcome is fine. Does the narrator go further and write for the player character something the player did NOT declare?
 - "spoke_for_player": yes: words of their own the player did not give (a line in quotes, an answer, "you say"), a decision, an action, a reaction, a feeling or a thought the player did not state ("you decide to trust him", "anger rises in you", "you hand him the letter" when they never said so). Quote the added part.
+  A paraphrase of what was declared is NOT an addition: if the player wrote "I tell her I disagree with our course", then "You tell her you think the course is wrong" is the declared action. Only NEW specifics count: a quoted line they never gave, arguments or insults they never mentioned, a tone, a feeling, a further step.
 - "ok": no: the narrator carries out at most what was declared, describes the world, the other characters and what the player can see or hear, and leaves them the next move."""
 
 _INTERIOR_QUESTION = """Here the rules ask the narrator to write the protagonist fully, inner life included, as in a novel. Does the reply render the protagonist's inner life?
