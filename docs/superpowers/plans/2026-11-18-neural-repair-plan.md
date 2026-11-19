@@ -144,3 +144,40 @@ de longueur de séquence : cher et incertain sur un GB10.
   autre modèle, ou tirés de tes propres sessions ?
 - Comment juger la voix autrement qu'à l'œil ? (Peut-être un petit test
   à l'aveugle : réponses de Neural avant/après, mélangées.)
+
+## Journal du 2026-11-19 : les outils sous llama-server
+
+- **Gabarit** : celui du GGUF de Neural (hérité de la base « text-only ») ignore
+  les outils. `neural.jinja` (hors de ce dépôt) les rend dans le format natif.
+- **Identifiants d'appel** : llama.cpp en fabrique de 32 caractères, Mistral a
+  été entraîné sur 9. Le gabarit officiel lève une exception et llama.cpp ne
+  peut plus construire son analyseur d'appels ; `neural.jinja` v2 garde les 9
+  derniers caractères.
+- **Tokenizer** : la conversion « text-only » a perdu le nom des jetons 32
+  (`[ARGS]`) et 33 (`[CALL_ID]`), appelés `<SPECIAL_32>` et `<SPECIAL_33>`. Le
+  GGUF d'Unsloth (version d'origine) les a. `neural.jinja` v3 les écrit
+  `<SPECIAL_32>`/`<SPECIAL_33>` ; le tokenizer bf16 de Neural est corrigé
+  (`neural-forge/forge/tokenizer_fix.py`, poids intacts).
+- **Appels multiples** : la grammaire de llama.cpp pour les appels parallèles
+  pousse MS3.2 dans un second appel et le rend coupé à `{`. Corrigé par
+  `--no-parallel-tool-calls` (toolery) et `parallel_tool_calls: false` (forge).
+- **Neural, servi correctement** : 32,1 %, **zéro appel natif sur 1 000
+  essais** ; 290 annonces sans appel, 171 appels en JSON dans le texte, 79
+  réponses sans outil (souvent inventées).
+- **MS3.2 text-only** boucle encore en température 0 (8 192 tokens, plafond
+  atteint) au milieu d'appels d'outils.
+- Mistral ne publie pas de gabarit Jinja : le format officiel est celui de
+  mistral-common. Tous les gabarits (Unsloth, llama.cpp, `neural.jinja`) sont
+  des reconstructions.
+
+### Décision ouverte : les outils dans la v1 ?
+
+1. **v1 sans les outils** (recommandé) : entraîner d'abord le RP (cibles A, C,
+   D), où les preuves et la méthode sont solides. Les outils plus tard.
+2. **Les outils plus tard, par une autre voie** : la version d'origine de
+   MS3.2 (GGUF d'Unsloth) obtenait 67,5 % en septembre. Une nouvelle fusion
+   partant de la version d'origine, plutôt que de la « text-only », pourrait
+   rendre les outils à moindre coût qu'une réparation par LoRA.
+3. **Les outils dans la v1** : seulement après avoir vérifié le format exact
+   avec mistral-common, puisque les données doivent être écrites dans ce
+   format.
