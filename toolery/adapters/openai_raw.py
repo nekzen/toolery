@@ -136,7 +136,12 @@ class OpenAIRawAdapter:
 
     def __init__(self, base_url: str, api_key: str = "", concurrency: int = 4,
                  max_retries: int = 4, text_tool_calls: bool = False,
-                 max_tokens: int = 0) -> None:
+                 max_tokens: int = 0, parallel_tool_calls: bool | None = None) -> None:
+        # Sent only when set. False: one tool call per reply. llama-server's
+        # grammar for parallel calls pushed Mistral Small 3.2 into a second
+        # call it did not want, and returned it cut to "{" (raw, the model
+        # wrote one call and stopped).
+        self.parallel_tool_calls = parallel_tool_calls
         # Cap on the tokens generated per request when the scenario sets
         # none (0 = no cap). Mistral Small 3.2 at temperature 0 can loop until
         # the context is full: 64,600 tokens and ten minutes for one request
@@ -238,6 +243,8 @@ class OpenAIRawAdapter:
                 # Only include the key when the scenario actually exposes tools.
                 if tools_schema:
                     payload["tools"] = tools_schema
+                    if self.parallel_tool_calls is not None:
+                        payload["parallel_tool_calls"] = self.parallel_tool_calls
                 headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
                 resp, req_latency_ms = await self._post_with_retry(payload, headers, deadline)
                 data = resp.json()

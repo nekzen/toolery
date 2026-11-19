@@ -350,3 +350,17 @@ async def test_a_tool_call_the_server_cannot_parse_is_the_models_failure(capture
     assert "malformed tool call: Failed to parse tool call" in trace.error
     assert _classify_error(trace.error) == "malformed_tool_call"
     assert not is_transient_error(trace.error)
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_parallel_tool_calls_is_sent_only_when_set():
+    reply = {"choices": [{"message": {"role": "assistant", "content": "7°C."}}]}
+    route = respx.post("http://localhost:8000/v1/chat/completions").mock(
+        return_value=httpx.Response(200, json=reply))
+    await OpenAIRawAdapter(base_url="http://localhost:8000", api_key="x", parallel_tool_calls=False
+                           ).run_scenario(_scenario(), model="m", timeout=10)
+    assert json.loads(route.calls[0].request.content)["parallel_tool_calls"] is False
+    await OpenAIRawAdapter(base_url="http://localhost:8000", api_key="x"
+                           ).run_scenario(_scenario(), model="m", timeout=10)
+    assert "parallel_tool_calls" not in json.loads(route.calls[1].request.content)

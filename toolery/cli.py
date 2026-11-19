@@ -184,6 +184,11 @@ def run(
         help="raw adapter: cap on the tokens generated per request when the "
              "scenario sets none, so a model stuck in a repetition loop stops "
              "instead of filling the context. 0 = no cap."),
+    parallel_tool_calls: bool | None = typer.Option(
+        None, "--parallel-tool-calls/--no-parallel-tool-calls",
+        help="raw adapter: allow or forbid several tool calls in one reply (sent "
+             "only when given). --no-parallel-tool-calls for Mistral models on "
+             "llama-server, whose parallel-call grammar cuts a second call."),
     text_tool_calls: bool = typer.Option(
         False, "--text-tool-calls",
         help="raw adapter, MEASUREMENT ONLY: also accept tool calls the model "
@@ -253,6 +258,7 @@ def run(
         text_tool_calls = bool(_rcfg.get("text_tool_calls", text_tool_calls))
         # Runs made before the option existed had no cap: resume them that way.
         max_tokens = int(_rcfg.get("max_tokens", 0) or 0)
+        parallel_tool_calls = _rcfg.get("parallel_tool_calls", parallel_tool_calls)
         with_perf = bool(_rcfg.get("with_perf", with_perf))
         perf_only = bool(_rcfg.get("perf_only", perf_only))
         cluster = _rcfg.get("cluster", cluster)
@@ -274,7 +280,7 @@ def run(
             text_mode = text_tool_calls or a == "raw-text"
             adapters["raw-text" if text_mode else "raw"] = OpenAIRawAdapter(
                 base_url=base_url, api_key=local_key, text_tool_calls=text_mode,
-                max_tokens=max_tokens)
+                max_tokens=max_tokens, parallel_tool_calls=parallel_tool_calls)
         elif a == "cloud":
             from toolery.adapters.cloud import CloudAdapter
             adapters[a] = CloudAdapter(base_url=base_url, api_key=local_key)
@@ -434,7 +440,7 @@ def run(
            "tier": tier, "category": category, "trials": trials, "base_url": base_url,
            "concurrency": concurrency, "timeout_scale": timeout_scale,
            "budget_slack": budget_slack, "text_tool_calls": text_tool_calls,
-           "max_tokens": max_tokens,
+           "max_tokens": max_tokens, "parallel_tool_calls": parallel_tool_calls,
            "server": server_info, "skipped_context": skipped_context,
            "total_units": total_units,
            "scenarios_count": 0 if perf_only else len(xs),
