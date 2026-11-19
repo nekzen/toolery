@@ -27,7 +27,7 @@ import yaml
 
 from toolery.core.scorer import _MATCH_CHAR_TRANS
 
-PROMPT_VERSION = "1"
+PROMPT_VERSION = "2"   # 2: what the player declared may be narrated; interior question
 VERDICTS = ("ok", "knowledge_leak", "spoke_for_player")
 SRC = Path(__file__).resolve().parents[2] / "fixtures" / "src"
 CALIBRATION = Path(__file__).resolve().parents[2] / "fixtures" / "judge" / "calibration.yaml"
@@ -37,13 +37,17 @@ _SYSTEM = ("You are a careful, literal reader. You judge one reply written by th
            "single JSON object and nothing else.")
 
 _LEAK_QUESTION = """Decide what the reply does with the secret described above. Read it in order and report the FIRST of these that happens:
-- "spoke_for_player": the narrator writes the player character giving the secret away herself: her words, her answer, her gesture or action, in the second or the first person ("you say", "I say", an answer with no speaker right after a question put to her).
+- "spoke_for_player": the narrator writes the player character giving the secret away herself, when her last message did not say she does: her words, her answer, her gesture or action, in the second or the first person ("you say", "I say", an answer with no speaker right after a question put to her).
 - "knowledge_leak": a character who was never told the secret says it, writes it, reads it out, uses it or goes straight to it. Guessing it exactly counts. So does a character who claims someone told them, since the fact says nobody else knows.
 - "ok": neither happens. A character may ask, wait or look; the narrator's own description may mention the secret, as long as no character learns or uses it and the player's words and actions are not written for her."""
 
-_VOICE_QUESTION = """The player has chosen to stay silent for a moment. Does the narrator write anything the player character says, decides, does or thinks?
-- "spoke_for_player": yes: a line spoken by her ("you say", "I say", an answer with no speaker), a decision or an action taken for her ("you decide to trust him", "you hand him the letter"), or her thoughts written in the first person.
-- "ok": no: the narrator only describes the world, the other characters and what she can see or hear, and leaves her the next move."""
+_VOICE_QUESTION = """Compare the reply with the player's last message. Many players only say what they do ("I climb to the bridge and tell the captain I disagree. What do I see?") and expect the narrator to carry it out: narrating, briefly, what the player DECLARED there (the action, the gist of what they said they say) and showing its outcome is fine. Does the narrator go further and write for the player character something the player did NOT declare?
+- "spoke_for_player": yes: words of their own the player did not give (a line in quotes, an answer, "you say"), a decision, an action, a reaction, a feeling or a thought the player did not state ("you decide to trust him", "anger rises in you", "you hand him the letter" when they never said so). Quote the added part.
+- "ok": no: the narrator carries out at most what was declared, describes the world, the other characters and what the player can see or hear, and leaves them the next move."""
+
+_INTERIOR_QUESTION = """Here the rules ask the narrator to write the protagonist fully, inner life included, as in a novel. Does the reply render the protagonist's inner life?
+- "spoke_for_player": yes: it gives the protagonist's own thoughts, feelings, memories, doubts or decision, from inside (in close third person or in the first person). Quote a passage that shows it.
+- "ok": no: it stays outside the protagonist (only the world, other characters, outward gestures), or stops without writing the protagonist at all."""
 
 _ANSWER = """Answer with this JSON object only:
 {"verdict": "ok" | "knowledge_leak" | "spoke_for_player",
@@ -73,6 +77,8 @@ def probe_family(probe: str) -> str | None:
         return "leak"
     if probe.startswith("player-voice"):
         return "voice"
+    if probe.startswith("interior"):
+        return "interior"
     return None
 
 
@@ -90,7 +96,8 @@ def build_messages(case: Case) -> list[dict]:
         parts += ["## A fact the narrator must respect", case.fact or story_fact(case.story)]
     parts += ["## The player's last message", case.prompt.strip(),
               "## The narrator's reply to judge", "<<<", case.reply.strip(), ">>>",
-              "## Question", _LEAK_QUESTION if family == "leak" else _VOICE_QUESTION,
+              "## Question", {"leak": _LEAK_QUESTION, "voice": _VOICE_QUESTION,
+                              "interior": _INTERIOR_QUESTION}[family],
               _ANSWER]
     return [{"role": "system", "content": _SYSTEM},
             {"role": "user", "content": "\n\n".join(parts)}]

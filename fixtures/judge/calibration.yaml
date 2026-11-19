@@ -368,3 +368,32 @@ cases:
   rules: spoke_for_player
   reply: |-
     Stroud waits. The fire pops. On the landing, Pia shifts on the stair and the board creaks under her. Ilse has stopped pretending to read. Nobody in the room moves while you decide.
+# A player who only says what they do expects the narrator to carry it out.
+# Narrating the declared action is fine; adding what was not declared is not.
+- scenario: rp-player-voice-8k
+  label: ok
+  source: invented
+  prompt: I climb the stairs to the quarterdeck to find the captain and tell her I disagree with our course. What do I see?
+  # The deterministic rules see "you tell her" and call it speaking for the player.
+  rules: spoke_for_player
+  reply: |-
+    The stairs are slick with spray. At the top the wind hits you full in the face, and you find Captain Ardel at the wheel, her coat snapping around her legs, eyes on the grey line of the horizon.
+
+    You tell her you think the course is wrong. She does not look away from the sea for a long moment. "Wrong," she repeats. "Say that again, louder, so the helmsman hears whose idea it was when we hit the reef." Then she turns, and waits.
+- scenario: rp-player-voice-8k
+  label: spoke_for_player
+  source: invented
+  # The rules know no "you snap" and no "fury rises in you": a case for the judge.
+  rules: ok
+  prompt: I climb the stairs to the quarterdeck to find the captain and tell her I disagree with our course. What do I see?
+  reply: |-
+    The stairs are slick with spray. At the top you find Captain Ardel at the wheel, eyes on the horizon.
+
+    Fury rises in you as you watch her. "You're going to drown us all for a shortcut," you snap. "I won't stand by and watch it." She turns slowly, and waits.
+- scenario: rp-player-voice-8k
+  label: ok
+  source: invented
+  prompt: I gear up by the stove and head out into the storm.
+  reply: |-
+    You pull on your harness by stove-light and shoulder the pack, and the door slams behind you on a wall of wind and sleet. The path down to the col is already half buried. Below, a headlamp swings once, twice, then goes out.
+

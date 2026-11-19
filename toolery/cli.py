@@ -792,6 +792,8 @@ def judge(
                 c = case_for(item["scenario"], item["reply"])
                 if c is None:
                     continue
+                if item.get("prompt"):      # a case may set its own player turn
+                    c.prompt = item["prompt"]
                 v = client.judge(c)
                 pairs.append((item["label"], probe_family(c.probe), v, c))
         else:

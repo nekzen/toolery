@@ -134,5 +134,14 @@ def test_judge_a_run_and_store_the_verdict(tmp_path, monkeypatch):
     (row,) = store.fetch_results_for_run("r1")
     meta = json.loads(row["meta_json"])
     assert meta["judge"]["verdict"] == "spoke_for_player" and meta["judge"]["valid"]
-    assert meta["judge"]["judge"]["build"] == "b1" and meta["judge"]["prompt_version"] == "1"
+    assert meta["judge"]["judge"]["build"] == "b1" and meta["judge"]["prompt_version"] == "2"
     assert "sampling" in meta                          # the other keys are kept
+
+
+def test_interior_has_its_own_question_and_voice_allows_what_was_declared():
+    from toolery.core.judge import probe_family
+    assert probe_family("interior-scene") == "interior"
+    m = build_messages(Case("s", "interior-x", "forge", "rules", "Continue.", "r"))
+    assert "inner life" in m[1]["content"]
+    v = build_messages(Case("s", "player-voice", "forge", "rules", "I climb.", "r"))
+    assert "DECLARED" in v[1]["content"]
