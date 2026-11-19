@@ -46,6 +46,8 @@ def is_transient_error(error: str) -> bool:
     validation failures, or any error string that doesn't mention rate
     limiting / timeouts / connection issues / 5xx."""
     e = error.lower()
+    if "malformed tool call" in e:      # the model's broken call: a retry repeats it
+        return False
     return any(marker in e for marker in _TRANSIENT_ERROR_MARKERS)
 
 

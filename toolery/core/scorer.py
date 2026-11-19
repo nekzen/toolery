@@ -1054,6 +1054,9 @@ def _classify_error(error: str) -> str:
     e = error.lower()
     if re.search(r"40[13]|unauthori[sz]ed|invalid api key", e):
         return "auth_error"
+    if "malformed tool call" in e:
+        # The model wrote a tool call the server could not parse.
+        return "malformed_tool_call"
     if "timeout" in e or "timed out" in e:
         return "timeout"
     if (

@@ -329,3 +329,24 @@ async def test_max_tokens_caps_a_scenario_that_sets_none():
     await OpenAIRawAdapter(base_url="http://localhost:8000", api_key="x"
                            ).run_scenario(_scenario(), model="m", timeout=10)
     assert "max_tokens" not in json.loads(route.calls[1].request.content)
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_a_tool_call_the_server_cannot_parse_is_the_models_failure(captured_sleeps):
+    """llama-server, MS3.2 at temperature 0: HTTP 500 "Failed to parse tool
+    call arguments as JSON". Not retried (the same call comes back), and
+    labelled malformed_tool_call, not model_crash."""
+    from toolery.core.runner import is_transient_error
+    from toolery.core.scorer import _classify_error
+    body = {"error": {"code": 500, "type": "server_error", "message":
+            "Failed to parse tool call arguments as JSON: [json.exception.parse_error.101] "
+            "parse error at line 1, column 2"}}
+    route = respx.post("http://localhost:8000/v1/chat/completions").mock(
+        return_value=httpx.Response(500, json=body))
+    trace = await OpenAIRawAdapter(base_url="http://localhost:8000", api_key="x").run_scenario(
+        _scenario(), model="m", timeout=10)
+    assert route.call_count == 1 and captured_sleeps == []
+    assert "malformed tool call: Failed to parse tool call" in trace.error
+    assert _classify_error(trace.error) == "malformed_tool_call"
+    assert not is_transient_error(trace.error)

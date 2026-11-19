@@ -20,6 +20,13 @@ _BACKOFF_MAX_SECONDS = 30.0
 _CONNECT_TIMEOUT_S = 10.0
 
 
+class MalformedToolCall(RuntimeError):
+    """The server could not parse the tool call the model wrote (llama-server
+    answers HTTP 500 "Failed to parse tool call arguments as JSON"). The
+    model's fault, not the server's: at temperature 0 a retry writes the
+    same broken call, so none is made."""
+
+
 class ScenarioTimeBudgetExhausted(TimeoutError):
     """The scenario's time budget ran out before the next request could be
     sent or answered."""
@@ -169,6 +176,12 @@ class OpenAIRawAdapter:
             resp = await self._client.post(url, json=payload, headers=headers,
                                            timeout=_request_timeout(deadline))
             latency_ms = int((time.monotonic() - t0) * 1000)
+            if resp.status_code == 500 and "parse tool call" in resp.text:
+                try:
+                    detail = resp.json()["error"]["message"]
+                except (ValueError, KeyError, TypeError):
+                    detail = resp.text[:300]
+                raise MalformedToolCall(f"malformed tool call: {detail}")
             retryable = resp.status_code == 429 or 500 <= resp.status_code < 600
             if retryable and attempt < self.max_retries:
                 await asyncio.sleep(_retry_delay(attempt, resp))
