@@ -2,6 +2,15 @@
 
 Rédigé le 2026-11-18. Document de travail : on le met à jour à chaque étape.
 
+## La boussole
+
+> Neural est une base restaurée de ses cicatrices de fusion. Il donne le
+> meilleur de lui-même et de son architecture, mais il existe pour l'écriture
+> et le RP. Si on est mal pris, il fait proprement les bases qu'on attend
+> d'un bon modèle de 8B : du Python et du JS simples, du JSON, du HTML et du
+> CSS bien formés, des outils appelés correctement et sans dégâts. Pas de
+> Rust ni de Go : on ne peut pas tout avoir.
+
 ## But
 
 Corriger les travers que la fusion a imposés à Neural **en gardant sa voix**.
@@ -181,3 +190,26 @@ de longueur de séquence : cher et incertain sur un GB10.
 3. **Les outils dans la v1** : seulement après avoir vérifié le format exact
    avec mistral-common, puisque les données doivent être écrites dans ce
    format.
+
+## Le pilote (décidé le 2026-11-19)
+
+Un premier entraînement volontairement petit, pour savoir si la voie est
+bonne avant de produire tout le reste. Méthode : ORPO, un seul entraînement
+(imitation de la réponse choisie et préférence contre la rejetée).
+
+| Cible | Paires | Choisie | Rejetée |
+|---|---|---|---|
+| A. Ne pas parler ni agir pour le joueur | ~200 | Neural avec la note | Neural sans la note |
+| B. Outils : `[TOOL_CALLS]` natif, agir au lieu d'annoncer | ~150 | MS3.2 text-only (appels natifs, même format et même tokenizer) | Neural |
+| G. Garde-fous : JSON/HTML/CSS bien formés, lire avant d'écrire, confirmer ou refuser avant de détruire | ~100 | MS3.2, gardée seulement si elle passe des vérifications automatiques (JSON valide et conforme, `read_file` avant `write_file`, aucune commande destructrice non demandée) | Neural |
+
+Les garde-fous ne se copient pas simplement de la base : MS3.2 elle-même
+écrase un fichier sans le lire (`easy-02-read-before-write`).
+
+Mesure après le pilote, toolery : `tool_selection`, `structured_output`,
+`safety_boundaries`, `restraint_refusal` et les sondes « parler pour le
+joueur » à 16k, avant/après.
+
+- Ça bouge dans le bon sens, sans perte ailleurs : on produit le reste.
+- Rien ne bouge : on revoit la méthode, ou on envisage une nouvelle fusion
+  partant de la version d'origine de MS3.2, avant d'y investir davantage.
