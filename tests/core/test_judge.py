@@ -49,6 +49,9 @@ def test_the_prompt_carries_the_fact_for_leaks_only():
     assert "## A fact the narrator must respect" not in voice[1]["content"]
     snow = build_messages(Case("s", "leak-stranger-secretcard", "snowline", "rules", "p", "r"))
     assert "Ilse" in snow[1]["content"]
+    given = build_messages(Case("s", "leak-ledger", "elsewhere", "rules", "p", "r",
+                                fact="Only Rook knows the vault code."))
+    assert "Only Rook knows the vault code." in given[1]["content"]
     with pytest.raises(ValueError):
         build_messages(Case("s", "ooc-pause", "harbor-road", "", "", ""))
 

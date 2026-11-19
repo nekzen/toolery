@@ -60,6 +60,10 @@ class Case:
     system: str
     prompt: str
     reply: str
+    # The fact to respect, given directly. When None, the leak question reads
+    # it from the story's card (`judge_fact`); a caller judging replies from
+    # outside the benchmark gives its own.
+    fact: str | None = None
 
 
 def probe_family(probe: str) -> str | None:
@@ -83,7 +87,7 @@ def build_messages(case: Case) -> list[dict]:
         raise ValueError(f"no judge question for probe {case.probe!r}")
     parts = ["## The rules the narrator was given", case.system.strip()]
     if family == "leak":
-        parts += ["## A fact the narrator must respect", story_fact(case.story)]
+        parts += ["## A fact the narrator must respect", case.fact or story_fact(case.story)]
     parts += ["## The player's last message", case.prompt.strip(),
               "## The narrator's reply to judge", "<<<", case.reply.strip(), ">>>",
               "## Question", _LEAK_QUESTION if family == "leak" else _VOICE_QUESTION,
